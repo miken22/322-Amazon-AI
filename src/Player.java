@@ -1,5 +1,6 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+
+import javax.swing.JFrame;
 
 import ubco.ai.GameRoom;
 import ubco.ai.connection.ServerMessage;
@@ -8,23 +9,48 @@ import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
 
 
-public class Player implements GamePlayer {
+public class Player extends JFrame implements GamePlayer {
 
-	GameClient client;
+	private static final long serialVersionUID = 348710967198419938L;
+
+	private GameClient client;
+	private Board board;
 	
 	public Player(String userName, String password){
 		
 		client = new GameClient(userName, password, this);		
+		
+		client.roomList = getRooms();
+		
+		client.getUserID();
+		
+		board = new Board(10,10);
+		
+		for(GameRoom g : client.roomList){
+			try{
+				client.joinGameRoom(g.roomName);
+				break;
+			} catch (Exception e){
+				continue;
+			}
+		}
+	}
+	
+	public ArrayList<GameRoom> getRooms(){
+		
 		ArrayList<GameRoom> rooms = client.getRoomLists();
 		
-		for (GameRoom g : rooms){
-			
+		for(GameRoom g : rooms){
+			System.out.println(g.roomID);
+			System.out.println(g.roomName);	
 		}
+
+		return rooms;
 	}
 	
 	@Override
 	public boolean handleMessage(String arg0) throws Exception {
-		
+		System.out.println("Server message: " + arg0);
 		return false;
 	}
 
@@ -36,10 +62,17 @@ public class Player implements GamePlayer {
 	
 	public void sendToServer(String msg, int roomID){
 		
-		String actionMsg = "Try this";
-
-		String message = ServerMessage.compileGameMessage(msg, roomID, actionMsg);
 		
 	}
+
+
+
+	public static void main(String[] args){
+	
+		Player player = new Player("","");
+		
+		
+	}
+	
 
 }
