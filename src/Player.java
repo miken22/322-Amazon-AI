@@ -15,11 +15,17 @@ public class Player implements GamePlayer {
 	public Player(String userName, String password){
 		
 		client = new GameClient(userName, password, this);		
+		
+	}
+	
+	public ArrayList<GameRoom> getRooms(){
 		ArrayList<GameRoom> rooms = client.getRoomLists();
 		
-		for (GameRoom g : rooms){
-			
+		for(GameRoom g : rooms){
+			System.out.println(g.roomID);
+			System.out.println(g.roomName);
 		}
+		return rooms;
 	}
 	
 	@Override
