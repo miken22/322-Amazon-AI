@@ -20,6 +20,7 @@ public class Player extends JFrame implements GamePlayer {
 		
 		client = new GameClient(userName, password, this);		
 		
+<<<<<<< HEAD
 		client.roomList = getRooms();
 		
 		client.getUserID();
@@ -38,13 +39,23 @@ public class Player extends JFrame implements GamePlayer {
 	
 	public ArrayList<GameRoom> getRooms(){
 		
+=======
+	}
+	
+	public ArrayList<GameRoom> getRooms(){
+>>>>>>> 42c9945b9740b4515ee8a319a46f1349ad70ac78
 		ArrayList<GameRoom> rooms = client.getRoomLists();
 		
 		for(GameRoom g : rooms){
 			System.out.println(g.roomID);
+<<<<<<< HEAD
 			System.out.println(g.roomName);	
 		}
 
+=======
+			System.out.println(g.roomName);
+		}
+>>>>>>> 42c9945b9740b4515ee8a319a46f1349ad70ac78
 		return rooms;
 	}
 	
