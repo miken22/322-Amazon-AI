@@ -9,9 +9,13 @@ Started the creation of a Player with game client and connects to the rooms. Tri
 Started creating a board class, initialize to initial state, create methods for moving
 
 Need to create a GUI to display the board, pieces, chat, move log.
+
 Need to test connection once the server goes up
+
 Need to implement search methods (A*, ID, min-max etc)
+
 Need to implement heuristic functions(s)
+
 Need to create the XML move formatting
 
 This should be enough to get started. The progress on the first two points is on my branch MikeDev, let me know if anything else comes to mind.
