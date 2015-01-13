@@ -86,7 +86,22 @@ public class Board {
 		return board[x][y];
 		
 	}
-
+	
+	public void updateBlackPositions(int oldX, int oldY, int newX, int newY){
+		
+	}
+	
+	public HashMap<Integer, Integer> getBlackPositions(){
+		return blackPositions;
+	}
+	
+	public void updateWhitePositions(int oldX, int oldY, int newX, int newY){
+		
+	}
+	
+	public HashMap<Integer, Integer> getWhitePositions(){
+		return whitePositions;
+	}
 }
 
 

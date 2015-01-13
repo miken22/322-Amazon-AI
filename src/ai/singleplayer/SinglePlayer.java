@@ -76,7 +76,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private JMenuBar menu;
 	private JMenu file;
 	private JMenuItem exit;
-
+	
+	private JLabel whosTurn;
+	private Timer gameTimer;
+	
 	private Font font;
 	
 	private int rows;
@@ -85,7 +88,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	
 	private Cells[][] guiBoard;
 	private boolean player1Turn = true;
-	private boolean player2Turn = false;
+
 	private boolean useAI = false;
 	private boolean finished = false;
 	
@@ -116,6 +119,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		file = new JMenu("File");
 		exit = new JMenuItem("Exit");
 		
+		whosTurn = new JLabel("New game");
+		gameTimer = new Timer();
+		gameTimer.setForeground(Color.RED);
+		
 		send = new JButton("Send");
 		clear = new JButton("Clear");
 		
@@ -132,12 +139,13 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		clear.addActionListener(new ButtonListener());
 		
 		exit.addActionListener(new MenuListener(1));
-
+		
 		try {
 			font = Font.createFont(0,this.getClass().getResourceAsStream("/Trebuchet MS.ttf"));
 		} catch (FontFormatException | IOException e) {
 			e.printStackTrace();
 		}
+		
 		Border b = new LineBorder(Color.LIGHT_GRAY,1,true);
 		
 		frame = new JFrame("Game of Amazons");
@@ -146,6 +154,15 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		frame.setSize(725, 675);
 		frame.setResizable(false);
 		frame.setJMenuBar(menu);
+		
+		whosTurn.setBounds(245,0,200,30);
+		font = font.deriveFont(Font.BOLD,15);
+		whosTurn.setFont(font);
+		
+		gameTimer.setBounds(50, 0, 250, 20);
+		font = font.deriveFont(Font.PLAIN,15);
+		gameTimer.setFont(font);
+		gameTimer.setBounds(50, 0, 250, 20);
 		
 		menu.setBackground(new Color(244,244,244));
 		menu.add(file);
@@ -175,7 +192,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		
 		input.setLineWrap(true);
 		input.setBorder(b);
-		font = font.deriveFont(Font.PLAIN,15);
 		input.setFont(font);
 		input.setBounds(0, 550, 550, 100);
 		input.setBackground(new Color(252,252,252));
@@ -195,15 +211,13 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		clear.setFocusPainted(false);
 		
 		c = frame.getContentPane();
+		c.add(whosTurn);
+		c.add(gameTimer);
 		c.add(scrollChat);
 		c.add(scrollLog);
 		c.add(input);
 		c.add(send);
 		c.add(clear);
-
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-		input.requestFocus();
 		
 	}
 	
@@ -238,7 +252,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
             	guiBoard[i][j] = cell;
             	frame.add(cell);
             }
-        	int q = 0;
         }
         
         JPanel tile = new JPanel();
@@ -255,7 +268,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
         for (int i = 0; i < columns; i++){
         	JLabel label = new JLabel();
         	label.setBackground(Color.BLACK);
-        	label.setBounds(70 + i * 50,0, 50,50);
+        	label.setBounds(70 + i * 50,10, 50,50);
         	label.setText("" + letters[i]);
         	frame.add(label);
         }
@@ -264,7 +277,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
         for (int i = rows-1; i >= 0; i--){
         	JLabel label = new JLabel();
         	label.setBackground(Color.BLACK);
-        	label.setBounds(20,510-i*50, 50,40);
+        	label.setBounds(25,510-i*50, 50,40);
         	label.setText("" + i);
         	frame.add(label);
         }
@@ -285,48 +298,16 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		guiBoard[6][9].setBQueen();
 		guiBoard[9][3].setBQueen();
 		guiBoard[9][6].setBQueen();	
-		
+
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		input.requestFocus();
 	}
-	
-	private void runTwoPlayer(){
 		
-		player1Turn = true;
-		player2Turn = false;
-		
-		while (!finished){
-			
-			player1Turn();
-			
-			player2Turn();
-			
-		}
-		
-		System.exit(0);
-	}
-	
-	private void player1Turn(){
-		
-		while(player1Turn){ }
-		
-		if(isFinished()){
-			determineWinner();
-			finished = true;
-		}	
-	}
-	
-	private void player2Turn(){
-		
-		while(player2Turn){	}
-		
-		if(isFinished()){
-			determineWinner();
-			finished = true;
-		}
-	}
-	
 	// Count the amount of available space for each player, largest area = winner
-	private void determineWinner() {
+	private int determineWinner() {
 		// Probably use the same idea as goal state checking.
+		return 1;
 	}
 
 	// Need to check if each amazon is contained within a specific region
@@ -352,30 +333,19 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		 12.        Add south node to end of Q if south has not been processed yet.
 		 13. Return.
 	 */
-	private boolean isFinished() {
-		
-		return true;
+	private boolean isFinished(int player) {		
+		return false;
 	}
 
-	private void runGame(){
-		
-		//boolean finished = false;
-		//Agent agent = new Agent();
-	}
-	
-	private void startGame(){
-		if (useAI){
-			runGame();
-		} else {
-			runTwoPlayer();
-		}
-	}
-	
 	public void init(){
 		createFrame();
 		drawBoard();
 		initializePositions();
-		startGame();
+		
+		gameTimer.startTiming();
+		
+		whosTurn.setText("Whites move");
+		
 	}
 	
 	public SinglePlayer(int row, int col){
@@ -398,6 +368,14 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		
 	}
 	
+	/**
+	 * This class controls game play, alternating player turns and handling any updates. All game logic must
+	 * be handled within the ActionListener class.
+	 * 
+	 * 
+	 * @author mike-nowicki
+	 *
+	 */
 	public class ButtonListener implements ActionListener{
 		String in = "";
 		String conversation = "";
@@ -434,6 +412,13 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			}
 			
 			input.requestFocus();
+			
+			if (finished){
+				int winner = determineWinner();
+				JOptionPane.showMessageDialog(frame,"Game over, Player " + winner + " won!", "Game over", JOptionPane.INFORMATION_MESSAGE);
+				System.exit(0);
+			}
+			
 		}
 		
 		private void handleMove(){
@@ -488,6 +473,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				board.placeMarker(tRow,tCol, WQUEEN);
 				board.placeMarker(aRow, aCol, ARROW);
 				
+				board.updateWhitePositions(fRow, fCol, tRow, tCol);
+				
 				guiBoard[fRow][fCol].setFree();
 				guiBoard[tRow][tCol].setWQueen();
 				guiBoard[aRow][aCol].setArrow();
@@ -498,7 +485,14 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				input.setText("");
 				
 				player1Turn = false;
-				player2Turn = true;
+				
+				whosTurn.setText("Blacks move.");
+				frame.repaint();
+								
+				if(isFinished(WQUEEN)){
+					finished = true;
+				}
+				
 				return;
 				
 			} else {
@@ -522,6 +516,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				board.freeSquare(fRow,fCol);
 				board.placeMarker(tRow,tCol, BQUEEN);
 				board.placeMarker(aRow, aCol, ARROW);
+
+				board.updateBlackPositions(fRow, fCol, tRow, tCol);
+				
 				
 				guiBoard[fRow][fCol].setFree();
 				guiBoard[tRow][tCol].setBQueen();
@@ -533,7 +530,15 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				input.setText("");
 				
 				player1Turn = true;
-				player2Turn = false;
+				
+				
+				whosTurn.setText("Whites move.");
+				frame.repaint();
+								
+				if(isFinished(BQUEEN)){
+					finished = true;
+				}
+				
 				return;
 			}
 		}
@@ -542,25 +547,28 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					
 			// Check horizontal move, make sure no obstacles
 			if (sX == dX){
-				// No move, just throw arrow
+				
 				if (sY == dY){
+
+					// No move, just throw arrow, not allowed to throw into your own tile
 					if (isArrow){
 						JOptionPane.showMessageDialog(frame,"Illegal move, cannot shoot arrow at your own position.", "Invalid", JOptionPane.WARNING_MESSAGE);
 						return false;
 					} else {
+						// Otherwise you are not moving, still valid I guess?
 						return true;
 					}
 				}
 				
-				// Quick swap
-				if (sX > dX){
-					int temp = sX;
-					sX = dX;
-					dX = temp;
-				}			
-				for (int i = sX; i <= dX; i++){
-					if (board.isMarked(i,dY)){
-						JOptionPane.showMessageDialog(frame,"Illegal move.", "Invalid", JOptionPane.WARNING_MESSAGE);
+				// Get change in column, find if positive/negative, use to increment to new position checking each tile on the way.
+				int deltaY = dY - sY;
+				deltaY = deltaY / Math.abs(deltaY);
+				
+				while(sY != dY){
+					sY += deltaY;
+					
+					if (board.isMarked(dX,sY)){
+						JOptionPane.showMessageDialog(frame,"Illegal move at [" + dX + "][" + sY + "].", "Invalid", JOptionPane.WARNING_MESSAGE);
 						return false;
 					}
 				}
@@ -568,40 +576,46 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				
 			}
 			
-			// Check vertical move, same thing
+			// Check vertical move, same thing as above
 			if (sY == dY){
-				// Quick swap
-				if (sY > dY){
-					int temp = sY;
-					sY = dY;
-					dY = temp;	
-				}			
-				for (int i = sY; i <= dY; i++){
-					if (board.isMarked(dX, i)){
-						JOptionPane.showMessageDialog(frame,"Illegal move.", "Invalid", JOptionPane.WARNING_MESSAGE);
+				
+				int deltaX = dX - sX;
+				deltaX = deltaX / Math.abs(deltaX);
+				
+				while (sX != dX){
+					sX += deltaX;
+					if (board.isMarked(sX, dY)){
+						JOptionPane.showMessageDialog(frame,"Illegal move at [" + sX + "][" + dY + "].", "Invalid", JOptionPane.WARNING_MESSAGE);
 						return false;
 					}
 				}
 				return true;
 			}
 			
-			// Check diagonal
-			if (sX > dX){
+			// Need to work out diagonal checks
+			if(sX > dX && sY > dY){	
 				int temp = sX;
 				sX = dX;
 				dX = temp;	
-			}
-			if (sY > dY){
-				int temp = sY;
+				
+				temp = sY;
 				sY = dY;
-				dY = temp;				
+				dY = temp;	
+				return checkEasyDiagonal(sX, sY, dX, dY);
+			} else if (sX < dX && sY < dY){
+				return checkEasyDiagonal(sX, sY, dX, dY);
 			}
+			
+			return true;
+		}
+		
+		private boolean checkEasyDiagonal(int sX, int sY, int dX, int dY){
 			
 			while (sX != dX || sY != dY){
 				sX++;
 				sY++;
 				if (board.isMarked(sX, sY)){
-					JOptionPane.showMessageDialog(frame,"Illegal move.", "Invalid", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(frame,"Illegal diagonal move.", "Invalid", JOptionPane.WARNING_MESSAGE);
 					return false;
 				}
 			}
