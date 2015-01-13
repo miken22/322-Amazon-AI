@@ -330,13 +330,21 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 
 	// Count the amount of available space for each player, largest area = winner
-	private int determineWinner() {
+	private void determineWinner() {
 		// Probably use the same idea as goal state checking. Sum area for one player, take 100 - sum for score of
 		// other player.
 		int whiteScore = 0;
 		int blackScore = 0;
 		
-		return (whiteScore > blackScore ? whiteScore : blackScore);
+		whiteScore++;
+		blackScore++;
+		
+		if (whiteScore > blackScore){
+			JOptionPane.showMessageDialog(frame,"White wins with a score of " + whiteScore, "Game Over", JOptionPane.NO_OPTION);
+		} else {
+			JOptionPane.showMessageDialog(frame,"Black wins with a score of " + blackScore, "Game Over", JOptionPane.NO_OPTION);
+		}
+		
 	}
 
 	/**
@@ -401,12 +409,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			break;
 		}
 		
-		Pair<Integer, Integer> parent = null;
 		Stack<Pair<Integer, Integer>> stack = new Stack<>();
 		stack.push(source);
 
 		while (!stack.empty()){
-
 			// Check 8 diagonal positions.
 			Pair<Integer, Integer> top = stack.pop();
 			int xPos = top.getLeft();
@@ -431,8 +437,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					hasChecked[xPos-1][yPos] = true;
 				}
 			}
-
-			//			-
 			if (xPos + 1 < rows){
 				if (!board.isMarked((xPos+1), yPos)){
 					if (!hasChecked[xPos+1][yPos]){
@@ -442,12 +446,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					return true;
 				} else {
 					hasChecked[xPos+1][yPos] = true;
-				}
-				return true;
-				
+				}				
 			}
-
-			//			|
 			if (yPos - 1 >= 0){
 				if (!board.isMarked((xPos), yPos-1)){
 					if (!hasChecked[xPos][yPos-1]){
@@ -459,7 +459,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					hasChecked[xPos][yPos-1] = true;
 				}
 			}
-
 			if (yPos + 1 < columns){
 				if (!board.isMarked(xPos, yPos+1)){
 					if (!hasChecked[xPos][yPos+1]){
@@ -471,8 +470,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					hasChecked[xPos][yPos+1] = true;
 				}
 			}
-
-			//			/
 			if ((xPos + 1 < rows) && (yPos + 1 < columns)){
 				if (!board.isMarked((xPos+1), yPos+1)){
 					if (!hasChecked[xPos+1][yPos]){
@@ -483,9 +480,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				} else {
 					hasChecked[xPos+1][yPos+1] = true;
 				}
-				
 			}
-
 			if ((xPos + 1 < rows) && (yPos - 1 >= 0)){
 				if (!board.isMarked((xPos+1), yPos-1)){
 					if (!hasChecked[xPos+1][yPos-1]){
@@ -497,7 +492,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					hasChecked[xPos+1][yPos-1] = true;
 				}
 			}
-
 			if ((xPos - 1 >= 0) && (yPos + 1 < columns)){
 				if (!board.isMarked((xPos-1), yPos+1)){
 					if (!hasChecked[xPos-1][yPos+1]){
@@ -509,7 +503,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					hasChecked[xPos-1][yPos+1] = true;
 				}
 			}
-
 			if ((xPos - 1 >= 0) && (yPos - 1 >= 0)){
 				if (!board.isMarked((xPos-1), yPos-1)){
 					if (!hasChecked[xPos-1][yPos-1]){
@@ -524,7 +517,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		}
 		return false;
 	}
-
 
 	/**
 	 * This class controls game play, alternating player turns and handling any updates. All game logic must
@@ -577,8 +569,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			input.requestFocus();
 
 			if (finished){
-				int winner = determineWinner();
-				JOptionPane.showMessageDialog(frame,"Game over, Player " + winner + " won!", "Game over", JOptionPane.INFORMATION_MESSAGE);
+				determineWinner();
+				JOptionPane.showMessageDialog(frame,"Game over, click to exit.", "Game over", JOptionPane.NO_OPTION);
 				System.exit(0);
 			}
 
@@ -653,10 +645,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				frame.repaint();
 
 				if(isFinished(WQUEEN)){
+					endGame();
 					finished = true;
 				}
-
-				return;
 
 			} else {
 
@@ -697,10 +688,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				frame.repaint();
 
 				if(isFinished(BQUEEN)){
+					endGame();	
 					finished = true;
 				}
-
-				return;
 			}
 		}
 
@@ -838,6 +828,18 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				}
 			}
 			return true;
+		}
+		
+		private void endGame(){
+		
+			doc = chat.getDocument();
+
+			StyleConstants.setForeground(userStyle, Color.red);
+			try { 
+				chatTextarea.insertString(chatTextarea.getLength(), "\r\nGame Over!",userStyle); 
+			} catch (BadLocationException e1){}
+
+			chat.select(doc.getLength(), doc.getLength());
 		}
 
 		private void addText(){
