@@ -9,6 +9,13 @@ import ubco.ai.games.GameClient;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
 
+/**
+ * A version of the Amazon player that is demo-ed in the API
+ * 
+ * 
+ * @author Mike Nowicki
+ *
+ */
 
 public class Player extends JFrame implements GamePlayer {
 
