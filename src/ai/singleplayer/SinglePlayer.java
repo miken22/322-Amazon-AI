@@ -30,7 +30,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import ai.Agent;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
 
@@ -51,9 +50,6 @@ import ubco.ai.games.GamePlayer;
  */
 public class SinglePlayer extends JFrame implements GamePlayer {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6270779398069277942L;
 
 	private JFrame frame;
@@ -94,8 +90,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	public final int WQUEEN = 1;
 	public final int BQUEEN = 2;
 	public final int ARROW = 3;
-	public final int FREE = -1;
-	
+	public final int FREE = -1;	
 			
 	@Override
 	public boolean handleMessage(String arg0) throws Exception {
@@ -136,7 +131,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		
 		exit.addActionListener(new MenuListener(1));
 
-		
 		try {
 			font = Font.createFont(0,this.getClass().getResourceAsStream("/Trebuchet MS.ttf"));
 		} catch (FontFormatException | IOException e) {
@@ -147,7 +141,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		frame = new JFrame("Game of Amazons");
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(710, 700);
+		frame.setSize(725, 700);
 		frame.setResizable(false);
 		frame.setJMenuBar(menu);
 		
@@ -159,10 +153,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		chat.setContentType("text/html");
 		chat.setBorder(b);
 		chat.setBackground(new Color(252,252,252));
-		font = font.deriveFont(Font.PLAIN,12);
+		font = font.deriveFont(Font.PLAIN,15);
 		chat.setFont(font);
 
-		scrollChat.setBounds(550, 250, 150, 300);
+		scrollChat.setBounds(550, 250, 170, 300);
 		scrollChat.setBackground(new Color(252,252,252));
 		scrollChat.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Chat History:"));
 		
@@ -170,31 +164,30 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		moveLog.setContentType("text/html");
 		moveLog.setBorder(b);
 		moveLog.setBackground(new Color(252,252,252));
-		font = font.deriveFont(Font.PLAIN,12);
+		font = font.deriveFont(Font.PLAIN,15);
 		moveLog.setFont(font);
 		
-		scrollLog.setBounds(550, 0, 150, 250);
+		scrollLog.setBounds(550, 0, 170, 250);
 		scrollLog.setBackground(new Color(252,252,252));
 		scrollLog.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Move History:"));
 		
 		input.setLineWrap(true);
 		input.setBorder(b);
-		font = font.deriveFont(Font.PLAIN,12);
+		font = font.deriveFont(Font.PLAIN,15);
 		input.setFont(font);
 		input.setBounds(0, 550, 550, 100);
 		input.setBackground(new Color(252,252,252));
 		input.addKeyListener(new TextListener());
-		input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Enter a move or chat:"));
-		
+		input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Enter a move or chat:"));		
 		
 		chatTextarea = chat.getStyledDocument();
 		moveTextarea = moveLog.getStyledDocument();
 		
-		send.setBounds(550, 550, 150, 50);
+		send.setBounds(550, 550, 170, 50);
 		send.setBorder(b);
 		send.setBackground(new Color(250,250,250));
 		send.setFocusPainted(false);
-		clear.setBounds(550, 600, 150, 50);
+		clear.setBounds(550, 600, 170, 50);
 		clear.setBorder(b);
 		clear.setBackground(new Color(250,250,250));
 		clear.setFocusPainted(false);
@@ -205,10 +198,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		c.add(input);
 		c.add(send);
 		c.add(clear);
-		
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-		input.requestFocus();
 		
 	}
 	
@@ -291,6 +280,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		guiBoard[3][9].setBQueen();
 		guiBoard[9][6].setBQueen();
 		guiBoard[6][9].setBQueen();	
+		
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		input.requestFocus();
 		
 	}
 	
@@ -432,9 +425,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					handleMove();
 				} else {
 					addText();
+					input.setText("");
 				}
 
-				input.setText("");
 				b.setBackground(new Color(250,250,250));
 			}
 			
@@ -448,11 +441,17 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			String arrow;
 			
 			String[] splitIn = in.split("-");
+			
+			if(splitIn.length > 3){
+				JOptionPane.showMessageDialog(frame,"Invalid move format, try again.", "Invalid", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			
 			from = splitIn[0];			
 			to = splitIn[1];
 			arrow = splitIn[2];
 			
-			// Get information about source of move
+			// Get information about source of move (convert character to int value)
 			char fromRow = from.toLowerCase().charAt(0);
 			int fRow = Utility.getColumn(fromRow);
 			int fCol = from.charAt(1)-48;
@@ -474,12 +473,12 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				}
 				
 				// Verify move is valid (straight/diagonal, no obstructions)
-				if (!moveIsValid(fRow,fCol,tRow,tCol)){
+				if (!moveIsValid(fRow,fCol,tRow,tCol,false)){
 					return;
 				}
 
 				// Use same logic to validate arrow throws.
-				if (!moveIsValid(tRow,tCol,aRow,aCol)){
+				if (!moveIsValid(tRow,tCol,aRow,aCol,true)){
 					return;
 				}
 							
@@ -494,6 +493,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				updateMoveLog(in,WQUEEN);
 				
 				frame.repaint();
+				input.setText("");
 				
 				player1Turn = false;
 				player2Turn = true;
@@ -508,12 +508,12 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				}
 				
 				// Verify move is valid (straight/diagonal, no obstructions)
-				if (!moveIsValid(fRow,fCol,tRow,tCol)){
+				if (!moveIsValid(fRow,fCol,tRow,tCol,false)){
 					return;
 				}
 
 				// Use same logic to validate arrow throws.
-				if (!moveIsValid(tRow,tCol,aRow,aCol)){
+				if (!moveIsValid(tRow,tCol,aRow,aCol,true)){
 					return;
 				}
 				
@@ -528,6 +528,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				updateMoveLog(in,BQUEEN);
 				
 				frame.repaint();
+				input.setText("");
 				
 				player1Turn = true;
 				player2Turn = false;
@@ -535,13 +536,18 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			}
 		}
 			
-		private boolean moveIsValid(int sX, int sY, int dX, int dY){
+		private boolean moveIsValid(int sX, int sY, int dX, int dY, boolean isArrow){
 					
 			// Check horizontal move, make sure no obstacles
 			if (sX == dX){
 				// No move, just throw arrow
 				if (sY == dY){
-					return true;
+					if (isArrow){
+						JOptionPane.showMessageDialog(frame,"Illegal move, cannot shoot arrow at your own position.", "Invalid", JOptionPane.WARNING_MESSAGE);
+						return false;
+					} else {
+						return true;
+					}
 				}
 				
 				// Quick swap
@@ -550,7 +556,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					sX = dX;
 					dX = temp;
 				}			
-				for (int i = sX+1; i <= dX; i++){
+				for (int i = sX; i <= dX; i++){
 					if (board.isMarked(i,dY)){
 						JOptionPane.showMessageDialog(frame,"Illegal move.", "Invalid", JOptionPane.WARNING_MESSAGE);
 						return false;
@@ -568,7 +574,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					sY = dY;
 					dY = temp;	
 				}			
-				for (int i = sY+1; i <= dY; i++){
+				for (int i = sY; i <= dY; i++){
 					if (board.isMarked(dX, i)){
 						JOptionPane.showMessageDialog(frame,"Illegal move.", "Invalid", JOptionPane.WARNING_MESSAGE);
 						return false;
@@ -578,10 +584,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			}
 			
 			// Check diagonal
-			
-			/*
-			 * This check is broken right now.
-			 */
 			if (sX > dX){
 				int temp = sX;
 				sX = dX;
@@ -638,8 +640,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 			chat.select(doc.getLength(), doc.getLength());
 		}
-
-	
 	}
 	
 	private class MenuListener implements ActionListener {
@@ -670,11 +670,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 		// Unused methods
 		@Override
-		public void keyReleased(KeyEvent arg0) {
-		}
+		public void keyReleased(KeyEvent arg0) {}
 
 		@Override
-		public void keyTyped(KeyEvent arg0) {	
-		}
+		public void keyTyped(KeyEvent arg0) {}
 	}
 }
