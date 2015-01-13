@@ -130,26 +130,3 @@ public class Board {
 		return whitePositions;
 	}
 }
-
-
-/**
-oard[0][3] = WQUEEN;
-board[0][6] = WQUEEN;
-board[3][0] = WQUEEN;
-board[6][0] = WQUEEN;
-
-whitePositions.put(0, 3);
-whitePositions.put(3, 0);
-whitePositions.put(0, 6);
-whitePositions.put(6, 0);
-
-board[0][6] = BQUEEN;
-board[3][9] = BQUEEN;
-board[9][3] = BQUEEN;
-board[6][9] = BQUEEN;	
-
-blackPositions.put(0, 6);
-blackPositions.put(3, 9);
-blackPositions.put(9, 3);
-blackPositions.put(6, 0);
-*/
