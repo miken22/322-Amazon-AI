@@ -9,14 +9,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
@@ -30,6 +33,7 @@ import javax.swing.text.StyledDocument;
 
 import ai.Agent;
 import ai.Board;
+import ai.Pair;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
 
@@ -125,7 +129,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		frame = new JFrame("TravelBot Chat Agency");
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(660, 650);
+		frame.setSize(710, 700);
 		frame.setResizable(false);
 		frame.setJMenuBar(menu);
 		
@@ -137,10 +141,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		chat.setContentType("text/html");
 		chat.setBorder(b);
 		chat.setBackground(new Color(252,252,252));
-		font = font.deriveFont(Font.PLAIN,10);
+		font = font.deriveFont(Font.PLAIN,12);
 		chat.setFont(font);
 
-		scrollChat.setBounds(500, 250, 150, 250);
+		scrollChat.setBounds(550, 250, 150, 300);
 		scrollChat.setBackground(new Color(252,252,252));
 		scrollChat.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Chat History:"));
 		
@@ -151,7 +155,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		font = font.deriveFont(Font.PLAIN,12);
 		moveLog.setFont(font);
 		
-		scrollLog.setBounds(500, 0, 150, 250);
+		scrollLog.setBounds(550, 0, 150, 250);
 		scrollLog.setBackground(new Color(252,252,252));
 		scrollLog.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Move History:"));
 		
@@ -159,18 +163,20 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		input.setBorder(b);
 		font = font.deriveFont(Font.PLAIN,12);
 		input.setFont(font);
-		input.setBounds(0, 500, 500, 150);
+		input.setBounds(0, 550, 550, 100);
 		input.setBackground(new Color(252,252,252));
 		input.addKeyListener(new TextListener());
+		input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Enter a move or chat:"));
+		
 		
 		chatTextarea = chat.getStyledDocument();
 		moveTextarea = moveLog.getStyledDocument();
 		
-		send.setBounds(500, 500, 150, 50);
+		send.setBounds(550, 550, 150, 50);
 		send.setBorder(b);
 		send.setBackground(new Color(250,250,250));
 		send.setFocusPainted(false);
-		clear.setBounds(500, 550, 150, 50);
+		clear.setBounds(550, 600, 150, 50);
 		clear.setBorder(b);
 		clear.setBackground(new Color(250,250,250));
 		clear.setFocusPainted(false);
@@ -213,7 +219,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
             		}
             	}
             	
-            	cell.setBounds(i * 50, j * 50, 50, 50);
+            	cell.setBounds(i * 50 + 50, j * 50 + 50, 50, 50);
             	cell.setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
             	cell.setXY(i, j);
             	guiBoard[i][j] = cell;
@@ -221,6 +227,38 @@ public class SinglePlayer extends JFrame implements GamePlayer {
             }
         }
         
+        JPanel tile = new JPanel();
+        tile.setBackground(Color.BLACK);
+        tile.setBounds(0,0,50,50);
+        frame.add(tile);
+        
+        /*
+         * I hate GUI's, this is the ugliest hack in the world I could come up with for labeling
+         * the grid but Java randomly decides not to draw some/all of the tiles. I hope someone knows
+         * a better solution.. 
+         */
+        for (int i = 0; i < rows; i++){
+        	JLabel label = new JLabel("  "  + i);
+        	label.setBackground(Color.BLACK);
+        	label.setBounds(60 + i * 50,0, 50,50);
+        	//label.
+        	frame.add(label);
+        }
+        
+        // Columns are used as integers but map to a char value
+        char[] letters = {'a','b','c','d','e','f','g','h','i','j'};
+        for (int i = 0; i < columns; i++){
+        
+        	JLabel label = new JLabel();
+        	label.setBackground(Color.BLACK);
+        	label.setBounds(10,60+i*50, 50,40);
+        	label.setText(" " + letters[i]);
+        	
+        	frame.add(label);
+
+        }
+        
+        frame.getContentPane().repaint();
         frame.repaint();
 		
 	}
@@ -241,27 +279,32 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	
 	public void runTwoPlayer(){
 		
-		
-		
 		boolean finished = false;
 		
 		while (!finished){
+			
+			if(isFinished(1)){
+				determineWinner();
+				finished = true;
+				break;
+			}
 			
 			player1Turn = true;
 			
 			while(player1Turn){	}
 			
+			if(isFinished(2)){
+				determineWinner();
+				finished = true;
+				break;
+			}
+			
 			player2Turn = true;
 			
 			while(player2Turn){	}
 						
-			if(isFinished()){
-				determineWinner();
-				finished = true;
-			}
-			
+				
 		}
-		
 	}
 	
 	// Count the amount of available space for each player, largest area = winner
@@ -270,8 +313,32 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	}
 
 	// Need to check if each amazon is contained within a specific region
-	private boolean isFinished() {
-
+	// The idea is to look for every component within the matrix, if each component
+	// has at most one player colour then the game is over.
+	private boolean isFinished(int player) {
+		
+		int piecesFound = 0;
+		ArrayList<Pair<Integer> > locations = new ArrayList<>(4);
+		
+		while (piecesFound < 4){
+			for (int i = 0; i < rows; i++){
+				for (int j = 0; j < columns; j++){
+					if(board.getPiece(i, j) == player){
+						Pair<Integer> pair = new Pair<>(i,j);	
+						locations.add(pair);
+						piecesFound++;
+					}
+				}
+			}
+		}
+		
+		// How to efficiently check every direction from each amazon piece?
+		// If we detect a different colour in the same component (path to opp)
+		// then return false otherwise if all in seperate comp from other colour
+		// return true;
+		
+		
+		
 		return false;
 	}
 
