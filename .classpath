@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="cosc322-2015.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/322-Amazon-AI/cosc322-client-api-docs.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="nanoxml-2.2.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/322-Amazon-AI/nanoxml-javadoc.tar.gz!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

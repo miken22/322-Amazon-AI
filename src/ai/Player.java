@@ -1,3 +1,4 @@
+package ai;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;

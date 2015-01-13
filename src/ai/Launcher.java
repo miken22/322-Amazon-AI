@@ -1,3 +1,4 @@
+package ai;
 import ubco.ai.games.Amazon;
 
 public class Launcher extends Amazon {
