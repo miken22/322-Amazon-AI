@@ -22,7 +22,7 @@ public class Player extends JFrame implements GamePlayer {
 	private static final long serialVersionUID = 348710967198419938L;
 
 	private GameClient client;
-	private Board board;
+	//private Board board;
 	
 	public Player(String userName, String password){
 		
@@ -32,7 +32,7 @@ public class Player extends JFrame implements GamePlayer {
 		
 		client.getUserID();
 		
-		board = new Board(10,10);
+		//board = new Board(10,10);
 		
 		for(GameRoom g : client.roomList){
 			try{
