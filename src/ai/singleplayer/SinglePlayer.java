@@ -370,6 +370,17 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		return true;
 	}
 
+	/**
+	 * This is a stack based search of the game board, if we detect an amazon piece
+	 * of the oppsing player then the game should not finish as there are legal moves
+	 * to reach other pieces. If every amazon is isolated from the opposite colour we
+	 * declare the game over.
+	 * 
+	 * @param source - An integer pairing (x,y) for where the amazon piece is
+	 * @param player - 1 for White, 2 for Black
+	 * @return - True if we reach an opponent, false otherwise.
+	 * 
+	 */
 	private boolean canReachOther(Pair<Integer, Integer> source, int player){
 
 		boolean[][] hasChecked = new boolean[rows][columns];
@@ -380,18 +391,16 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			}
 		}
 		
-		
 		int opponent = 0;
 		switch(player){
-		case(WQUEEN):
-			opponent = BQUEEN;
-		break;
-		case(BQUEEN):
-			opponent = WQUEEN;
-		break;
+			case(WQUEEN):
+				opponent = BQUEEN;
+			break;
+			case(BQUEEN):
+				opponent = WQUEEN;
+			break;
 		}
-
-
+		
 		Pair<Integer, Integer> parent = null;
 		Stack<Pair<Integer, Integer>> stack = new Stack<>();
 		stack.push(source);
@@ -405,13 +414,19 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 			hasChecked[xPos][yPos] = true;
 			
+			// Check boundary
 			if (xPos - 1 >= 0){
+				// If it is free
 				if (!board.isMarked((xPos-1), yPos)){
+					// If we haven't looked at it yet
 					if (!hasChecked[xPos-1][yPos]){
+						// Add the coordinate to check next
 						stack.push(new Pair<>(xPos-1, yPos));
 					}
+				// If we run into an opponent keep the game going
 				} else if (board.getPiece(xPos-1, yPos) == opponent){
 					return true;
+				// Otherwise there is an arrow, mark it as checked and move on.
 				} else {
 					hasChecked[xPos-1][yPos] = true;
 				}
@@ -737,6 +752,12 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				}
 				return true;
 			}
+			
+			// Must have the same rise as run for a legal diagonal move.
+			if (Math.abs(sX - dX) != Math.abs(sY - dY)){
+				JOptionPane.showMessageDialog(frame,"Illegal diagonal move, dx does not equal dy.", "Invalid", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
 
 			// Diagonal checks
 			if(sX > dX && sY > dY){	
@@ -779,7 +800,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			}
 			
 			
-			while (sX != dX || sY != dY){
+			while (sX <= dX || sY <= dY){
 				if (board.getPiece(sX, sY) != FREE && board.getPiece(sX, sY) != player){
 					JOptionPane.showMessageDialog(frame,"Illegal easy diagonal ( / ) move at [" +sX + "][" + sY + "].", "Invalid", JOptionPane.WARNING_MESSAGE);
 					return false;
