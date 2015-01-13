@@ -44,6 +44,8 @@ import ubco.ai.games.GamePlayer;
  * 
  * A sample starting move for white is: d0-d4-d6 (move from d0 -> d4, arrow to d6)
  * 
+ * Board is 2d array, first position marks column, second marks row.
+ * 
  * 
  * @author Mike Nowicki
  *
@@ -141,7 +143,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		frame = new JFrame("Game of Amazons");
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(725, 700);
+		frame.setSize(725, 675);
 		frame.setResizable(false);
 		frame.setJMenuBar(menu);
 		
@@ -198,6 +200,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		c.add(input);
 		c.add(send);
 		c.add(clear);
+
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		input.requestFocus();
 		
 	}
 	
@@ -226,12 +232,13 @@ public class SinglePlayer extends JFrame implements GamePlayer {
             		}
             	}
             	
-            	cell.setBounds(i * 50 + 50, 500 - j * 50, 50, 50);
+            	cell.setBounds(j * 50 + 50, 500 - i * 50, 50, 50);
             	cell.setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
-            	cell.setXY(i, j);
+            	cell.setXY(i,j);	// This is weird but it has to be backwards because the gui is tilted, is only for reference anyways never used.
             	guiBoard[i][j] = cell;
             	frame.add(cell);
             }
+        	int q = 0;
         }
         
         JPanel tile = new JPanel();
@@ -245,23 +252,21 @@ public class SinglePlayer extends JFrame implements GamePlayer {
          * a better solution.. 
          */
         char[] letters = {'a','b','c','d','e','f','g','h','i','j'};
-        for (int i = 0; i < rows; i++){
+        for (int i = 0; i < columns; i++){
         	JLabel label = new JLabel();
         	label.setBackground(Color.BLACK);
-        	label.setBounds(60 + i * 50,0, 50,50);
+        	label.setBounds(70 + i * 50,0, 50,50);
         	label.setText("" + letters[i]);
         	frame.add(label);
         }
         
         // Columns are used as integers but map to a char value
-        for (int i = columns-1; i >= 0; i--){
-        
+        for (int i = rows-1; i >= 0; i--){
         	JLabel label = new JLabel();
         	label.setBackground(Color.BLACK);
-        	label.setBounds(10,510-i*50, 50,40);
+        	label.setBounds(20,510-i*50, 50,40);
         	label.setText("" + i);
         	frame.add(label);
-
         }
         
         frame.getContentPane().repaint();
@@ -272,18 +277,14 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private void initializePositions(){
 		
 		guiBoard[0][3].setWQueen();
+		guiBoard[0][6].setWQueen();
 		guiBoard[3][0].setWQueen();
-		guiBoard[9][3].setWQueen();
-		guiBoard[6][0].setWQueen();
+		guiBoard[3][9].setWQueen();
 		
-		guiBoard[0][6].setBQueen();
-		guiBoard[3][9].setBQueen();
-		guiBoard[9][6].setBQueen();
-		guiBoard[6][9].setBQueen();	
-		
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-		input.requestFocus();
+		guiBoard[6][0].setBQueen();
+		guiBoard[6][9].setBQueen();
+		guiBoard[9][3].setBQueen();
+		guiBoard[9][6].setBQueen();	
 		
 	}
 	
@@ -310,7 +311,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		if(isFinished()){
 			determineWinner();
 			finished = true;
-			return;
 		}	
 	}
 	
@@ -321,7 +321,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		if(isFinished()){
 			determineWinner();
 			finished = true;
-			return;
 		}
 	}
 	
@@ -358,18 +357,25 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		return true;
 	}
 
-	public void runGame(){
+	private void runGame(){
 		
 		//boolean finished = false;
 		//Agent agent = new Agent();
 	}
 	
-	public void startGame(){
+	private void startGame(){
 		if (useAI){
 			runGame();
 		} else {
 			runTwoPlayer();
 		}
+	}
+	
+	public void init(){
+		createFrame();
+		drawBoard();
+		initializePositions();
+		startGame();
 	}
 	
 	public SinglePlayer(int row, int col){
@@ -380,10 +386,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		rows = row;
 		columns = col;
 		
-		createFrame();
-		drawBoard();
-		initializePositions();
-		startGame();
 	}
 
 	
@@ -392,7 +394,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		
 		SinglePlayer sp = new SinglePlayer(10,10);
 		
-		sp.startGame();
+		sp.init();
 		
 	}
 	
@@ -452,17 +454,17 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			arrow = splitIn[2];
 			
 			// Get information about source of move (convert character to int value)
-			char fromRow = from.toLowerCase().charAt(0);
-			int fRow = Utility.getColumn(fromRow);
-			int fCol = from.charAt(1)-48;
+			char fromCol = from.toLowerCase().charAt(0);
+			int fCol = Utility.getColumn(fromCol);
+			int fRow = from.charAt(1)-48;
 			
-			char toRow = to.toLowerCase().charAt(0);
-			int tRow = Utility.getColumn(toRow);
-			int tCol = to.charAt(1)-48;
+			char toCol = to.toLowerCase().charAt(0);
+			int tCol = Utility.getColumn(toCol);
+			int tRow = to.charAt(1)-48;
 			
-			char arrRow = arrow.toLowerCase().charAt(0);
-			int aRow = Utility.getColumn(arrRow);
-			int aCol = arrow.charAt(1)-48;
+			char arrCol = arrow.toLowerCase().charAt(0);
+			int aCol = Utility.getColumn(arrCol);
+			int aRow = arrow.charAt(1)-48;
 			
 			if (player1Turn){
 				

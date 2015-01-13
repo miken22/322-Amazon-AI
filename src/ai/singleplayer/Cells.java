@@ -13,9 +13,6 @@ import javax.swing.border.LineBorder;
 
 public class Cells extends JPanel {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7176886344416475173L;
 
     private Color defaultBackground;
@@ -42,7 +39,7 @@ public class Cells extends JPanel {
             		setBorder(new LineBorder(Color.GREEN,1,true));
             		clicked = true;
             	}
-            	System.out.println("("+x+","+y+")");
+            	System.out.println("["+x+"]["+y+"]");
             }
         });
 		

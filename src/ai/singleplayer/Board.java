@@ -1,5 +1,7 @@
 package ai.singleplayer;
 
+import java.util.HashMap;
+
 public class Board {
 
 	private int[][] board;
@@ -11,12 +13,19 @@ public class Board {
 	public final int ARROW = 3;
 	public final int FREE = -1;
 	
+	HashMap<Integer, Integer> whitePositions;
+	HashMap<Integer, Integer> blackPositions;
+	
+	// TODO: Keep track of black/white amazon positions for quick reference
 	
 	public Board(int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
 		
 		board = new int[rows][columns];
+		
+		whitePositions = new HashMap<>();
+		blackPositions = new HashMap<>();
 		
 		initialize();		
 	}
@@ -30,14 +39,24 @@ public class Board {
 		}
 		
 		board[0][3] = WQUEEN;
+		board[0][6] = WQUEEN;
 		board[3][0] = WQUEEN;
-		board[9][3] = WQUEEN;
-		board[6][0] = WQUEEN;
-		
-		board[0][6] = BQUEEN;
-		board[3][9] = BQUEEN;
-		board[9][9] = BQUEEN;
-		board[6][9] = BQUEEN;	
+		board[3][9] = WQUEEN;
+
+		whitePositions.put(0, 3);
+		whitePositions.put(0, 6);
+		whitePositions.put(3, 0);
+		whitePositions.put(3, 9);
+
+		board[6][0] = BQUEEN;
+		board[6][9] = BQUEEN;
+		board[9][3] = BQUEEN;
+		board[9][6] = BQUEEN;	
+
+		blackPositions.put(6, 9);
+		blackPositions.put(9, 3);
+		blackPositions.put(6, 0);
+		blackPositions.put(9, 6);
 		
 	}
 	
@@ -69,3 +88,26 @@ public class Board {
 	}
 
 }
+
+
+/**
+oard[0][3] = WQUEEN;
+board[0][6] = WQUEEN;
+board[3][0] = WQUEEN;
+board[6][0] = WQUEEN;
+
+whitePositions.put(0, 3);
+whitePositions.put(3, 0);
+whitePositions.put(0, 6);
+whitePositions.put(6, 0);
+
+board[0][6] = BQUEEN;
+board[3][9] = BQUEEN;
+board[9][3] = BQUEEN;
+board[6][9] = BQUEEN;	
+
+blackPositions.put(0, 6);
+blackPositions.put(3, 9);
+blackPositions.put(9, 3);
+blackPositions.put(6, 0);
+*/
