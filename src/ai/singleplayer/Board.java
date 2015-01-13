@@ -1,5 +1,6 @@
 package ai.singleplayer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Board {
@@ -13,8 +14,10 @@ public class Board {
 	public final int ARROW = 3;
 	public final int FREE = -1;
 	
-	HashMap<Integer, Integer> whitePositions;
-	HashMap<Integer, Integer> blackPositions;
+
+	ArrayList<Pair<Integer, Integer> > whitePositions;
+	
+	ArrayList<Pair<Integer, Integer> > blackPositions;
 	
 	// TODO: Keep track of black/white amazon positions for quick reference
 	
@@ -24,8 +27,8 @@ public class Board {
 		
 		board = new int[rows][columns];
 		
-		whitePositions = new HashMap<>();
-		blackPositions = new HashMap<>();
+		whitePositions = new ArrayList<>();
+		blackPositions = new ArrayList<>();
 		
 		initialize();		
 	}
@@ -43,20 +46,20 @@ public class Board {
 		board[3][0] = WQUEEN;
 		board[3][9] = WQUEEN;
 
-		whitePositions.put(0, 3);
-		whitePositions.put(0, 6);
-		whitePositions.put(3, 0);
-		whitePositions.put(3, 9);
+		whitePositions.add(new Pair<Integer, Integer>(0,3));
+		whitePositions.add(new Pair<Integer, Integer>(0,6));
+		whitePositions.add(new Pair<Integer, Integer>(3,0));
+		whitePositions.add(new Pair<Integer, Integer>(3,9));
 
 		board[6][0] = BQUEEN;
 		board[6][9] = BQUEEN;
 		board[9][3] = BQUEEN;
 		board[9][6] = BQUEEN;	
 
-		blackPositions.put(6, 9);
-		blackPositions.put(9, 3);
-		blackPositions.put(6, 0);
-		blackPositions.put(9, 6);
+		blackPositions.add(new Pair<Integer, Integer>(6, 9));
+		blackPositions.add(new Pair<Integer, Integer>(9, 3));
+		blackPositions.add(new Pair<Integer, Integer>(6, 0));
+		blackPositions.add(new Pair<Integer, Integer>(9, 6));
 		
 	}
 	
@@ -87,19 +90,43 @@ public class Board {
 		
 	}
 	
+	/**
+	 * Cycle through black pieces, find the one that matches the starting configuration, remove it and make a new pairing.
+	 * 
+	 * @param oldX
+	 * @param oldY
+	 * @param newX
+	 * @param newY
+	 */
 	public void updateBlackPositions(int oldX, int oldY, int newX, int newY){
 		
+		for (Pair<Integer, Integer> p : blackPositions){
+			
+			if (p.getLeft() == oldX && p.getRight() == oldY){
+				blackPositions.remove(p);
+				blackPositions.add(new Pair<Integer, Integer>(newX, newY));
+				return;
+			}	
+		}
 	}
 	
-	public HashMap<Integer, Integer> getBlackPositions(){
+	public ArrayList<Pair<Integer, Integer> > getBlackPositions(){
 		return blackPositions;
 	}
 	
 	public void updateWhitePositions(int oldX, int oldY, int newX, int newY){
-		
+
+		for (Pair<Integer, Integer> p : whitePositions){
+			
+			if (p.getLeft() == oldX && p.getRight() == oldY){
+				whitePositions.remove(p);
+				whitePositions.add(new Pair<Integer, Integer>(newX, newY));
+				return;
+			}	
+		}
 	}
 	
-	public HashMap<Integer, Integer> getWhitePositions(){
+	public ArrayList<Pair<Integer, Integer> > getWhitePositions(){
 		return whitePositions;
 	}
 }

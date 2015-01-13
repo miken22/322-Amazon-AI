@@ -69,7 +69,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private StyledDocument chatTextarea;
 	private StyledDocument moveTextarea;
 		
-	
 	private JButton send;
 	private JButton clear;
 	
@@ -108,6 +107,28 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public static void main(String[] args){
+		SinglePlayer sp = new SinglePlayer(10,10);
+		sp.init();	
+	}
+	
+	public SinglePlayer(int row, int col){
+		board = new Board(row,col);
+		guiBoard = new Cells[row][col];		
+		rows = row;
+		columns = col;
+	}
+
+	public void init(){
+		createFrame();
+		drawBoard();
+		initializePositions();
+		
+		gameTimer.startTiming();
+		
+		whosTurn.setText("Whites move");
+	}	
 	
 	private void createFrame(){
 		
@@ -304,19 +325,15 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		input.requestFocus();
 	}
 		
+	
+	
 	// Count the amount of available space for each player, largest area = winner
 	private int determineWinner() {
 		// Probably use the same idea as goal state checking.
 		return 1;
 	}
 
-	// Need to check if each amazon is contained within a specific region
-	/**
-	 * See the flood-fill algorithm for detecting seperate rooms
-	 * 
-	 * @return {@code TRUE} if all amazons in seperate sections, {@code FALSE} otherwise
-	 */
-	
+		
 	/*
 	   Flood-fill (node, target-color, replacement-color):
 		 1. If target-color is equal to replacement-color, return.
@@ -337,37 +354,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		return false;
 	}
 
-	public void init(){
-		createFrame();
-		drawBoard();
-		initializePositions();
-		
-		gameTimer.startTiming();
-		
-		whosTurn.setText("Whites move");
-		
-	}
-	
-	public SinglePlayer(int row, int col){
 
-		board = new Board(row,col);
-		guiBoard = new Cells[row][col];
-		
-		rows = row;
-		columns = col;
-		
-	}
-
-	
-	
-	public static void main(String[] args){
-		
-		SinglePlayer sp = new SinglePlayer(10,10);
-		
-		sp.init();
-		
-	}
-	
 	/**
 	 * This class controls game play, alternating player turns and handling any updates. All game logic must
 	 * be handled within the ActionListener class.
@@ -519,7 +506,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 				board.updateBlackPositions(fRow, fCol, tRow, tCol);
 				
-				
 				guiBoard[fRow][fCol].setFree();
 				guiBoard[tRow][tCol].setBQueen();
 				guiBoard[aRow][aCol].setArrow();
@@ -530,7 +516,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				input.setText("");
 				
 				player1Turn = true;
-				
 				
 				whosTurn.setText("Whites move.");
 				frame.repaint();
@@ -592,8 +577,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				return true;
 			}
 			
-			// Need to work out diagonal checks
+			// Diagonal checks
 			if(sX > dX && sY > dY){	
+				// This is the moving from a square to one to its lower left
 				int temp = sX;
 				sX = dX;
 				dX = temp;	
@@ -603,17 +589,59 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				dY = temp;	
 				return checkEasyDiagonal(sX, sY, dX, dY);
 			} else if (sX < dX && sY < dY){
+				// Case where we move from a square to one to its upper right
 				return checkEasyDiagonal(sX, sY, dX, dY);
+			} else {
+				// The other two diagonal directions
+				return oppositeDiagonal(sX, sY, dX, dY);
 			}
-			
-			return true;
 		}
 		
+		/**
+		 * Simple rise/run calculation to check that the diagonal is valid. We must take as many steps
+		 * left/right as we do up/down to have a valid diagonal move. Must be sure to swap start, end
+		 * nodes if sX and sY > dX and dY for the algorithm to hold.
+		 * 
+		 * @param sX - Smaller x value.
+		 * @param sY - Smaller y value.
+		 * @param dX - Larger x value.
+		 * @param dY - Larger y value.
+		 * @return
+		 */
 		private boolean checkEasyDiagonal(int sX, int sY, int dX, int dY){
 			
 			while (sX != dX || sY != dY){
 				sX++;
 				sY++;
+				if (board.isMarked(sX, sY)){
+					JOptionPane.showMessageDialog(frame,"Illegal diagonal move.", "Invalid", JOptionPane.WARNING_MESSAGE);
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		/**
+		 * Simple calculation to check the other two diagonal directions. We determine if we are moving up left
+		 * or down right, in either case deltaX = -(deltaY) so we compute them and iteratively move along the diagonal
+		 * like the other check does.
+		 * 
+		 * @param sX - Starting x value.
+		 * @param sY - Starting y value.
+		 * @param dX - Ending x value.
+		 * @param dY - Ending y value.
+		 * @return
+		 */
+		private boolean oppositeDiagonal(int sX, int sY, int dX, int dY){
+			
+			int deltaX = dX - sX;
+			deltaX = deltaX/Math.abs(deltaX);
+			
+			int deltaY = deltaX/(-1);
+			
+			while (sX != dX || sY != dY){
+				sX += deltaX;
+				sY += deltaY;
 				if (board.isMarked(sX, sY)){
 					JOptionPane.showMessageDialog(frame,"Illegal diagonal move.", "Invalid", JOptionPane.WARNING_MESSAGE);
 					return false;

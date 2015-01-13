@@ -2,6 +2,9 @@ package ai.singleplayer;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Formatter;
 
 import javax.swing.JLabel;
 
@@ -10,8 +13,6 @@ public class Timer extends JLabel {
 	private static final long serialVersionUID = 2555383820456291745L;
 
 	private double startTime;
-	private double endTime;
-	private double duration;
 	private boolean notDone;
 	
 	
@@ -40,20 +41,20 @@ public class Timer extends JLabel {
 		
 		setBackground(Color.RED);
 		
-		double time = (System.currentTimeMillis() - startTime)/1000;
+		double elapsedTime = System.currentTimeMillis() - startTime;
+		double seconds = elapsedTime / 1000;
+		double displaySecs = seconds % 60;
+		double minutes = seconds / 60;
 		
+		int m = (int) minutes;
+		int s = (int)Math.round(displaySecs);
+				
+		String secs = Integer.toString(s);
 		
-		if (time < 60){
-			int seconds = (int) Math.round(time);
-			setText("0 : " + seconds);
-		} else {
-			int minutes = (int)time % 60;
-			int seconds = (int)time/(minutes*60);
-			setText(minutes + " : " + seconds);
-			
+		if (s < 10){
+			secs = "0" + secs;
 		}
+		setText("0: 0" + m + " : " + secs);
 		
 	}
-	
-	
 }
