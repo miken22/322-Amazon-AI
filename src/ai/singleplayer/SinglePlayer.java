@@ -78,8 +78,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private JMenu file;
 	private JMenuItem exit;
 
-	private JLabel whosTurn;
 	private Timer gameTimer;
+	private JLabel whiteScore;
+	private JLabel blackScore;
 
 	private Font font;
 
@@ -92,29 +93,38 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 	private boolean useAI = false;
 	private boolean finished = false;
+	
+	/**
+	 * 2 element array, index 0 for white score, 1 for black score
+	 */
+	private int[] scores = new int[2];
 
 	public final int WQUEEN = 1;
 	public final int BQUEEN = 2;
 	public final int ARROW = 3;
 	public final int FREE = -1;	
 
+	/**
+	 * Not used for single player (since we aren't talking to a server..)
+	 */
 	@Override
-	public boolean handleMessage(String arg0) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean handleMessage(String arg0) throws Exception {return false;}
 
+	/**
+	 * Not used for single player.
+	 */
 	@Override
-	public boolean handleMessage(GameMessage arg0) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean handleMessage(GameMessage arg0) throws Exception {return false;}
 
 	public static void main(String[] args){
 		SinglePlayer sp = new SinglePlayer(10,10);
 		sp.init();	
 	}
 
+					/***************
+					 * Main program*
+					 ***************/
+	
 	public SinglePlayer(int row, int col){
 		board = new Board(row,col);
 		guiBoard = new Cells[row][col];		
@@ -126,66 +136,58 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		createFrame();
 		drawBoard();
 		initializePositions();
-
 		gameTimer.startTiming();
-
-		whosTurn.setText("Whites move");
 	}	
 
 	private void createFrame(){
-
+		
+		Border b = new LineBorder(Color.LIGHT_GRAY,1,true);
 		Container c;
 
-		frame = new JFrame();		
+		frame = new JFrame("Game of Amazons");
 		menu = new JMenuBar();
 
 		file = new JMenu("File");
 		exit = new JMenuItem("Exit");
-
-		whosTurn = new JLabel("New game");
+		
+		whiteScore = new JLabel("White: "+0);
+		blackScore = new JLabel("Black: "+0);
+		
 		gameTimer = new Timer();
-		gameTimer.setForeground(Color.RED);
 
 		send = new JButton("Send");
 		clear = new JButton("Clear");
 
 		moveLog = new JTextPane();
 		scrollLog = new JScrollPane(moveLog);
+
 		chat = new JTextPane();
 		scrollChat = new JScrollPane(chat);
+		
 		input = new JTextArea();
 
 		userStyle = chat.addStyle("userin", null);
 		agentStyle = chat.addStyle("agentstyle",null);
-
-		send.addActionListener(new ButtonListener());
-		clear.addActionListener(new ButtonListener());
-
-		exit.addActionListener(new MenuListener(1));
 
 		try {
 			font = Font.createFont(0,this.getClass().getResourceAsStream("/Trebuchet MS.ttf"));
 		} catch (FontFormatException | IOException e) {
 			e.printStackTrace();
 		}
+		font = font.deriveFont(Font.BOLD,15);
 
-		Border b = new LineBorder(Color.LIGHT_GRAY,1,true);
-
-		frame = new JFrame("Game of Amazons");
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(725, 675);
 		frame.setResizable(false);
 		frame.setJMenuBar(menu);
 
-		whosTurn.setBounds(245,0,200,30);
-		font = font.deriveFont(Font.BOLD,15);
-		whosTurn.setFont(font);
-
-		gameTimer.setBounds(50, 0, 250, 20);
-		font = font.deriveFont(Font.PLAIN,15);
+		gameTimer.setForeground(Color.RED);
+		gameTimer.setBounds(0, 0, 250, 20);
 		gameTimer.setFont(font);
-		gameTimer.setBounds(50, 0, 250, 20);
+		
+		whiteScore.setBounds(150, 0, 100, 20);
+		blackScore.setBounds(245, 0, 150, 20);
 
 		menu.setBackground(new Color(244,244,244));
 		menu.add(file);
@@ -195,7 +197,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		chat.setContentType("text/html");
 		chat.setBorder(b);
 		chat.setBackground(new Color(252,252,252));
-		font = font.deriveFont(Font.PLAIN,15);
 		chat.setFont(font);
 
 		scrollChat.setBounds(550, 250, 170, 300);
@@ -206,7 +207,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		moveLog.setContentType("text/html");
 		moveLog.setBorder(b);
 		moveLog.setBackground(new Color(252,252,252));
-		font = font.deriveFont(Font.PLAIN,15);
 		moveLog.setFont(font);
 
 		scrollLog.setBounds(550, 0, 170, 250);
@@ -218,7 +218,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		input.setFont(font);
 		input.setBounds(0, 550, 550, 100);
 		input.setBackground(new Color(252,252,252));
-		input.addKeyListener(new TextListener());
 		input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Enter a move or chat:"));		
 
 		chatTextarea = chat.getStyledDocument();
@@ -228,13 +227,21 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		send.setBorder(b);
 		send.setBackground(new Color(250,250,250));
 		send.setFocusPainted(false);
+		
 		clear.setBounds(550, 600, 170, 50);
 		clear.setBorder(b);
 		clear.setBackground(new Color(250,250,250));
 		clear.setFocusPainted(false);
 
+		input.addKeyListener(new TextListener());
+		
+		send.addActionListener(new ButtonListener());
+		clear.addActionListener(new ButtonListener());
+		exit.addActionListener(new MenuListener(1));
+
 		c = frame.getContentPane();
-		c.add(whosTurn);
+		c.add(whiteScore);
+		c.add(blackScore);
 		c.add(gameTimer);
 		c.add(scrollChat);
 		c.add(scrollLog);
@@ -246,8 +253,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 	private void drawBoard(){
 
-		Color c1 = new Color(219, 169, 1);
-		Color c2 = new Color(255, 229, 204);	
+		Color light = new Color(219, 169, 1);
+		Color dark = new Color(255, 229, 204);	
 
 		for (int i = rows-1; i >= 0; i--) {
 
@@ -257,15 +264,15 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 				if (i % 2 == 0){
 					if (j % 2 == 0){
-						cell = new Cells(c2);
+						cell = new Cells(dark);
 					} else {
-						cell = new Cells(c1);
+						cell = new Cells(light);
 					}
 				} else {
 					if (j % 2 == 0){
-						cell = new Cells(c1);
+						cell = new Cells(light);
 					} else {
-						cell = new Cells(c2);
+						cell = new Cells(dark);
 					}
 				}
 
@@ -280,7 +287,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		JPanel tile = new JPanel();
 		tile.setBackground(Color.BLACK);
 		tile.setBounds(0,0,50,50);
-		frame.add(tile);
+	//	frame.add(tile);
 
 		/*
 		 * I hate GUI's, this is the ugliest hack in the world I could come up with for labeling
@@ -311,7 +318,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	}
 
 	private void initializePositions(){
-
 		guiBoard[0][3].setWQueen();
 		guiBoard[0][6].setWQueen();
 		guiBoard[3][0].setWQueen();
@@ -321,30 +327,37 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		guiBoard[6][9].setBQueen();
 		guiBoard[9][3].setBQueen();
 		guiBoard[9][6].setBQueen();	
+		
+/* ********** For trivial goal testing ************
+ 	
+		guiBoard[5][0].setArrow();
+		guiBoard[5][1].setArrow();
+		guiBoard[5][2].setArrow();
+		guiBoard[5][3].setArrow();
+		guiBoard[5][4].setArrow();
+		guiBoard[5][5].setArrow();
+		guiBoard[5][6].setArrow();
+		guiBoard[5][7].setArrow();
+		guiBoard[5][8].setArrow();
+		guiBoard[5][9].setArrow();
+
+		board.placeMarker(5, 0, ARROW);
+		board.placeMarker(5, 1, ARROW);
+		board.placeMarker(5, 2, ARROW);
+		board.placeMarker(5, 3, ARROW);
+		board.placeMarker(5, 4, ARROW);
+		board.placeMarker(5, 5, ARROW);
+		board.placeMarker(5, 6, ARROW);
+		board.placeMarker(5, 7, ARROW);
+		board.placeMarker(5, 8, ARROW);
+		board.placeMarker(5, 9, ARROW);
+***************************************************/	
+		scores[0] = 0;
+		scores[1] = 0;
 
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		input.requestFocus();
-	}
-
-
-
-	// Count the amount of available space for each player, largest area = winner
-	private void determineWinner() {
-		// Probably use the same idea as goal state checking. Sum area for one player, take 100 - sum for score of
-		// other player.
-		int whiteScore = 0;
-		int blackScore = 0;
-		
-		whiteScore++;
-		blackScore++;
-		
-		if (whiteScore > blackScore){
-			JOptionPane.showMessageDialog(frame,"White wins with a score of " + whiteScore, "Game Over", JOptionPane.NO_OPTION);
-		} else {
-			JOptionPane.showMessageDialog(frame,"Black wins with a score of " + blackScore, "Game Over", JOptionPane.NO_OPTION);
-		}
-		
 	}
 
 	/**
@@ -356,21 +369,33 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private boolean isFinished(int player) {	
 
 		ArrayList<Pair<Integer, Integer> > positions;
+
 		switch(player){
-		case(WQUEEN):
-			positions = board.getWhitePositions();
-		break;
-		case(BQUEEN):
-			positions = board.getBlackPositions();
-		break;
-		// If we're passed an invalid value something went wrong, end the game.
-		default:
-			return true;
+			case(WQUEEN):
+				positions = board.getWhitePositions();
+			break;
+			case(BQUEEN):
+				positions = board.getBlackPositions();
+			break;
+			// If we're passed an invalid value something went wrong, end the game.
+			default:
+				return true;
 		}
 
+		boolean[][] hasChecked = new boolean[rows][columns];
+		
+		for(int i = 0; i < rows; i++){
+			for (int j = 0; j < columns; j++){
+				hasChecked[i][j] = false;
+			}
+		}
+		
+		// Reset score;
+		scores[player-1] = 0;
+		
 		for (Pair<Integer, Integer> pair : positions){
 			// Reach opposing amazon using legal moves then the game is not over.
-			if (canReachOther(pair, player)){
+			if (canReachOpponent(pair, player, hasChecked)){
 				return false;
 			}
 		}
@@ -384,20 +409,16 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	 * to reach other pieces. If every amazon is isolated from the opposite colour we
 	 * declare the game over.
 	 * 
+	 * The scoring system does not work, it finds the right winner (in the runs i've done)
+	 * but does not return the expected value. Will have to see proper scoring later I
+	 * guess.
+	 * 
 	 * @param source - An integer pairing (x,y) for where the amazon piece is
 	 * @param player - 1 for White, 2 for Black
 	 * @return - True if we reach an opponent, false otherwise.
 	 * 
 	 */
-	private boolean canReachOther(Pair<Integer, Integer> source, int player){
-
-		boolean[][] hasChecked = new boolean[rows][columns];
-		
-		for(int i = 0; i < rows; i++){
-			for (int j = 0; j < columns; j++){
-				hasChecked[i][j] = false;
-			}
-		}
+	private boolean canReachOpponent(Pair<Integer, Integer> source, int player, boolean[][] hasChecked){
 		
 		int opponent = 0;
 		switch(player){
@@ -428,6 +449,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					if (!hasChecked[xPos-1][yPos]){
 						// Add the coordinate to check next
 						stack.push(new Pair<>(xPos-1, yPos));
+						scores[player-1]++;
 					}
 				// If we run into an opponent keep the game going
 				} else if (board.getPiece(xPos-1, yPos) == opponent){
@@ -441,6 +463,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!board.isMarked((xPos+1), yPos)){
 					if (!hasChecked[xPos+1][yPos]){
 						stack.push(new Pair<>(xPos+1, yPos));
+						scores[player-1]++;
 					}
 				} else if (board.getPiece(xPos+1, yPos) == opponent){
 					return true;
@@ -452,6 +475,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!board.isMarked((xPos), yPos-1)){
 					if (!hasChecked[xPos][yPos-1]){
 						stack.push(new Pair<>(xPos, yPos-1));
+						scores[player-1]++;
 					}
 				} else if (board.getPiece(xPos, yPos-1) == opponent){
 					return true;
@@ -463,6 +487,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!board.isMarked(xPos, yPos+1)){
 					if (!hasChecked[xPos][yPos+1]){
 						stack.push(new Pair<>(xPos, yPos+1));
+						scores[player-1]++;
 					}
 				} else if (board.getPiece(xPos, yPos+1) == opponent){
 					return true;
@@ -474,6 +499,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!board.isMarked((xPos+1), yPos+1)){
 					if (!hasChecked[xPos+1][yPos]){
 						stack.push(new Pair<>(xPos+1, yPos+1));
+						scores[player-1]++;
 					}
 				} else if (board.getPiece(xPos+1, yPos+1) == opponent){
 					return true;
@@ -485,6 +511,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!board.isMarked((xPos+1), yPos-1)){
 					if (!hasChecked[xPos+1][yPos-1]){
 						stack.push(new Pair<>(xPos+1, yPos-1));
+						scores[player-1]++;
 					}
 				} else if (board.getPiece(xPos+1, yPos-1) == opponent){
 					return true;
@@ -496,6 +523,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!board.isMarked((xPos-1), yPos+1)){
 					if (!hasChecked[xPos-1][yPos+1]){
 						stack.push(new Pair<>(xPos-1, yPos+1));
+						scores[player-1]++;
 					}
 				} else if (board.getPiece(xPos-1, yPos+1) == opponent){
 					return true;
@@ -507,6 +535,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!board.isMarked((xPos-1), yPos-1)){
 					if (!hasChecked[xPos-1][yPos-1]){
 						stack.push(new Pair<>(xPos-1, yPos-1));
+						scores[player-1]++;
 					}
 				} else if (board.getPiece(xPos-1, yPos-1) == opponent){
 					return true;
@@ -515,15 +544,30 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				}
 			}
 		}
+		
+		// Compute score when a winner is decided.
+		
+		if (player == WQUEEN){
+			scores[0] = 100 - scores[1];
+			whiteScore.setText("White: " + scores[0]);
+			blackScore.setText("Black: " + scores[1]);
+		} else {
+			scores[1] = 100 - scores[0];
+			whiteScore.setText("White: " + scores[0]);
+			blackScore.setText("Black: " + scores[1]);
+		}
+		
 		return false;
 	}
 
 	/**
 	 * This class controls game play, alternating player turns and handling any updates. All game logic must
-	 * be handled within the ActionListener class.
+	 * be handled within the ActionListener class. The majority of the overhead incurred here can be ignored
+	 * when developing for Computer vs Computer as we just need on version of the board to use to generate the
+	 * GUI.
 	 * 
 	 * 
-	 * @author mike-nowicki
+	 * @author Mike Nowicki
 	 *
 	 */
 	public class ButtonListener implements ActionListener{
@@ -569,8 +613,18 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			input.requestFocus();
 
 			if (finished){
-				determineWinner();
-				JOptionPane.showMessageDialog(frame,"Game over, click to exit.", "Game over", JOptionPane.NO_OPTION);
+
+				String winner = "";
+				int score  = 0;
+				if (scores[0] > scores[1]){
+					winner = "White";
+					score = scores[0];
+				} else {
+					winner = "Black";
+					score = scores[1];
+				}
+				
+				JOptionPane.showMessageDialog(frame,"Game over " + winner + " won with score " + score + " click to exit.", "Game over", JOptionPane.NO_OPTION);
 				System.exit(0);
 			}
 
@@ -640,8 +694,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				input.setText("");
 
 				player1Turn = false;
-
-				whosTurn.setText("Blacks move.");
 				frame.repaint();
 
 				if(isFinished(WQUEEN)){
@@ -683,8 +735,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				input.setText("");
 
 				player1Turn = true;
-
-				whosTurn.setText("Whites move.");
 				frame.repaint();
 
 				if(isFinished(BQUEEN)){

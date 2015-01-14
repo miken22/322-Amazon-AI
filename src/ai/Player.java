@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 
 import ubco.ai.GameRoom;
-import ubco.ai.connection.ServerMessage;
 import ubco.ai.games.GameClient;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
 
 /**
  * A version of the Amazon player that is demo-ed in the API
- * 
  * 
  * @author Mike Nowicki
  *
@@ -77,7 +75,7 @@ public class Player extends JFrame implements GamePlayer {
 
 	public static void main(String[] args){
 	
-		Player player = new Player("","");
+		//Player player = new Player("","");
 		
 		
 	}

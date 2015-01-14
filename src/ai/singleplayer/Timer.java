@@ -2,10 +2,6 @@ package ai.singleplayer;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Formatter;
-
 import javax.swing.JLabel;
 
 public class Timer extends JLabel {

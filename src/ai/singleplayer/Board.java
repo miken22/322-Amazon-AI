@@ -1,7 +1,6 @@
 package ai.singleplayer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Board {
 
@@ -14,19 +13,14 @@ public class Board {
 	public final int ARROW = 3;
 	public final int FREE = -1;
 	
-
 	ArrayList<Pair<Integer, Integer> > whitePositions;
-	
 	ArrayList<Pair<Integer, Integer> > blackPositions;
-	
-	// TODO: Keep track of black/white amazon positions for quick reference
 	
 	public Board(int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
 		
 		board = new int[rows][columns];
-		
 		whitePositions = new ArrayList<>();
 		blackPositions = new ArrayList<>();
 		
@@ -64,32 +58,23 @@ public class Board {
 	}
 	
 	public void freeSquare(int x, int y){
-		
 		board[x][y] = FREE;
-		
 	}
 	
 	public void placeMarker(int x, int y, int piece){
-		
 		board[x][y] = piece;
-		
 	}
 		
 	public boolean isMarked(int x, int y){
-		
 		if (board[x][y] == -1){
 			return false;
 		}
 		return true;
-		
 	}
 	
 	public int getPiece(int x, int y){
-		
 		return board[x][y];
-		
 	}
-	
 	/**
 	 * Cycle through black pieces, find the one that matches the starting configuration, remove it and make a new pairing.
 	 * 
