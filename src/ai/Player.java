@@ -75,7 +75,7 @@ public class Player extends JFrame implements GamePlayer {
 
 	public static void main(String[] args){
 	
-		//Player player = new Player("","");
+		Player player = new Player("92384072", "nowicki");
 		
 		
 	}

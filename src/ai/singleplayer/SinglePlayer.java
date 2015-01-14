@@ -86,11 +86,11 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 	private int rows;
 	private int columns;
+	
 	private Board board;
-
 	private Cells[][] guiBoard;
+	
 	private boolean player1Turn = true;
-
 	private boolean useAI = false;
 	private boolean finished = false;
 	
@@ -124,6 +124,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					/***************
 					 * Main program*
 					 ***************/
+	
+	// TODO: Get rid of cells class, put functionality into board somehow to reduce redundancy
 	
 	public SinglePlayer(int row, int col){
 		board = new Board(row,col);
@@ -328,8 +330,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		guiBoard[9][3].setBQueen();
 		guiBoard[9][6].setBQueen();	
 		
-/* ********** For trivial goal testing ************
- 	
+
+/* ********** For trivial goal testing ************	
 		guiBoard[5][0].setArrow();
 		guiBoard[5][1].setArrow();
 		guiBoard[5][2].setArrow();
@@ -352,6 +354,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		board.placeMarker(5, 8, ARROW);
 		board.placeMarker(5, 9, ARROW);
 ***************************************************/	
+
 		scores[0] = 0;
 		scores[1] = 0;
 
