@@ -79,9 +79,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private JMenuItem exit;
 
 	private Timer gameTimer;
-	private JLabel whiteScore;
-	private JLabel blackScore;
-
 	private Font font;
 
 	private int rows;
@@ -101,8 +98,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	/**
 	 * 2 element array, index 0 for white score, 1 for black score
 	 */
-	private int[] scores = new int[2];
-
 	public final int WQUEEN = 1;
 	public final int BQUEEN = 2;
 	public final int ARROW = 3;
@@ -156,9 +151,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		file = new JMenu("File");
 		exit = new JMenuItem("Exit");
 		
-		whiteScore = new JLabel("White: "+0);
-		blackScore = new JLabel("Black: "+0);
-		
 		gameTimer = new Timer();
 
 		send = new JButton("Send");
@@ -191,9 +183,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		gameTimer.setForeground(Color.RED);
 		gameTimer.setBounds(0, 0, 250, 20);
 		gameTimer.setFont(font);
-		
-		whiteScore.setBounds(150, 0, 100, 20);
-		blackScore.setBounds(245, 0, 150, 20);
 
 		menu.setBackground(new Color(244,244,244));
 		menu.add(file);
@@ -246,15 +235,13 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		exit.addActionListener(new MenuListener(1));
 
 		c = frame.getContentPane();
-		c.add(whiteScore);
-		c.add(blackScore);
 		c.add(gameTimer);
 		c.add(scrollChat);
 		c.add(scrollLog);
 		c.add(input);
 		c.add(send);
 		c.add(clear);
-
+		
 	}
 
 	private void drawBoard(){
@@ -286,14 +273,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				cell.setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
 				cell.setXY(i,j);	// This is weird but it has to be backwards because the gui is tilted, is only for reference anyways never used.
 				guiBoard[i][j] = cell;
-						frame.add(cell);
+				frame.add(cell);
 			}
 		}
-
-		JPanel tile = new JPanel();
-		tile.setBackground(Color.BLACK);
-		tile.setBounds(0,0,50,50);
-	//	frame.add(tile);
 
 		/*
 		 * I hate GUI's, this is the ugliest hack in the world I could come up with for labeling
@@ -333,9 +315,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		guiBoard[6][9].setBQueen();
 		guiBoard[9][3].setBQueen();
 		guiBoard[9][6].setBQueen();	
-		
-
-// ********* For trivial goal testing ************	
+	
+/* ********* For trivial goal testing ************	
 		guiBoard[5][0].setArrow();
 		guiBoard[5][1].setArrow();
 		guiBoard[5][2].setArrow();
@@ -357,10 +338,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		board.placeMarker(5, 7, ARROW);
 		board.placeMarker(5, 8, ARROW);
 		board.placeMarker(5, 9, ARROW);
-//***************************************************/	
-
-		scores[0] = 0;
-		scores[1] = 0;
+***************************************************/	
 
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
@@ -437,7 +415,18 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	 ***************************************************************************************/
 	private void countReachableTiles(Pair<Integer, Integer> source, int player, int[][] hasChecked){
 
+		int opponent;
+		switch(player){
+		case(WQUEEN):
+			opponent = BQUEEN;
+			break;
+		default:
+			opponent = WQUEEN;
+		}
+		
 		Stack<Pair<Integer, Integer>> stack = new Stack<>();
+		
+		hasChecked[source.getLeft()][source.getRight()] = player;
 				
 		stack.push(source);
 
@@ -455,7 +444,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 					if (hasChecked[xPos-1][yPos] == 0){
 						stack.push(new Pair<>(xPos-1, yPos)); 
 						hasChecked[xPos-1][yPos] = player;
-					} else if (hasChecked[xPos-1][yPos] != player) {
+					} else if (hasChecked[xPos - 1][yPos] == opponent) {
+						stack.push(new Pair<>(xPos-1, yPos)); 
 						hasChecked[xPos-1][yPos] = ARROW;
 					}
 				}
@@ -466,7 +456,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos+1, yPos));
 						hasChecked[xPos+1][yPos] = player;
-					} else if (hasChecked[xPos+1][yPos] != player) {
+					} else if (hasChecked[xPos+1][yPos] == opponent) {
+						stack.push(new Pair<>(xPos+1, yPos));
 						hasChecked[xPos+1][yPos] = ARROW;
 					}
 				}
@@ -477,7 +468,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos, yPos-1));
 						hasChecked[xPos][yPos-1] = player;
-					} else if (hasChecked[xPos][yPos-1] != player){
+					} else if (hasChecked[xPos][yPos-1] == opponent){
+						stack.push(new Pair<>(xPos, yPos-1));
 						hasChecked[xPos][yPos-1] = ARROW;
 					}
 				}
@@ -488,8 +480,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos, yPos+1));
 						hasChecked[xPos][yPos+1] = player;
-						
-					} else if (hasChecked[xPos][yPos+1] != player){
+					} else if (hasChecked[xPos][yPos+1] == opponent){
+						stack.push(new Pair<>(xPos, yPos+1));
 						hasChecked[xPos][yPos+1] = ARROW;
 					}
 				}
@@ -500,9 +492,9 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos+1, yPos+1));
 						hasChecked[xPos+1][yPos+1] = player;
-						
-					} else if (hasChecked[xPos+1][yPos+1] != player) {
+					} else if (hasChecked[xPos+1][yPos+1] == opponent) {
 						hasChecked[xPos+1][yPos+1] = ARROW;
+						stack.push(new Pair<>(xPos+1, yPos+1));
 					}
 				}
 			}
@@ -512,8 +504,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos+1, yPos-1));
 						hasChecked[xPos+1][yPos-1] = player;
-						
-					} else if (hasChecked[xPos+1][yPos-1] != player) {
+					} else if (hasChecked[xPos+1][yPos-1] == opponent) {
+						stack.push(new Pair<>(xPos+1, yPos-1));
 						hasChecked[xPos+1][yPos-1] = ARROW;
 					}
 				}
@@ -525,7 +517,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 						stack.push(new Pair<>(xPos-1, yPos+1));
 						hasChecked[xPos-1][yPos+1] = player;
 						
-					} else if (hasChecked[xPos-1][yPos+1] != player) {
+					} else if (hasChecked[xPos-1][yPos+1] == opponent) {
+						stack.push(new Pair<>(xPos-1, yPos+1));
 						hasChecked[xPos-1][yPos+1] = ARROW;
 					}
 				}
@@ -536,7 +529,8 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos-1, yPos-1));
 						hasChecked[xPos-1][yPos-1] = player;
-					} else if (hasChecked[xPos-1][yPos-1] != player) {
+					} else if (hasChecked[xPos-1][yPos-1] == opponent) {
+						stack.push(new Pair<>(xPos-1, yPos-1));
 						hasChecked[xPos-1][yPos-1] = ARROW;
 					}
 				}

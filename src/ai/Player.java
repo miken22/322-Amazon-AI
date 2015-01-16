@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import ai.singleplayer.Board;
 import ubco.ai.GameRoom;
 import ubco.ai.games.GameClient;
 import ubco.ai.games.GameMessage;
@@ -20,7 +21,7 @@ public class Player extends JFrame implements GamePlayer {
 	private static final long serialVersionUID = 348710967198419938L;
 
 	private GameClient client;
-	//private Board board;
+	private Board board;
 	
 	public Player(String userName, String password){
 		
@@ -30,7 +31,7 @@ public class Player extends JFrame implements GamePlayer {
 		
 		client.getUserID();
 		
-		//board = new Board(10,10);
+		board = new Board(10,10);
 		
 		for(GameRoom g : client.roomList){
 			try{
@@ -41,14 +42,13 @@ public class Player extends JFrame implements GamePlayer {
 			}
 		}
 		
+		client.sendToServer("", false);
+		
 		// TODO: Build GUI, pass board to constructor
 	}
 	
-	
 	public ArrayList<GameRoom> getRooms(){
-
 		ArrayList<GameRoom> rooms = client.getRoomLists();
-		
 		for(GameRoom g : rooms){
 			System.out.println(g.roomID + " " + g.roomName);	
 		}
@@ -72,6 +72,6 @@ public class Player extends JFrame implements GamePlayer {
 	}
 
 	public static void main(String[] args){
-		Player player = new Player("Berate-A-Bot", "54321");	
+		Player player = new Player("Berate-A-Bot-10002.0001", "54321");	
 	}
 }
