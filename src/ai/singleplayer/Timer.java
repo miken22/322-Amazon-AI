@@ -31,6 +31,10 @@ public class Timer extends JLabel {
 		
 	}
 	
+	public void stopTiming(){
+		notDone = false;
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g){
 		super.paintComponent(g);

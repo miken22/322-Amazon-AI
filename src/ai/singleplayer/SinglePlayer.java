@@ -87,6 +87,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private int rows;
 	private int columns;
 	
+	private int whiteTiles;
+	private int blackTiles;
+	private int bothCanReach;
+	
 	private Board board;
 	private Cells[][] guiBoard;
 	
@@ -331,7 +335,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		guiBoard[9][6].setBQueen();	
 		
 
-/* ********** For trivial goal testing ************	
+// ********* For trivial goal testing ************	
 		guiBoard[5][0].setArrow();
 		guiBoard[5][1].setArrow();
 		guiBoard[5][2].setArrow();
@@ -353,7 +357,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		board.placeMarker(5, 7, ARROW);
 		board.placeMarker(5, 8, ARROW);
 		board.placeMarker(5, 9, ARROW);
-***************************************************/	
+//***************************************************/	
 
 		scores[0] = 0;
 		scores[1] = 0;
@@ -369,44 +373,54 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	 * 
 	 * @param player - Which players pieces to start from to look for the goal.
 	 */
-	private boolean isFinished(int player) {	
+	private boolean isFinished() {	
 
-		ArrayList<Pair<Integer, Integer> > positions;
+		ArrayList<Pair<Integer, Integer> > wPositions = board.getWhitePositions();
+		ArrayList<Pair<Integer, Integer> > bPositions = board.getBlackPositions();
 
-		switch(player){
-			case(WQUEEN):
-				positions = board.getWhitePositions();
-			break;
-			case(BQUEEN):
-				positions = board.getBlackPositions();
-			break;
-			// If we're passed an invalid value something went wrong, end the game.
-			default:
-				return true;
-		}
-
-		boolean[][] hasChecked = new boolean[rows][columns];
-		
-		for(int i = 0; i < rows; i++){
-			for (int j = 0; j < columns; j++){
-				hasChecked[i][j] = false;
-			}
-		}
-		
-		// Reset score;
-		scores[player-1] = 0;
-		
-		for (Pair<Integer, Integer> pair : positions){
+		int[][] hasChecked = new int[rows][columns];
+	
+		for (Pair<Integer, Integer> pair : wPositions){
 			// Reach opposing amazon using legal moves then the game is not over.
-			if (canReachOpponent(pair, player, hasChecked)){
-				return false;
+			countReachableTiles(pair, WQUEEN, hasChecked);
+		}
+		
+		for (Pair<Integer, Integer> pair : bPositions){
+			// Reach opposing amazon using legal moves then the game is not over.
+			countReachableTiles(pair, BQUEEN, hasChecked);
+		}
+		
+		whiteTiles = 0;
+		blackTiles = 0; 
+		bothCanReach = 0;
+		
+		for (int i = 0; i < rows; i++){
+			for (int j = 0; j < columns; j++){
+				switch(hasChecked[i][j]){
+					case(1):
+						whiteTiles++;
+						break;
+					case(2):
+						blackTiles++;
+						break;
+					case(3):
+						bothCanReach++;
+						break;
+				}
 			}
 		}
+		
+		if (blackTiles > whiteTiles + bothCanReach){
+			return true;
+		} else if (whiteTiles > blackTiles + bothCanReach){
+			return true;
+		} 
+		
 		// If we reach this point we have examined every component
-		return true;
+		return false;
 	}
 
-	/**
+	/****************************************************************************************
 	 * This is a stack based search of the game board, if we detect an amazon piece
 	 * of the oppsing player then the game should not finish as there are legal moves
 	 * to reach other pieces. If every amazon is isolated from the opposite colour we
@@ -420,20 +434,11 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	 * @param player - 1 for White, 2 for Black
 	 * @return - True if we reach an opponent, false otherwise.
 	 * 
-	 */
-	private boolean canReachOpponent(Pair<Integer, Integer> source, int player, boolean[][] hasChecked){
-		
-		int opponent = 0;
-		switch(player){
-			case(WQUEEN):
-				opponent = BQUEEN;
-			break;
-			case(BQUEEN):
-				opponent = WQUEEN;
-			break;
-		}
-		
+	 ***************************************************************************************/
+	private void countReachableTiles(Pair<Integer, Integer> source, int player, int[][] hasChecked){
+
 		Stack<Pair<Integer, Integer>> stack = new Stack<>();
+				
 		stack.push(source);
 
 		while (!stack.empty()){
@@ -441,126 +446,102 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			Pair<Integer, Integer> top = stack.pop();
 			int xPos = top.getLeft();
 			int yPos = top.getRight();
-
-			hasChecked[xPos][yPos] = true;
 			
 			// Check boundary
 			if (xPos - 1 >= 0){
 				// If it is free
 				if (!board.isMarked((xPos-1), yPos)){
 					// If we haven't looked at it yet
-					if (!hasChecked[xPos-1][yPos]){
-						// Add the coordinate to check next
-						stack.push(new Pair<>(xPos-1, yPos));
-						scores[player-1]++;
+					if (hasChecked[xPos-1][yPos] == 0){
+						stack.push(new Pair<>(xPos-1, yPos)); 
+						hasChecked[xPos-1][yPos] = player;
+					} else if (hasChecked[xPos-1][yPos] != player) {
+						hasChecked[xPos-1][yPos] = ARROW;
 					}
-				// If we run into an opponent keep the game going
-				} else if (board.getPiece(xPos-1, yPos) == opponent){
-					return true;
-				// Otherwise there is an arrow, mark it as checked and move on.
-				} else {
-					hasChecked[xPos-1][yPos] = true;
 				}
 			}
 			if (xPos + 1 < rows){
 				if (!board.isMarked((xPos+1), yPos)){
-					if (!hasChecked[xPos+1][yPos]){
+					if (hasChecked[xPos+1][yPos] == 0){
+						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos+1, yPos));
-						scores[player-1]++;
+						hasChecked[xPos+1][yPos] = player;
+					} else if (hasChecked[xPos+1][yPos] != player) {
+						hasChecked[xPos+1][yPos] = ARROW;
 					}
-				} else if (board.getPiece(xPos+1, yPos) == opponent){
-					return true;
-				} else {
-					hasChecked[xPos+1][yPos] = true;
-				}				
+				}
 			}
 			if (yPos - 1 >= 0){
 				if (!board.isMarked((xPos), yPos-1)){
-					if (!hasChecked[xPos][yPos-1]){
+					if (hasChecked[xPos][yPos-1] == 0){
+						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos, yPos-1));
-						scores[player-1]++;
+						hasChecked[xPos][yPos-1] = player;
+					} else if (hasChecked[xPos][yPos-1] != player){
+						hasChecked[xPos][yPos-1] = ARROW;
 					}
-				} else if (board.getPiece(xPos, yPos-1) == opponent){
-					return true;
-				} else {
-					hasChecked[xPos][yPos-1] = true;
 				}
 			}
 			if (yPos + 1 < columns){
 				if (!board.isMarked(xPos, yPos+1)){
-					if (!hasChecked[xPos][yPos+1]){
+					if (hasChecked[xPos][yPos+1] == 0){
+						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos, yPos+1));
-						scores[player-1]++;
+						hasChecked[xPos][yPos+1] = player;
+						
+					} else if (hasChecked[xPos][yPos+1] != player){
+						hasChecked[xPos][yPos+1] = ARROW;
 					}
-				} else if (board.getPiece(xPos, yPos+1) == opponent){
-					return true;
-				} else {
-					hasChecked[xPos][yPos+1] = true;
 				}
 			}
 			if ((xPos + 1 < rows) && (yPos + 1 < columns)){
 				if (!board.isMarked((xPos+1), yPos+1)){
-					if (!hasChecked[xPos+1][yPos]){
+					if (hasChecked[xPos+1][yPos+1] == 0){
+						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos+1, yPos+1));
-						scores[player-1]++;
+						hasChecked[xPos+1][yPos+1] = player;
+						
+					} else if (hasChecked[xPos+1][yPos+1] != player) {
+						hasChecked[xPos+1][yPos+1] = ARROW;
 					}
-				} else if (board.getPiece(xPos+1, yPos+1) == opponent){
-					return true;
-				} else {
-					hasChecked[xPos+1][yPos+1] = true;
 				}
 			}
 			if ((xPos + 1 < rows) && (yPos - 1 >= 0)){
 				if (!board.isMarked((xPos+1), yPos-1)){
-					if (!hasChecked[xPos+1][yPos-1]){
+					if (hasChecked[xPos+1][yPos-1] == 0){
+						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos+1, yPos-1));
-						scores[player-1]++;
+						hasChecked[xPos+1][yPos-1] = player;
+						
+					} else if (hasChecked[xPos+1][yPos-1] != player) {
+						hasChecked[xPos+1][yPos-1] = ARROW;
 					}
-				} else if (board.getPiece(xPos+1, yPos-1) == opponent){
-					return true;
-				} else {
-					hasChecked[xPos+1][yPos-1] = true;
 				}
 			}
 			if ((xPos - 1 >= 0) && (yPos + 1 < columns)){
 				if (!board.isMarked((xPos-1), yPos+1)){
-					if (!hasChecked[xPos-1][yPos+1]){
+					if (hasChecked[xPos-1][yPos+1] == 0){
+						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos-1, yPos+1));
-						scores[player-1]++;
+						hasChecked[xPos-1][yPos+1] = player;
+						
+					} else if (hasChecked[xPos-1][yPos+1] != player) {
+						hasChecked[xPos-1][yPos+1] = ARROW;
 					}
-				} else if (board.getPiece(xPos-1, yPos+1) == opponent){
-					return true;
-				} else {
-					hasChecked[xPos-1][yPos+1] = true;
 				}
 			}
 			if ((xPos - 1 >= 0) && (yPos - 1 >= 0)){
 				if (!board.isMarked((xPos-1), yPos-1)){
-					if (!hasChecked[xPos-1][yPos-1]){
+					if (hasChecked[xPos-1][yPos-1] == 0){
+						// If we haven't looked at it yet
 						stack.push(new Pair<>(xPos-1, yPos-1));
-						scores[player-1]++;
+						hasChecked[xPos-1][yPos-1] = player;
+					} else if (hasChecked[xPos-1][yPos-1] != player) {
+						hasChecked[xPos-1][yPos-1] = ARROW;
 					}
-				} else if (board.getPiece(xPos-1, yPos-1) == opponent){
-					return true;
-				} else {
-					hasChecked[xPos-1][yPos-1] = true;
 				}
 			}
-		}
-		
-		// Compute score when a winner is decided.
-		
-		if (player == WQUEEN){
-			scores[0] = 100 - scores[1];
-			whiteScore.setText("White: " + scores[0]);
-			blackScore.setText("Black: " + scores[1]);
-		} else {
-			scores[1] = 100 - scores[0];
-			whiteScore.setText("White: " + scores[0]);
-			blackScore.setText("Black: " + scores[1]);
-		}
-		
-		return false;
+		}			
 	}
 
 	/**
@@ -616,18 +597,14 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 			input.requestFocus();
 
 			if (finished){
-
-				String winner = "";
-				int score  = 0;
-				if (scores[0] > scores[1]){
-					winner = "White";
-					score = scores[0];
-				} else {
+				String winner;
+				gameTimer.stopTiming();
+				if (blackTiles > whiteTiles + bothCanReach){
 					winner = "Black";
-					score = scores[1];
-				}
-				
-				JOptionPane.showMessageDialog(frame,"Game over " + winner + " won with score " + score + " click to exit.", "Game over", JOptionPane.NO_OPTION);
+				} else {
+					winner = "White";
+				} 	
+				JOptionPane.showMessageDialog(frame,"Game over " + winner + "!! Click to exit.", "Game over", JOptionPane.NO_OPTION);
 				System.exit(0);
 			}
 
@@ -675,16 +652,19 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!moveIsValid(fRow,fCol,tRow,tCol,false)){
 					return;
 				}
-
+				
+				board.freeSquare(fRow,fCol);
+				board.placeMarker(tRow,tCol, WQUEEN);
+				
 				// Use same logic to validate arrow throws.
 				if (!moveIsValid(tRow,tCol,aRow,aCol,true)){
+					// Put the piece back if the arrow throw is invalid.
+					board.freeSquare(tRow, tCol);
+					board.placeMarker(fRow, fCol, WQUEEN);
 					return;
 				}
 
-				board.freeSquare(fRow,fCol);
-				board.placeMarker(tRow,tCol, WQUEEN);
 				board.placeMarker(aRow, aCol, ARROW);
-
 				board.updateWhitePositions(fRow, fCol, tRow, tCol);
 
 				guiBoard[fRow][fCol].setFree();
@@ -693,13 +673,12 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 
 				updateMoveLog(in,WQUEEN);
 
-				frame.repaint();
 				input.setText("");
-
 				player1Turn = false;
+				
 				frame.repaint();
 
-				if(isFinished(WQUEEN)){
+				if(isFinished()){
 					endGame();
 					finished = true;
 				}
@@ -716,31 +695,35 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 				if (!moveIsValid(fRow,fCol,tRow,tCol,false)){
 					return;
 				}
-
-				// Use same logic to validate arrow throws.
+				
+				// Amazon piece is valid, we update the logic part of the board
+				board.freeSquare(fRow,fCol);
+				board.placeMarker(tRow,tCol, BQUEEN);
+				
+				// If the arrow throw is invalid, we must put the queen back and ask for a new move
 				if (!moveIsValid(tRow,tCol,aRow,aCol,true)){
+					board.freeSquare(tRow,tCol);
+					board.placeMarker(fRow,fCol, BQUEEN);
 					return;
 				}
 
-				board.freeSquare(fRow,fCol);
-				board.placeMarker(tRow,tCol, BQUEEN);
+				// Otherwise, place the arrow on the board, update the records and GUI
 				board.placeMarker(aRow, aCol, ARROW);
 
 				board.updateBlackPositions(fRow, fCol, tRow, tCol);
-
+				
 				guiBoard[fRow][fCol].setFree();
 				guiBoard[tRow][tCol].setBQueen();
 				guiBoard[aRow][aCol].setArrow();
 
 				updateMoveLog(in,BQUEEN);
 
-				frame.repaint();
 				input.setText("");
 
 				player1Turn = true;
 				frame.repaint();
 
-				if(isFinished(BQUEEN)){
+				if(isFinished()){
 					endGame();	
 					finished = true;
 				}

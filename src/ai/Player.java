@@ -40,6 +40,8 @@ public class Player extends JFrame implements GamePlayer {
 				continue;
 			}
 		}
+		
+		// TODO: Build GUI, pass board to constructor
 	}
 	
 	
@@ -48,8 +50,7 @@ public class Player extends JFrame implements GamePlayer {
 		ArrayList<GameRoom> rooms = client.getRoomLists();
 		
 		for(GameRoom g : rooms){
-			System.out.println(g.roomID);
-			System.out.println(g.roomName);	
+			System.out.println(g.roomID + " " + g.roomName);	
 		}
 		return rooms;
 	}
@@ -67,18 +68,10 @@ public class Player extends JFrame implements GamePlayer {
 	}
 	
 	public void sendToServer(String msg, int roomID){
-		
-		
+			
 	}
-
-
 
 	public static void main(String[] args){
-	
-		Player player = new Player("92384072", "nowicki");
-		
-		
+		Player player = new Player("Berate-A-Bot", "54321");	
 	}
-	
-
 }
