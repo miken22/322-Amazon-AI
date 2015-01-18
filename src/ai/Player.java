@@ -8,10 +8,10 @@ import net.n3.nanoxml.IXMLParser;
 import net.n3.nanoxml.IXMLReader;
 import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLParserFactory;
-import net.n3.nanoxml.XMLWriter;
 import ai.gui.GUI;
 import ai.search.Agent;
 import ubco.ai.GameRoom;
+import ubco.ai.connection.ServerMessage;
 import ubco.ai.games.GameClient;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
@@ -34,7 +34,7 @@ public class Player implements GamePlayer {
 	private int whiteTiles;
 	private int blackTiles;
 	private int bothCanReach;
-	
+
 	private String userName;
 
 	private final int ROWS = 10;
@@ -42,53 +42,69 @@ public class Player implements GamePlayer {
 
 	private final int WQUEEN = 1;
 	private final int BQUEEN = 2;
-	private final int ARROW = 3; 
+	private final int ARROW = 3;
 	
+	private int playerID;
+	private String role;
+
 	private boolean isOpponentsTurn;
 	private boolean finished;
+	
+	private int roomNumber;
 
 	public Player(String userName, String password) {
-		
+
 		this.userName = userName;
 
 		client = new GameClient(userName, password, this);
-		client.roomList = getRooms();
-		client.getUserID();
-
 		board = new Board(ROWS, COLS);
-		
 		gui = new GUI(board, ROWS, COLS);
-		gui.init();
-
 		parser = new XMLParser();
+	
+	}
 
+	public void joinServer(){
+		client.roomList = getRooms();	
+		gui.init();
+		
 		for (GameRoom g : client.roomList) {
 			try {
 				client.joinGameRoom(g.roomName);
+				roomNumber = g.roomID;
 				break;
 			} catch (Exception e) {
 				continue;
 			}
 		}
-
-		if (client.isRunning()){
-			startGame(1);
-		}
-		
-		// if game starts
-
-		// TODO: Build GUI, pass board to constructor
 	}
+
+	public void joinServer(String roomName){
+		client.roomList = getRooms();
+		gui.init();
+		
+		try {
+			client.joinGameRoom(roomName);
+			roomNumber = client.roomList.indexOf(roomName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//		startGame(1);
+	}
+
 
 	public void startGame(int playerNumber) {
 
-		agent = new Agent(board, ROWS, COLS, playerNumber);
-		
 		if (playerNumber == 1) {
 			isOpponentsTurn = false;
+			playerID = 1;
+			role = "W";
 		} else {
 			isOpponentsTurn = true;
+			playerID = 2;
+			role = "B";
 		}
+		
+		agent = new Agent(board, ROWS, COLS, playerID);
 
 		finished = false;
 
@@ -102,53 +118,50 @@ public class Player implements GamePlayer {
 
 			if (isOpponentsTurn) {
 				// TODO: Plan ahead based on possible moves
-				finished = isFinished();
-				
 				waitForMove();
-				
-				
+
+				isOpponentsTurn = false;
+				finished = isFinished();
+
 			} else {
 				// TODO: Pick a move and send it to the server
-				agent.selectMove();
+				String move = agent.selectMove();
+				String serverMessage = ServerMessage.compileGameMessage(ServerMessage.USR_MSG, roomNumber, GameMessage.ACTION_MOVE);
+				gui.addServerMessage("My ", serverMessage);
+				
+				client.sendToServer(serverMessage, true);
+				isOpponentsTurn = true;
 			}
 
 		} while (!finished);
 
 	}
-	
+
 	private void waitForMove(){
-		
+
 		while (isOpponentsTurn){
-			
+			isOpponentsTurn = false;
+
 		}
-		
+
 	}
 
 	/**
-	 * Search board starting from each of the players pieces. If there is no
-	 * path to any opposing colour then the game is over.
+	 * Search board to detect if we are in a goal state
 	 * 
-	 * @param player
-	 *            - Which players pieces to start from to look for the goal.
 	 */
 	private boolean isFinished() {
 
-		ArrayList<Pair<Integer, Integer>> wPositions = board
-				.getWhitePositions();
-		ArrayList<Pair<Integer, Integer>> bPositions = board
-				.getBlackPositions();
+		ArrayList<Pair<Integer, Integer>> wPositions = board.getWhitePositions();
+		ArrayList<Pair<Integer, Integer>> bPositions = board.getBlackPositions();
 
 		int[][] hasChecked = new int[ROWS][COLS];
 
 		for (Pair<Integer, Integer> pair : wPositions) {
-			// Reach opposing amazon using legal moves then the game is not
-			// over.
 			countReachableTiles(pair, WQUEEN, hasChecked);
 		}
 
 		for (Pair<Integer, Integer> pair : bPositions) {
-			// Reach opposing amazon using legal moves then the game is not
-			// over.
 			countReachableTiles(pair, BQUEEN, hasChecked);
 		}
 
@@ -161,13 +174,13 @@ public class Player implements GamePlayer {
 				switch (hasChecked[i][j]) {
 				case (1):
 					whiteTiles++;
-					break;
+				break;
 				case (2):
 					blackTiles++;
-					break;
+				break;
 				case (3):
 					bothCanReach++;
-					break;
+				break;
 				}
 			}
 		}
@@ -177,26 +190,20 @@ public class Player implements GamePlayer {
 		} else if (whiteTiles > blackTiles + bothCanReach) {
 			return true;
 		}
-
-		// If we reach this point we have examined every component
 		return false;
 	}
 
 	/****************************************************************************************
-	 * This is a stack based search of the game board, if we detect an amazon
-	 * piece of the oppsing player then the game should not finish as there are
-	 * legal moves to reach other pieces. If every amazon is isolated from the
-	 * opposite colour we declare the game over.
-	 * 
-	 * The scoring system does not work, it finds the right winner (in the runs
-	 * i've done) but does not return the expected value. Will have to see
-	 * proper scoring later I guess.
+	 * This is a stack based search of the game board, we flag each tile in the grid as either
+	 * belonging to White, Black, or is Neutral. If one sides score is larger than the others,
+	 * plus the neutral tiles, then that side is declared the winner.
 	 * 
 	 * @param source
 	 *            - An integer pairing (x,y) for where the amazon piece is
 	 * @param player
 	 *            - 1 for White, 2 for Black
-	 * @return - True if we reach an opponent, false otherwise.
+	 * @param hasChecked[][]
+	 * 			  - 2D integer array for mapping which pieces can reach which tiles in the grid
 	 * 
 	 ***************************************************************************************/
 	private void countReachableTiles(Pair<Integer, Integer> source, int player,
@@ -206,7 +213,7 @@ public class Player implements GamePlayer {
 		switch (player) {
 		case (WQUEEN):
 			opponent = BQUEEN;
-			break;
+		break;
 		default:
 			opponent = WQUEEN;
 		}
@@ -341,52 +348,43 @@ public class Player implements GamePlayer {
 
 	@Override
 	public boolean handleMessage(GameMessage message) throws Exception {
-		
+
 		/**
 		 * These are the NanoXML classes we need to convert the message to XML and such, need to
 		 * figure out the message header
 		 */
-		
-		IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
+
+		IXMLParser iParser = XMLParserFactory.createDefaultXMLParser();
 		IXMLReader reader = StdXMLReader.stringReader(message.toString());
-		parser.setReader(reader);
-		IXMLElement xml = (IXMLElement) parser.parse();
+		iParser.setReader(reader);
+		IXMLElement xml = (IXMLElement) iParser.parse();
+
+		parser.handleXML(xml);
 		
 		// Handle the different types of messages that we recieve.
-		
-		if (xml.hasAttribute(GameMessage.ACTION_MOVE)){
-			
-		} else if (xml.hasAttribute(GameMessage.ACTION_GAME_START)){
-			
-		} else if (xml.hasAttribute(GameMessage.ACTION_POS_MARKED)){
-			
-		} else if (xml.hasAttribute(GameMessage.ACTION_ROOM_JOINED)){
-			
-		} else if (xml.hasAttribute(GameMessage.MSG_GAME)){
-			
-		} else if (xml.hasAttribute(GameMessage.MSG_CHAT)){
-			
-		} else if (xml.hasAttribute(GameMessage.MSG_GENERAL)){
-			
-		} else if (xml.hasAttribute(GameMessage.MSG_JOIN_ROOM)) {
-			
-		}
-    
-		gui.addServerMessage("Server game message: ", message.toString());
+		gui.addServerMessage("Server other message: ", message.toString());
+
+
 		return false;
 	}
+	
+	
+	public void sendToServer(String messageType, String message) {
 
-	/**
-	 * Main method to pass agent actions to the server
-	 * 
-	 * @param msg - What to say to the server
-	 * @param roomID - Which room to direct it to.
-	 */
-	public void sendToServer(String msg, int roomID) {
-
+		
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Berate-A-Bot-2.0001", "54321");
+		Player player = new Player("Bot-1.0001", "54321");
+		
+		if (args.length == 0){
+			player.joinServer();
+		} else {
+			player.joinServer(args[0] + " " + args[1]);
+		}
+		
+//		Player p2 = new Player("Bot-2-0001", "54321");
+//		p2.joinServer(args[0] + " " + args[1]);
+		
 	}
 }

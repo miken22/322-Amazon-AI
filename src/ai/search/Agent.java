@@ -28,8 +28,15 @@ public class Agent {
 		scg = new SuccessorGenerator(board, ourColour);
 	}
 	
-	public void selectMove(){
+	public String selectMove(){
+		String move = "";
 		
+		// some search function call or something
+		move = "a3-d3-d8";
+		
+		
+		return move;
+				
 	}
 	
 }
