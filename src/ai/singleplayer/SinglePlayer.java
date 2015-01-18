@@ -20,7 +20,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
@@ -52,9 +51,7 @@ import ubco.ai.games.GamePlayer;
  * @author Mike Nowicki
  *
  */
-public class SinglePlayer extends JFrame implements GamePlayer {
-
-	private static final long serialVersionUID = 6270779398069277942L;
+public class SinglePlayer implements GamePlayer {
 
 	private JFrame frame;
 
@@ -62,12 +59,10 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private JScrollPane scrollLog;
 
 	private JTextPane chat;
-	private JTextPane moveLog ;
+	private JTextPane moveLog;
 	private JTextArea input;
 
 	private Style userStyle;
-	private Style agentStyle;
-
 	private StyledDocument chatTextarea;
 	private StyledDocument moveTextarea;
 
@@ -92,7 +87,6 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 	private Cells[][] guiBoard;
 	
 	private boolean player1Turn = true;
-	private boolean useAI = false;
 	private boolean finished = false;
 	
 	/**
@@ -165,7 +159,7 @@ public class SinglePlayer extends JFrame implements GamePlayer {
 		input = new JTextArea();
 
 		userStyle = chat.addStyle("userin", null);
-		agentStyle = chat.addStyle("agentstyle",null);
+		chat.addStyle("agentstyle",null);
 
 		try {
 			font = Font.createFont(0,this.getClass().getResourceAsStream("/Trebuchet MS.ttf"));
