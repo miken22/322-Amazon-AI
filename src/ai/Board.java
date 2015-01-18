@@ -1,4 +1,4 @@
-package ai.singleplayer;
+package ai;
 
 import java.util.ArrayList;
 

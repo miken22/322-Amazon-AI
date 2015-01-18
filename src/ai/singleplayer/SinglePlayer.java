@@ -31,6 +31,10 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import ai.Board;
+import ai.Pair;
+import ai.Utility;
+import ai.gui.Cells;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
 

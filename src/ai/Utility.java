@@ -1,4 +1,4 @@
-package ai.singleplayer;
+package ai;
 
 public class Utility {
 	

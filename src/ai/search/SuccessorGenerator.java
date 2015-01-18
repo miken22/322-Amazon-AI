@@ -1,6 +1,6 @@
-package ai;
+package ai.search;
 
-import ai.singleplayer.Board;
+import ai.Board;
 
 public class SuccessorGenerator {
 

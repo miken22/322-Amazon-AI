@@ -1,4 +1,4 @@
-package ai;
+package ai.gui;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -24,8 +24,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import ai.singleplayer.Board;
-import ai.singleplayer.Cells;
+import ai.Board;
 
 public class GUI {
 

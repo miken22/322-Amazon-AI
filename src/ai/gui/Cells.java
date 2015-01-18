@@ -1,4 +1,4 @@
-package ai.singleplayer;
+package ai.gui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
