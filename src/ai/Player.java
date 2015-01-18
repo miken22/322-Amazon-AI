@@ -3,6 +3,12 @@ package ai;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import net.n3.nanoxml.IXMLElement;
+import net.n3.nanoxml.IXMLParser;
+import net.n3.nanoxml.IXMLReader;
+import net.n3.nanoxml.StdXMLReader;
+import net.n3.nanoxml.XMLParserFactory;
+import net.n3.nanoxml.XMLWriter;
 import ai.singleplayer.Board;
 import ai.singleplayer.Pair;
 import ubco.ai.GameRoom;
@@ -335,6 +341,37 @@ public class Player implements GamePlayer {
 
 	@Override
 	public boolean handleMessage(GameMessage message) throws Exception {
+		
+		/**
+		 * These are the NanoXML classes we need to convert the message to XML and such, need to
+		 * figure out the message header
+		 */
+		
+		IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
+		IXMLReader reader = StdXMLReader.stringReader(message.toString());
+		parser.setReader(reader);
+		IXMLElement xml = (IXMLElement) parser.parse();
+		
+		// Handle the different types of messages that we recieve.
+		
+		if (xml.hasAttribute(GameMessage.ACTION_MOVE)){
+			
+		} else if (xml.hasAttribute(GameMessage.ACTION_GAME_START)){
+			
+		} else if (xml.hasAttribute(GameMessage.ACTION_POS_MARKED)){
+			
+		} else if (xml.hasAttribute(GameMessage.ACTION_ROOM_JOINED)){
+			
+		} else if (xml.hasAttribute(GameMessage.MSG_GAME)){
+			
+		} else if (xml.hasAttribute(GameMessage.MSG_CHAT)){
+			
+		} else if (xml.hasAttribute(GameMessage.MSG_GENERAL)){
+			
+		} else if (xml.hasAttribute(GameMessage.MSG_JOIN_ROOM)) {
+			
+		}
+    
 		gui.addServerMessage("Server game message: ", message.toString());
 		return false;
 	}
