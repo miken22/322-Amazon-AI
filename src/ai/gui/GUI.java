@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
@@ -139,6 +141,9 @@ public class GUI {
 		chatTextarea = chat.getStyledDocument();
 		moveTextarea = moveLog.getStyledDocument();
 
+		exit.addActionListener(new MenuListener(1));
+		
+		
 		c = frame.getContentPane();
 		c.add(scrollChat);
 		c.add(scrollLog);
@@ -263,7 +268,7 @@ public class GUI {
 		
 		StyleConstants.setForeground(agentStyle, Color.GREEN);
 		try { 
-			chatTextarea.insertString(chatTextarea.getLength(), "\r\n" + type + ": ",agentStyle); 
+			chatTextarea.insertString(chatTextarea.getLength(), "\r\n" + type + " ",agentStyle); 
 		} catch (BadLocationException e1){}
 
 		StyleConstants.setForeground(agentStyle, Color.black);
@@ -280,7 +285,7 @@ public class GUI {
 
 		StyleConstants.setForeground(userStyle, Color.red);
 		try { 
-			moveTextarea.insertString(moveTextarea.getLength(), "\r\n" + player + ": ",userStyle); 
+			moveTextarea.insertString(moveTextarea.getLength(), "\r\n" + player + " ",userStyle); 
 		} catch (BadLocationException e1){}
 
 		StyleConstants.setForeground(userStyle, Color.black);
@@ -291,5 +296,18 @@ public class GUI {
 		chat.select(doc.getLength(), doc.getLength());
 	
 	}
+	
+	private class MenuListener implements ActionListener {
+		private int id;
+		public MenuListener(int a){
+			this.id = a;
+		}
 
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (id==1){
+				System.exit(0);
+			}	
+		}
+	}
 }

@@ -88,12 +88,14 @@ public class Player implements GamePlayer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		startGame(1);
+
 	}
 
 
 	public void startGame(int playerNumber) {
-
+		
+		System.out.println("Game started");
+		
 		if (playerNumber == 1) {
 			isOpponentsTurn = false;
 			playerID = 1;
@@ -358,11 +360,12 @@ public class Player implements GamePlayer {
 
 		String answer = parser.handleXML(xml);
 		
-		
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
-			startGame(BQUEEN);
-		}
-		
+			
+			parser.getUserInfo(xml);
+			
+//			startGame(BQUEEN);
+		} 
 		// Handle the different types of messages that we recieve.
 		gui.addServerMessage("Server other message: ", message.toString());
 
@@ -377,7 +380,7 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		
 		if (args.length == 0){
 			player.joinServer();
@@ -385,8 +388,8 @@ public class Player implements GamePlayer {
 			player.joinServer(args[0] + " " + args[1]);
 		}
 		
-//		Player p2 = new Player("Bot-2-0001", "54321");
-//		p2.joinServer();
+//		Player p2 = new Player("Bot-3-0001", "54321");
+//		p2.joinServer("Okanagan lake");
 		
 	}
 }
