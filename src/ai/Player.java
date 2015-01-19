@@ -138,12 +138,9 @@ public class Player implements GamePlayer {
 	}
 
 	private void waitForMove(){
-
 		while (isOpponentsTurn){
-			isOpponentsTurn = false;
-
+			//isOpponentsTurn = false;
 		}
-
 	}
 
 	/**
@@ -334,9 +331,9 @@ public class Player implements GamePlayer {
 
 	public ArrayList<GameRoom> getRooms() {
 		ArrayList<GameRoom> rooms = client.getRoomLists();
-		for (GameRoom g : rooms) {
-			System.out.println(g.roomID + " " + g.roomName);
-		}
+//		for (GameRoom g : rooms) {
+//			System.out.println(g.roomID + " " + g.roomName);
+//		}
 		return rooms;
 	}
 
@@ -359,7 +356,12 @@ public class Player implements GamePlayer {
 		iParser.setReader(reader);
 		IXMLElement xml = (IXMLElement) iParser.parse();
 
-		parser.handleXML(xml);
+		String answer = parser.handleXML(xml);
+		
+		
+		if (answer.equals(GameMessage.ACTION_GAME_START)){
+			startGame(BQUEEN);
+		}
 		
 		// Handle the different types of messages that we recieve.
 		gui.addServerMessage("Server other message: ", message.toString());
@@ -384,7 +386,7 @@ public class Player implements GamePlayer {
 		}
 		
 //		Player p2 = new Player("Bot-2-0001", "54321");
-//		p2.joinServer(args[0] + " " + args[1]);
+//		p2.joinServer();
 		
 	}
 }
