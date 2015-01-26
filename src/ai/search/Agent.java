@@ -32,7 +32,7 @@ public class Agent {
 		String move = "";
 		
 		// some search function call or something
-		move = "a3-d3-d8";
+		move = "a3-d3";
 		
 		
 		return move;

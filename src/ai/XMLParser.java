@@ -26,8 +26,11 @@ public class XMLParser{
 			if (xml.getAttribute("type", GameMessage.ACTION_GAME_START).contains(GameMessage.ACTION_GAME_START)){
 				return GameMessage.ACTION_GAME_START;
 			}
-		}
 
+			if (xml.getAttribute("type", GameMessage.ACTION_MOVE).contains(GameMessage.ACTION_MOVE)){
+				System.out.println("Move recieved");
+			}
+		}
 		return "";
 		// TODO: Third level of game message has userName and role information.
 	}

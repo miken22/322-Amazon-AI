@@ -110,32 +110,34 @@ public class Player implements GamePlayer {
 
 		finished = false;
 
+		
+		String chat = "<action type='" + GameMessage.MSG_CHAT + "'> AHAHAHAHAHAHAHAHAHA </action>";
+		
+		String msg = ServerMessage.compileSystemMessage(ServerMessage.USR_MSG, roomNumber, chat);
+		client.sendToServer(msg, false);
+		
 		inGame();
 
 	}
 
 	private void inGame() {
 
-		do {
+	//	do {
 
 			if (isOpponentsTurn) {
 				// TODO: Plan ahead based on possible moves
-				waitForMove();
+//				waitForMove();
 
 				isOpponentsTurn = false;
 				finished = isFinished();
 
 			} else {
 				// TODO: Pick a move and send it to the server
-				String move = agent.selectMove();
-				String serverMessage = ServerMessage.compileGameMessage(ServerMessage.USR_MSG, roomNumber, move);
-				gui.addServerMessage("My ", serverMessage);
 				
-				client.sendToServer(serverMessage, true);
 				isOpponentsTurn = true;
 			}
 
-		} while (!finished);
+//		} while (!finished);
 
 	}
 
@@ -348,10 +350,7 @@ public class Player implements GamePlayer {
 	@Override
 	public boolean handleMessage(GameMessage message) throws Exception {
 
-		/**
-		 * These are the NanoXML classes we need to convert the message to XML and such, need to
-		 * figure out the message header
-		 */
+		gui.addServerMessage("Server other message: ", message.toString());
 
 		IXMLParser iParser = XMLParserFactory.createDefaultXMLParser();
 		IXMLReader reader = StdXMLReader.stringReader(message.toString());
@@ -366,34 +365,24 @@ public class Player implements GamePlayer {
 				System.out.println("Spectator of match.");
 				return false;
 			}
-			gui.addServerMessage("Server other message: ", message.toString());
 			System.out.println("Starting match.");
 			startGame();
 		} 
-		// Handle the different types of messages that we recieve.
-		gui.addServerMessage("Server other message: ", message.toString());
-
 
 		return true;
 	}
 	
-	
-	public void sendToServer(String messageType, String message) {
-
-		
-	}
-
 	public static void main(String[] args) {
 		Player player = new Player("Bot-1.0001", "54321");
 		
 		if (args.length == 0){
-			player.joinServer("Jackpine Lake");
+			player.joinServer("Bear Lake");
 		} else {
 			player.joinServer(args[0] + " " + args[1]);
 		}
 		
 //		Player p2 = new Player("Bot-3-0001", "54321");
-//		p2.joinServer("Okanagan lake");
+//		p2.joinServer("Jackpine lake");
 		
 	}
 }
