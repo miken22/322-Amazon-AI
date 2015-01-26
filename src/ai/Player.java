@@ -57,16 +57,24 @@ public class Player implements GamePlayer {
 		this.userName = userName;
 
 		client = new GameClient(userName, password, this);
+		
+		printRooms();
+		
 		board = new Board(ROWS, COLS);
 		gui = new GUI(board, ROWS, COLS);
 		parser = new XMLParser();
 	
 	}
 
+	public void printRooms(){
+		for (GameRoom g : client.roomList) {
+			System.out.println(g.roomName + ", " + g.roomID);
+		}
+	}
+	
 	public void joinServer(){
 		client.roomList = getRooms();	
 		gui.init();
-		
 		for (GameRoom g : client.roomList) {
 			try {
 				client.joinGameRoom(g.roomName);
@@ -91,7 +99,7 @@ public class Player implements GamePlayer {
 
 	}
 
-
+	// public void startGame(String role) {
 	public void startGame(int playerNumber) {
 		
 		System.out.println("Game started");
@@ -173,10 +181,10 @@ public class Player implements GamePlayer {
 				switch (hasChecked[i][j]) {
 				case (1):
 					whiteTiles++;
-				break;
+					break;
 				case (2):
 					blackTiles++;
-				break;
+					break;
 				case (3):
 					bothCanReach++;
 				break;
@@ -232,14 +240,14 @@ public class Player implements GamePlayer {
 			// Check boundary
 			if (xPos - 1 >= 0) {
 				// If it is free
-				if (!board.isMarked((xPos - 1), yPos)) {
+				if (!board.isMarked((xPos - 1), yPos)) {	// Ignore all cells with arrows and amazons
 					// If we haven't looked at it yet
-					if (hasChecked[xPos - 1][yPos] == 0) {
+					if (hasChecked[xPos - 1][yPos] == 0) {	// The cell hasn't been reached by either side, score for that player
 						stack.push(new Pair<>(xPos - 1, yPos));
 						hasChecked[xPos - 1][yPos] = player;
-					} else if (hasChecked[xPos - 1][yPos] == opponent) {
+					} else if (hasChecked[xPos - 1][yPos] == opponent) {	// Cell can be reached by black and white, mark it as neutral.
 						stack.push(new Pair<>(xPos - 1, yPos));
-						hasChecked[xPos - 1][yPos] = ARROW;
+						hasChecked[xPos - 1][yPos] = ARROW;	// In this case ARROW means neutral, not an inpassable object.
 					}
 				}
 			}
@@ -359,13 +367,12 @@ public class Player implements GamePlayer {
 		IXMLElement xml = (IXMLElement) iParser.parse();
 
 		String answer = parser.handleXML(xml);
+		gui.addServerMessage("Server other message: ", message.toString());
 		
-		if (answer.equals(GameMessage.ACTION_GAME_START)){
-			
-			parser.getUserInfo(xml);
-			
-//			startGame(BQUEEN);
-		} 
+//		if (answer.equals(GameMessage.ACTION_GAME_START)){
+//			parser.getUserInfo(xml);
+//			
+//		} 
 		// Handle the different types of messages that we recieve.
 		gui.addServerMessage("Server other message: ", message.toString());
 
@@ -389,7 +396,7 @@ public class Player implements GamePlayer {
 		}
 		
 //		Player p2 = new Player("Bot-3-0001", "54321");
-//		p2.joinServer("Okanagan lake");
+//		p2.joinServer();
 		
 	}
 }

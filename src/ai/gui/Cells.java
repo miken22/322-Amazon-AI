@@ -117,7 +117,6 @@ public class Cells extends JPanel {
 			g.drawImage(image,0,0,null);
 			return;
 		}
-
 		setBackground(defaultBackground);
 	}
 }

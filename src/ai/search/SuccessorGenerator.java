@@ -4,9 +4,14 @@ import ai.Board;
 
 public class SuccessorGenerator {
 
-	
+	/**
+	 * Logical representation of the board.
+	 */
 	private Board board;
 
+	/**
+	 * The colour pieces we control.
+	 */
 	private int OURCOLOUR;
 	private final int ARROW = 3;
 	private final int FREE = -1;
@@ -15,9 +20,7 @@ public class SuccessorGenerator {
 		this.board = board;
 		this.OURCOLOUR = ourColour;
 	}
-	
-	
-	
+		
 	public boolean isMoveValid(int fRow, int fCol, int tRow, int tCol, int aRow, int aCol){
 		
 		// Check starting from an owned piece
