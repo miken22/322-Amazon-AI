@@ -59,7 +59,7 @@ public class Player implements GamePlayer {
 		client = new GameClient(userName, password, this);
 		board = new Board(ROWS, COLS);
 		gui = new GUI(board, ROWS, COLS);
-		parser = new XMLParser();
+		parser = new XMLParser(userName);
 	
 	}
 
@@ -92,18 +92,18 @@ public class Player implements GamePlayer {
 	}
 
 
-	public void startGame(int playerNumber) {
+	public void startGame() {
 		
 		System.out.println("Game started");
 		
-		if (playerNumber == 1) {
+		if (role.equals("W")) {
 			isOpponentsTurn = false;
 			playerID = 1;
-			role = "W";
-		} else {
+		} else if (role.equals("B")) {
 			isOpponentsTurn = true;
 			playerID = 2;
-			role = "B";
+		} else {
+			System.out.println("Something went wrong detecting our role");
 		}
 		
 		agent = new Agent(board, ROWS, COLS, playerID);
@@ -128,7 +128,7 @@ public class Player implements GamePlayer {
 			} else {
 				// TODO: Pick a move and send it to the server
 				String move = agent.selectMove();
-				String serverMessage = ServerMessage.compileGameMessage(ServerMessage.USR_MSG, roomNumber, GameMessage.ACTION_MOVE);
+				String serverMessage = ServerMessage.compileGameMessage(ServerMessage.USR_MSG, roomNumber, move);
 				gui.addServerMessage("My ", serverMessage);
 				
 				client.sendToServer(serverMessage, true);
@@ -151,8 +151,8 @@ public class Player implements GamePlayer {
 	 */
 	private boolean isFinished() {
 
-		ArrayList<Pair<Integer, Integer>> wPositions = board.getWhitePositions();
-		ArrayList<Pair<Integer, Integer>> bPositions = board.getBlackPositions();
+		ArrayList<Pair<Integer, Integer> > wPositions = board.getWhitePositions();
+		ArrayList<Pair<Integer, Integer> > bPositions = board.getBlackPositions();
 
 		int[][] hasChecked = new int[ROWS][COLS];
 
@@ -361,16 +361,20 @@ public class Player implements GamePlayer {
 		String answer = parser.handleXML(xml);
 		
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
-			
-			parser.getUserInfo(xml);
-			
-//			startGame(BQUEEN);
+			this.role = parser.getUserInfo(xml);
+			if (!role.equals("W") && !role.equals("B")){
+				System.out.println("Spectator of match.");
+				return false;
+			}
+			gui.addServerMessage("Server other message: ", message.toString());
+			System.out.println("Starting match.");
+			startGame();
 		} 
 		// Handle the different types of messages that we recieve.
 		gui.addServerMessage("Server other message: ", message.toString());
 
 
-		return false;
+		return true;
 	}
 	
 	
@@ -380,10 +384,10 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-2.0001", "54321");
+		Player player = new Player("Bot-1.0001", "54321");
 		
 		if (args.length == 0){
-			player.joinServer();
+			player.joinServer("Jackpine Lake");
 		} else {
 			player.joinServer(args[0] + " " + args[1]);
 		}
