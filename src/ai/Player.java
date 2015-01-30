@@ -109,7 +109,7 @@ public class Player implements GamePlayer {
 			System.out.println("Something went wrong detecting our role");
 		}
 		
-		agent = new Agent(board, ROWS, COLS, playerID);
+		agent = new Agent(ROWS, COLS, playerID);
 		finished = false;
 		inGame();
 	}
@@ -130,7 +130,7 @@ public class Player implements GamePlayer {
 				
 				//
 				
-				int[] move = agent.selectMove();
+				int[] move = agent.selectMove(board);
 				
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
 				client.sendToServer(moveMessage, false);

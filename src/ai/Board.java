@@ -2,6 +2,12 @@ package ai;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents the state of the game during search and gameplay.
+ * 
+ * @author Mike Nowicki
+ *
+ */
 public class Board {
 
 	private int[][] board;
@@ -85,8 +91,7 @@ public class Board {
 	 */
 	public void updateBlackPositions(int oldX, int oldY, int newX, int newY){
 		
-		for (Pair<Integer, Integer> p : blackPositions){
-			
+		for (Pair<Integer, Integer> p : blackPositions){			
 			if (p.getLeft() == oldX && p.getRight() == oldY){
 				blackPositions.remove(p);
 				blackPositions.add(new Pair<Integer, Integer>(newX, newY));
@@ -101,8 +106,7 @@ public class Board {
 	
 	public void updateWhitePositions(int oldX, int oldY, int newX, int newY){
 
-		for (Pair<Integer, Integer> p : whitePositions){
-			
+		for (Pair<Integer, Integer> p : whitePositions){			
 			if (p.getLeft() == oldX && p.getRight() == oldY){
 				whitePositions.remove(p);
 				whitePositions.add(new Pair<Integer, Integer>(newX, newY));
