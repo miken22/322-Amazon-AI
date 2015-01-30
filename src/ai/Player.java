@@ -45,6 +45,7 @@ public class Player implements GamePlayer {
 	private final int ARROW = 3;
 	
 	private int playerID;
+	private int oppID;
 	private String role;
 
 	private boolean isOpponentsTurn;
@@ -84,7 +85,7 @@ public class Player implements GamePlayer {
 		
 		try {
 			client.joinGameRoom(roomName);
-			roomNumber = client.roomList.indexOf(roomName);
+			System.out.println(roomNumber);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -99,25 +100,18 @@ public class Player implements GamePlayer {
 		if (role.equals("W")) {
 			isOpponentsTurn = false;
 			playerID = 1;
+			oppID = 2;
 		} else if (role.equals("B")) {
 			isOpponentsTurn = true;
+			oppID = 1;
 			playerID = 2;
 		} else {
 			System.out.println("Something went wrong detecting our role");
 		}
 		
 		agent = new Agent(board, ROWS, COLS, playerID);
-
 		finished = false;
-
-		
-		String chat = "<action type='" + GameMessage.MSG_CHAT + "'> AHAHAHAHAHAHAHAHAHA </action>";
-		
-		String msg = ServerMessage.compileSystemMessage(ServerMessage.USR_MSG, roomNumber, chat);
-		client.sendToServer(msg, false);
-		
 		inGame();
-
 	}
 
 	private void inGame() {
@@ -134,6 +128,11 @@ public class Player implements GamePlayer {
 			} else {
 				// TODO: Pick a move and send it to the server
 				
+				//
+				
+				String move = parser.buildMoveForServer(roomNumber, 3, 0, 3, 3, 8, 3);
+				client.sendToServer(move, false);
+				gui.updateGUI(3, 0, 3, 3, 8, 3, playerID);
 				isOpponentsTurn = true;
 			}
 
@@ -367,16 +366,24 @@ public class Player implements GamePlayer {
 			}
 			System.out.println("Starting match.");
 			startGame();
-		} 
+		} else if (answer.equals(GameMessage.ACTION_MOVE)){
+			System.out.println("Opponent move recieved.");
+			
+			// Get the queen move and arrow marker.
+			// int fRow, int fCol, int tRow, int tCol, int aRow, int aCol, 
+			int[] move = parser.getOpponentMove(xml);		
+			gui.updateGUI(move[0], move[1], move[2], move[3], move[4], move[5], oppID);
+			
+		}
 
 		return true;
 	}
 	
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		
 		if (args.length == 0){
-			player.joinServer("Bear Lake");
+			player.joinServer();
 		} else {
 			player.joinServer(args[0] + " " + args[1]);
 		}
