@@ -8,12 +8,7 @@ import ai.Board;
  * @author Mike Nowicki
  *
  */
-public class Agent {
-
-	public final int WQUEEN = 1;
-	public final int BQUEEN = 2;
-	public final int ARROW = 3;
-	public final int FREE = -1;	 
+public class Agent implements Search {
 	
 	private Board board;
 	private SuccessorGenerator scg;
@@ -28,15 +23,20 @@ public class Agent {
 		scg = new SuccessorGenerator(board, ourColour);
 	}
 	
-	public String selectMove(){
-		String move = "";
+	/**
+	 * Method to return the move that the search agent has selected. Six entries must be in the move
+	 * array at the time of return: FromX, FromY, ToX, ToY, aRow, aCol.  
+	 */
+	public int[] selectMove(){
+		int[] move = new int[6];
 		
-		// some search function call or something
-		move = "a3-d3";
+		move[0] = 3;
+		move[1] = 0;
+		move[2] = 3;
+		move[3] = 3;
+		move[4] = 8;
+		move[5] = 3;
 		
-		
-		return move;
-				
+		return move;		
 	}
-	
 }

@@ -45,6 +45,7 @@ public class Player implements GamePlayer {
 	private final int ARROW = 3;
 	
 	private int playerID;
+	private int oppID;
 	private String role;
 
 	private boolean isOpponentsTurn;
@@ -84,7 +85,7 @@ public class Player implements GamePlayer {
 		
 		try {
 			client.joinGameRoom(roomName);
-			roomNumber = client.roomList.indexOf(roomName);
+			System.out.println(roomNumber);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -99,25 +100,18 @@ public class Player implements GamePlayer {
 		if (role.equals("W")) {
 			isOpponentsTurn = false;
 			playerID = 1;
+			oppID = 2;
 		} else if (role.equals("B")) {
 			isOpponentsTurn = true;
+			oppID = 1;
 			playerID = 2;
 		} else {
 			System.out.println("Something went wrong detecting our role");
 		}
 		
 		agent = new Agent(board, ROWS, COLS, playerID);
-
 		finished = false;
-
-		
-		String chat = "<action type='" + GameMessage.MSG_CHAT + "'> AHAHAHAHAHAHAHAHAHA </action>";
-		
-		String msg = ServerMessage.compileSystemMessage(ServerMessage.USR_MSG, roomNumber, chat);
-		client.sendToServer(msg, false);
-		
 		inGame();
-
 	}
 
 	private void inGame() {
@@ -134,6 +128,15 @@ public class Player implements GamePlayer {
 			} else {
 				// TODO: Pick a move and send it to the server
 				
+				//
+				
+				int[] move = agent.selectMove();
+				
+				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
+				client.sendToServer(moveMessage, false);
+
+				// GUI and logic update
+				updateRepresentations(move, playerID);
 				isOpponentsTurn = true;
 			}
 
@@ -145,6 +148,26 @@ public class Player implements GamePlayer {
 		while (isOpponentsTurn){
 			//isOpponentsTurn = false;
 		}
+	}
+	
+	/**
+	 * Take the move coordinates and piece colour to update the board positions and GUI layout
+	 * 
+	 * @param move - 6 Element array for the queen move and arrow placing
+	 * @param piece - Colour of the piece moved
+	 */
+	private void updateRepresentations(int[] move, int piece){
+		gui.updateGUI(move[0], move[1], move[2], move[3], move[4], move[5], piece);
+		// Update logical representation of board.
+		board.freeSquare(move[0], move[1]);
+		board.placeMarker(move[2], move[3], piece);
+		board.placeMarker(move[4], move[5], ARROW);	
+		
+		if (piece == 1){
+			board.updateWhitePositions(move[0], move[1], move[2], move[3]);
+		} else {
+			board.updateBlackPositions(move[0], move[1], move[2], move[3]);
+		}	
 	}
 
 	/**
@@ -367,7 +390,15 @@ public class Player implements GamePlayer {
 			}
 			System.out.println("Starting match.");
 			startGame();
-		} 
+			
+		} else if (answer.equals(GameMessage.ACTION_MOVE)){
+			System.out.println("Opponent move recieved.");
+			
+			// Get the queen move and arrow marker.
+			int[] move = parser.getOpponentMove(xml);		
+			// Update GUI
+			updateRepresentations(move, oppID);
+		}
 
 		return true;
 	}
@@ -376,7 +407,7 @@ public class Player implements GamePlayer {
 		Player player = new Player("Bot-1.0001", "54321");
 		
 		if (args.length == 0){
-			player.joinServer("Bear Lake");
+			player.joinServer();
 		} else {
 			player.joinServer(args[0] + " " + args[1]);
 		}

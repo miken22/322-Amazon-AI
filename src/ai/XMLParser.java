@@ -28,7 +28,7 @@ public class XMLParser{
 			}
 
 			if (xml.getAttribute("type", GameMessage.ACTION_MOVE).contains(GameMessage.ACTION_MOVE)){
-				System.out.println("Move recieved");
+				return GameMessage.ACTION_MOVE;
 			}
 		}
 		return "";
@@ -65,5 +65,56 @@ public class XMLParser{
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Create the server message for a move in the correct format
+	 * 
+	 * @param roomID - Room to send message to.
+	 * @param fX - X location where queen leaves from
+	 * @param fY - Y location where queen leaves from
+	 * @param tX - X location where queen goes.
+	 * @param tY - Y location where queen goes.
+	 * @param arow - X location where arrow goes.
+	 * @param acol - Y location where arrow goes.
+	 * @return - String of the message for the server.
+	 */
+	public String buildMoveForServer(int roomID, int fX, int fY, int tX, int tY,  int arow, int acol){
+
+		String actionMsg = "<action type='" +  GameMessage.ACTION_MOVE + "'>";
+		char c = Utility.getColumn(fY);
+		actionMsg = actionMsg + "<queen move='" + c + String.valueOf(fX) + "-";  
+		c = Utility.getColumn(tY);
+		actionMsg = actionMsg + c + String.valueOf(tX) + "'>" + "</queen> ";
+		c = Utility.getColumn(acol);
+		actionMsg = actionMsg + "<arrow move='" + c + String.valueOf(arow) + "'>" + "</arrow></action>";
+
+		String msg = ServerMessage.compileGameMessage(GameMessage.MSG_GAME, roomID, actionMsg);
+		return msg;
+	}
+
+	public int[] getOpponentMove(IXMLElement xml) {
+
+		int[] move = new int[6];
+
+		IXMLElement queen = xml.getFirstChildNamed("queen");
+		String qmove = queen.getAttribute("move", "default");
+
+		IXMLElement arrow = xml.getFirstChildNamed("arrow");
+		String amove = arrow.getAttribute("move", "defalut");
+				
+		char c = qmove.charAt(0);
+		move[1] = c - 97;
+		move[0] = Integer.parseInt(qmove.substring(1, 2));
+		
+		c = qmove.charAt(3);
+		move[3] = c - 97; 
+		move[2] = Integer.parseInt(qmove.substring(4,5));
+		
+		c = amove.charAt(0);
+		move[5] = c - 97;
+		move[4] = Integer.parseInt(amove.substring(1, amove.length()));
+
+		return move;
 	}
 }
