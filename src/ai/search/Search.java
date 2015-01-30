@@ -7,6 +7,6 @@ public interface Search {
 	public final int ARROW = 3;
 	public final int FREE = -1;	 
 
-	public String selectMove();
+	public int[] selectMove();
 	
 }

@@ -130,9 +130,13 @@ public class Player implements GamePlayer {
 				
 				//
 				
-				String move = parser.buildMoveForServer(roomNumber, 3, 0, 3, 3, 8, 3);
-				client.sendToServer(move, false);
-				gui.updateGUI(3, 0, 3, 3, 8, 3, playerID);
+				int[] move = agent.selectMove();
+				
+				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
+				client.sendToServer(moveMessage, false);
+
+				// GUI and logic update
+				updateRepresentations(move, playerID);
 				isOpponentsTurn = true;
 			}
 
@@ -144,6 +148,26 @@ public class Player implements GamePlayer {
 		while (isOpponentsTurn){
 			//isOpponentsTurn = false;
 		}
+	}
+	
+	/**
+	 * Take the move coordinates and piece colour to update the board positions and GUI layout
+	 * 
+	 * @param move - 6 Element array for the queen move and arrow placing
+	 * @param piece - Colour of the piece moved
+	 */
+	private void updateRepresentations(int[] move, int piece){
+		gui.updateGUI(move[0], move[1], move[2], move[3], move[4], move[5], piece);
+		// Update logical representation of board.
+		board.freeSquare(move[0], move[1]);
+		board.placeMarker(move[2], move[3], piece);
+		board.placeMarker(move[4], move[5], ARROW);	
+		
+		if (piece == 1){
+			board.updateWhitePositions(move[0], move[1], move[2], move[3]);
+		} else {
+			board.updateBlackPositions(move[0], move[1], move[2], move[3]);
+		}	
 	}
 
 	/**
@@ -366,21 +390,21 @@ public class Player implements GamePlayer {
 			}
 			System.out.println("Starting match.");
 			startGame();
+			
 		} else if (answer.equals(GameMessage.ACTION_MOVE)){
 			System.out.println("Opponent move recieved.");
 			
 			// Get the queen move and arrow marker.
-			// int fRow, int fCol, int tRow, int tCol, int aRow, int aCol, 
 			int[] move = parser.getOpponentMove(xml);		
-			gui.updateGUI(move[0], move[1], move[2], move[3], move[4], move[5], oppID);
-			
+			// Update GUI
+			updateRepresentations(move, oppID);
 		}
 
 		return true;
 	}
 	
 	public static void main(String[] args) {
-		Player player = new Player("Bot-2.0001", "54321");
+		Player player = new Player("Bot-1.0001", "54321");
 		
 		if (args.length == 0){
 			player.joinServer();
