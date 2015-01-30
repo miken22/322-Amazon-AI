@@ -1,89 +1,184 @@
 package ai;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Actions {
+
+	public int[] stayStill = { 0, 0 };
+
+	public int[] leftOne = { -1, 0 };
+	public int[] leftTwo = { -2, 0 };
+	public int[] leftThree = { -3, 0 };
+	public int[] leftFour = { -4, 0 };
+	public int[] leftFive = { -5, 0 };
+	public int[] leftSix = { -6, 0 };
+	public int[] leftSeven = { -7, 0 };
+	public int[] leftEight = { -8, 0 };
+	public int[] leftNine = { -9, 0 };
+
+	public int[] rightOne = { 1, 0 };
+	public int[] rightTwo = { 2, 0 };
+	public int[] rightThree = { 3, 0 };
+	public int[] rightFour = { 4, 0 };
+	public int[] rightFive = { 5, 0 };
+	public int[] rightSix = { 6, 0 };
+	public int[] rightSeven = { 7, 0 };
+	public int[] rightEight = { 8, 0 };
+	public int[] rightNine = { 9, 0 };
+
+	public int[] upOne = { 0, -1 };
+	public int[] upTwo = { 0, -2 };
+	public int[] upThree = { 0, -3 };
+	public int[] upFour = { 0, -4 };
+	public int[] upFive = { 0, -5 };
+	public int[] upSix = { 0, -6 };
+	public int[] upSeven = { 0, -7 };
+	public int[] upEight = { 0, -8 };
+	public int[] upNine = { 0, -9 };
+
+	public int[] downOne = { 0, 1 };
+	public int[] downTwo = { 0, 2 };
+	public int[] downThree = { 0, 3 };
+	public int[] downFour = { 0, 4 };
+	public int[] downFive = { 0, 5 };
+	public int[] downSix = { 0, 6 };
+	public int[] downSeven = { 0, 7 };
+	public int[] downEight = { 0, 8 };
+	public int[] downNine = { 0, 9 };
 	
-	/**
-	 * Checks to see if we can move left the specified number of tiles
-	 * 
-	 * @param number - The number of tiles to move
-	 * @return - @code(TRUE) if possible, @code(FALSE) otherwise.
-	 */
-	public boolean moveLeft(int number){
+	public int[] downLeftOne = { -1, -1 };
+	public int[] downLeftTwo = { -2, -2 };
+	public int[] downLeftThree = { -3, -3 };
+	public int[] downLeftFour = { -4, -4 };
+	public int[] downLeftFive = { -5, -5 };
+	public int[] downLeftSix = { -6, -6 };
+	public int[] downLeftSeven = { -7, -7 };
+	public int[] downLeftEight = { -8, -8 };
+	public int[] downLeftNine = { -9, -9 };
 	
-		
-		return true;
-	}
-	/**
-	 * Checks to see if we can move right the specified number of tiles
-	 * 
-	 * @param number - The number of tiles to move
-	 * @return - @code(TRUE) if possible, @code(FALSE) otherwise.
-	 */
-	public boolean moveRight(int number){
-		
-		return true;
-	}
-	/**
-	 * Checks to see if we can move up the specified number of tiles
-	 * 
-	 * @param number - The number of tiles to move
-	 * @return - @code(TRUE) if possible, @code(FALSE) otherwise.
-	 */
-	public boolean moveUp(int number){
+	public int[] downRightOne = { -1, 1 };
+	public int[] downRightTwo = { -2, 2 };
+	public int[] downRightThree = { -3, 3 };
+	public int[] downRightFour = { -4, 4 };
+	public int[] downRightFive = { -5, 5 };
+	public int[] downRightSix = { -6, 6 };
+	public int[] downRightSeven = { -7, 7 };
+	public int[] downRightEight = { -8, 8 };
+	public int[] downRightNine = { -9, 9 };
+
+	public int[] upRightOne = { 1, 1 };
+	public int[] upRightTwo = { 2, 2 };
+	public int[] upRightThree = { 3, 3 };
+	public int[] upRightFour = { 4, 4 };
+	public int[] upRightFive = { 5, 5 };
+	public int[] upRightSix = { 6, 6 };
+	public int[] upRightSeven = { 7, 7 };
+	public int[] upRightEight = { 8, 8 };
+	public int[] upRightNine = { 9, 9 };
+
+	public int[] upLeftOne = { -1, 1 };
+	public int[] upLeftTwo = { -2, 2 };
+	public int[] upLeftThree = { -3, 3 };
+	public int[] upLeftFour = { -4, 4 };
+	public int[] upLeftFive = { -5, 5 };
+	public int[] upLeftSix = { -6, 6 };
+	public int[] upLeftSeven = { -7, 7 };
+	public int[] upLeftEight = { -8, 8 };
+	public int[] upLeftNine = { -9, 9 };
 	
-		
-		return true;
-	}
-	/**
-	 * Checks to see if we can move down the specified number of tiles
-	 * 
-	 * @param number - The number of tiles to move
-	 * @return - @code(TRUE) if possible, @code(FALSE) otherwise.
-	 */
-	public boolean moveDown(int number){
-		
-		return true;
-	}
-	/**
-	 * Checks to see if we can move up-left diagonal the specified number of tiles
-	 * 
-	 * @param number - The number of tiles to move
-	 * @return - @code(TRUE) if possible, @code(FALSE) otherwise.
-	 */
-	public boolean moveUpLeft(int number){
+	List<int[]> actions;
 	
+	public Actions(){
 		
-		return true;
+		actions = new ArrayList<>();
+		
+		actions.add(stayStill);
+		
+		actions.add(leftOne);
+		actions.add(leftTwo);
+		actions.add(leftThree);
+		actions.add(leftFour);
+		actions.add(leftFive);
+		actions.add(leftSix);
+		actions.add(leftSeven);
+		actions.add(leftEight);
+		actions.add(leftNine);
+		
+		actions.add(rightOne);
+		actions.add(rightTwo);
+		actions.add(rightThree);
+		actions.add(rightFour);
+		actions.add(rightFive);
+		actions.add(rightSix);
+		actions.add(rightSeven);
+		actions.add(rightEight);
+		actions.add(rightNine);
+		
+		actions.add(upOne);
+		actions.add(upTwo);
+		actions.add(upThree);
+		actions.add(upFour);
+		actions.add(upFive);
+		actions.add(upSix);
+		actions.add(upSeven);
+		actions.add(upEight);
+		actions.add(upNine);
+		
+		actions.add(downOne);
+		actions.add(downTwo);
+		actions.add(downThree);
+		actions.add(downFour);
+		actions.add(downFive);
+		actions.add(downSix);
+		actions.add(downSeven);
+		actions.add(downEight);
+		actions.add(downNine);
+		
+		actions.add(downLeftOne);
+		actions.add(downLeftTwo);
+		actions.add(downLeftThree);
+		actions.add(downLeftFour);
+		actions.add(downLeftFive);
+		actions.add(downLeftSix);
+		actions.add(downLeftSeven);
+		actions.add(downLeftEight);
+		actions.add(downLeftNine);
+		
+		actions.add(downRightOne);
+		actions.add(downRightTwo);
+		actions.add(downRightThree);
+		actions.add(downRightFour);
+		actions.add(downRightFive);
+		actions.add(downRightSix);
+		actions.add(downRightSeven);
+		actions.add(downRightEight);
+		actions.add(downRightNine);
+		
+		actions.add(upLeftOne);
+		actions.add(upLeftTwo);
+		actions.add(upLeftThree);
+		actions.add(upLeftFour);
+		actions.add(upLeftFive);
+		actions.add(upLeftSix);
+		actions.add(upLeftSeven);
+		actions.add(upLeftEight);
+		actions.add(upLeftNine);
+		
+		actions.add(upRightOne);
+		actions.add(upRightTwo);
+		actions.add(upRightThree);
+		actions.add(upRightFour);
+		actions.add(upRightFive);
+		actions.add(upRightSix);
+		actions.add(upRightSeven);
+		actions.add(upRightEight);
+		actions.add(upRightNine);
+		
+		
 	}
-	/**
-	 * Checks to see if we can move up-right diagonal the specified number of tiles
-	 * 
-	 * @param number - The number of tiles to move
-	 * @return - @code(TRUE) if possible, @code(FALSE) otherwise.
-	 */
-	public boolean moveUpRight(int number){
-		
-		return true;
-	}
-	/**
-	 * Checks to see if we can move down-left diagonal the specified number of tiles
-	 * 
-	 * @param number - The number of tiles to move
-	 * @return - @code(TRUE) if possible, @code(FALSE) otherwise.
-	 */
-	public boolean moveDownLeft(int number){
-	
-		
-		return true;
-	}
-	/**
-	 * Checks to see if we can move down-right diagonal the specified number of tiles
-	 * 
-	 * @param number - The number of tiles to move
-	 * @return - @code(TRUE) if possible, @code(FALSE) otherwise.
-	 */
-	public boolean moveDownRight(int number){
-		
-		return true;
+
+	public List<int[]> getActions(){	
+		return actions;
 	}
 }
