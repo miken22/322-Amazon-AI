@@ -53,6 +53,10 @@ public class HMinimaxSearch {
 		
 		ALPHA = Integer.MIN_VALUE;
 		BETA = Integer.MAX_VALUE;
+		
+		if (stateValues.size() > 250000){
+			stateValues.clear();
+		}
 				
 		List<int[]> potentialActions = scg.getSuccessors(board, player);
 		
