@@ -75,7 +75,7 @@ public class HMinimaxSearch {
 	 */
 	public int maxVal(Board board,int depth, int player){
 		
-		int min = Integer.MIN_VALUE;
+		int max = Integer.MIN_VALUE;
 
 		// Switch roles for next generation
 		if (player == 1){
@@ -103,9 +103,9 @@ public class HMinimaxSearch {
 			Board child = scg.generateBoard(board, action, player);
 			int result = minVal(child, depth+1, player);
 
-			min = Math.max(min, result);		
+			max = Math.max(max, result);		
 		}
-		return min;
+		return max;
 	}
 	/**
 	 * Returns the evaluation of the board for the player
@@ -116,9 +116,9 @@ public class HMinimaxSearch {
 	 * 
 	 * @return - The heuristic value of the state
 	 */
-	public int minVal(Board board,int depth, int player){
+	public int minVal(Board board, int depth, int player){
 		
-		int max = Integer.MAX_VALUE;
+		int min = Integer.MAX_VALUE;
 
 		// Switch roles for next generation
 		if (player == 1){
@@ -146,8 +146,8 @@ public class HMinimaxSearch {
 			Board child = scg.generateBoard(board, action, player);
 			int result = maxVal(child, depth+1, player);
 			
-			max = Math.min(max, result);
+			min = Math.min(min, result);
 		}
-		return max;
+		return min;
 	}
 }
