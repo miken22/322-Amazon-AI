@@ -11,7 +11,7 @@ import ai.Board;
  * @author Mike Nowicki
  *
  */
-public class HMinimaxSearch extends GameTreeSearch {
+public class HMinimaxSearch {
 	
 	/**
 	 * The heuristic being used
@@ -54,7 +54,7 @@ public class HMinimaxSearch extends GameTreeSearch {
 			
 			Board child = scg.generateBoard(board, action, player);
 			
-			int result = DFS(child, 1, player);
+			int result = maxVal(child, 1, player);
 			
 			if (result > max){
 				max = result;
@@ -73,9 +73,16 @@ public class HMinimaxSearch extends GameTreeSearch {
 	 * 
 	 * @return - The heuristic value of the state
 	 */
-	public int DFS(Board board,int depth, int player){
+	public int maxVal(Board board,int depth, int player){
 		
-		int max = Integer.MIN_VALUE;
+		int min = Integer.MIN_VALUE;
+
+		// Switch roles for next generation
+		if (player == 1){
+			player = 2;
+		} else {
+			player = 1;
+		}
 		
 		if (depth == MAXDEPTH){
 			
@@ -89,6 +96,30 @@ public class HMinimaxSearch extends GameTreeSearch {
 			return  value;	
 		}
 		
+		List<int[]> potentialActions = scg.getSuccessors(board, player);
+		
+		for (int[] action : potentialActions){
+
+			Board child = scg.generateBoard(board, action, player);
+			int result = minVal(child, depth+1, player);
+
+			min = Math.max(min, result);		
+		}
+		return min;
+	}
+	/**
+	 * Returns the evaluation of the board for the player
+	 * 
+	 * @param board - State of the amazons game being evaluated
+	 * @param depth - The current depth of the search
+	 * @param player - The player being evaluated, {@value 1} for max, {@value 2} for min
+	 * 
+	 * @return - The heuristic value of the state
+	 */
+	public int minVal(Board board,int depth, int player){
+		
+		int max = Integer.MAX_VALUE;
+
 		// Switch roles for next generation
 		if (player == 1){
 			player = 2;
@@ -96,19 +127,27 @@ public class HMinimaxSearch extends GameTreeSearch {
 			player = 1;
 		}
 		
+		if (depth == MAXDEPTH){
+			
+			if (stateValues.containsKey(board.getBoard())){
+				return stateValues.get(board.getBoard());
+			} 
+		
+			int value = evaluator.evaluate(board, player);
+			stateValues.put(board.getBoard(), value);
+			
+			return  value;	
+		}
+		
 		List<int[]> potentialActions = scg.getSuccessors(board, player);
 		
 		for (int[] action : potentialActions){
 
 			Board child = scg.generateBoard(board, action, player);
-			int result = DFS(child, depth+1, player);
+			int result = maxVal(child, depth+1, player);
 			
-			if (result > max){
-				max = result;
-			}		
+			max = Math.min(max, result);
 		}
-		
 		return max;
-	
 	}
 }
