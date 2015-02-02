@@ -18,9 +18,12 @@ public class HMinimaxSearch {
 	 */
 	EvaluationFunction evaluator;
 
-	public int MAXDEPTH = 4;
+	public int MAXDEPTH = 1;
 	
 	public SuccessorGenerator scg;
+	
+	private int ALPHA;
+	private int BETA;
 	
 	HashMap<int[][], Integer> stateValues;
 	
@@ -47,19 +50,30 @@ public class HMinimaxSearch {
 		
 		int max = Integer.MIN_VALUE;
 		int[] move = new int[6];
+		
+		ALPHA = Integer.MIN_VALUE;
+		BETA = Integer.MAX_VALUE;
 				
 		List<int[]> potentialActions = scg.getSuccessors(board, player);
+		
+		long startTime = System.currentTimeMillis();
 		
 		for (int[] action : potentialActions){
 			
 			Board child = scg.generateBoard(board, action, player);
 			
-			int result = maxVal(child, 1, player);
+			int result = minVal(board, 1, player);
 			
+			// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
 			if (result > max){
 				max = result;
 				move = action;
 			}
+			
+			if (((System.currentTimeMillis() - startTime) / 1000) % 60  >= 28){
+				break;
+			}
+			
 		}
 		return move;
 	}
@@ -75,8 +89,6 @@ public class HMinimaxSearch {
 	 */
 	public int maxVal(Board board,int depth, int player){
 		
-		int max = Integer.MIN_VALUE;
-
 		// Switch roles for next generation
 		if (player == 1){
 			player = 2;
@@ -96,6 +108,8 @@ public class HMinimaxSearch {
 			return  value;	
 		}
 		
+		int max = Integer.MIN_VALUE;
+
 		List<int[]> potentialActions = scg.getSuccessors(board, player);
 		
 		for (int[] action : potentialActions){
@@ -103,7 +117,14 @@ public class HMinimaxSearch {
 			Board child = scg.generateBoard(board, action, player);
 			int result = minVal(child, depth+1, player);
 
-			max = Math.max(max, result);		
+			max = Math.max(max, result);
+			
+			if (max >= BETA){
+				return max;
+			}
+			
+			ALPHA = Math.max(ALPHA, max);
+						
 		}
 		return max;
 	}
@@ -147,6 +168,14 @@ public class HMinimaxSearch {
 			int result = maxVal(child, depth+1, player);
 			
 			min = Math.min(min, result);
+			
+			if (min <= ALPHA){
+				return min;
+			}
+			
+			BETA = Math.min(BETA, min);
+						
+			
 		}
 		return min;
 	}

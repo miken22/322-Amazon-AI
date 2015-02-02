@@ -15,7 +15,7 @@ public class TestClass {
 	
 	public static void main(String[] args){
 		
-		Agent agent = new Agent(10, 10, 1);
+		Agent agent = new Agent(1);
 		
 		agent.setupHeuristic(new TrivialFunction(1));
 
