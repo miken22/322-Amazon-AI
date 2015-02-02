@@ -25,6 +25,11 @@ public class HMinimaxSearch {
 	private int ALPHA;
 	private int BETA;
 	
+	private long startTime;
+	
+	/**
+	 * Doesn't work.
+	 */
 	HashMap<int[][], Integer> stateValues;
 	
 	public HMinimaxSearch(EvaluationFunction evaluator){
@@ -60,7 +65,7 @@ public class HMinimaxSearch {
 				
 		List<int[]> potentialActions = scg.getSuccessors(board, player);
 		
-		long startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		
 		for (int[] action : potentialActions){
 			
@@ -123,6 +128,10 @@ public class HMinimaxSearch {
 
 			max = Math.max(max, result);
 			
+			if (((System.currentTimeMillis() - startTime) / 1000) % 60  >= 27){
+				return max;
+			}
+			
 			if (max >= BETA){
 				return max;
 			}
@@ -172,6 +181,10 @@ public class HMinimaxSearch {
 			int result = maxVal(child, depth+1, player);
 			
 			min = Math.min(min, result);
+			
+			if (((System.currentTimeMillis() - startTime) / 1000) % 60  >= 27){
+				return min;
+			}
 			
 			if (min <= ALPHA){
 				return min;

@@ -93,8 +93,6 @@ public class Actions {
 		
 		actions = new ArrayList<>();
 		
-		actions.add(stayStill);
-		
 		actions.add(leftOne);
 		actions.add(leftTwo);
 		actions.add(leftThree);
@@ -174,6 +172,8 @@ public class Actions {
 		actions.add(upRightSeven);
 		actions.add(upRightEight);
 		actions.add(upRightNine);
+
+		actions.add(stayStill);
 		
 	}
 

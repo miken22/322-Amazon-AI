@@ -41,14 +41,14 @@ public class Player implements GamePlayer {
 	private final int WQUEEN = 1;
 	private final int BQUEEN = 2;
 	private final int ARROW = 3;
-	
+
 	private int playerID;
 	private int oppID;
 	private String role;
 
 	private boolean isOpponentsTurn;
 	private boolean finished;
-	
+
 	private int roomNumber;
 
 	public Player(String userName, String password) {
@@ -57,15 +57,16 @@ public class Player implements GamePlayer {
 		board = new Board(ROWS, COLS);
 		gui = new GUI(board, ROWS, COLS);
 		parser = new XMLParser(userName);
-		
+
+
 		board.initialize();
-	
+
 	}
 
 	public void joinServer(){
 		client.roomList = getRooms();	
 		gui.init();
-		
+
 		for (GameRoom g : client.roomList) {
 			try {
 				client.joinGameRoom(g.roomName);
@@ -80,7 +81,7 @@ public class Player implements GamePlayer {
 	public void joinServer(String roomName){
 		client.roomList = getRooms();
 		gui.init();
-		
+
 		try {
 			client.joinGameRoom(roomName);
 			System.out.println(roomNumber);
@@ -92,9 +93,9 @@ public class Player implements GamePlayer {
 
 
 	public void startGame() {
-		
+
 		System.out.println("Game started");
-		
+
 		if (role.equals("W")) {
 			isOpponentsTurn = false;
 			playerID = 1;
@@ -106,50 +107,68 @@ public class Player implements GamePlayer {
 		} else {
 			System.out.println("Something went wrong detecting our role");
 		}
-		
+
 		// TODO: Handle arguments to set properties such as heuristic choice, search depth (for difficulty)
 		agent = new Agent(playerID);
-		
+
 		agent.setupHeuristic(new TrivialFunction(playerID));
-		
+
 		finished = false;
-		inGame();
+		
+		if (!isOpponentsTurn){
+			pickMove();
+		}
 	}
 
-	private void inGame() {
+	private void pickMove() {
 
-		do {
+		if (isOpponentsTurn) {
+			// TODO: Plan ahead based on possible moves
 
-			if (isOpponentsTurn) {
-				// TODO: Plan ahead based on possible moves
-				waitForMove();
+			System.out.println("Opponents turn:");
 
-				isOpponentsTurn = false;
-				finished = isFinished();
+			waitForMove();
 
-			} else {
-				
-				int[] move = agent.selectMove(board);
+			finished = isFinished();
+
+		} else {
+
+			System.out.println("Agents move:");
+
+			int[] move = agent.selectMove(board);
+			
+			try{
 				
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
-				
-				System.out.println(Utility.getColumn(move[1]) + "" + move[0] + "-" + move[3] + "" + move[2] + "-" + move[5] + "" + move[4]);
-				
-				client.sendToServer(moveMessage, false);
+				System.out.println(Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4]);
 
-				// GUI and logic update
+				client.sendToServer(moveMessage, false);
 				updateRepresentations(move, playerID);
 				isOpponentsTurn = true;
+				
+			} catch (NullPointerException e){
+				finished = true;
+				endGame();
 			}
-
-		} while (!finished);
+			// GUI and logic update
+			
+		}
 
 	}
 
 	private void waitForMove(){
-		
+		while (isOpponentsTurn){
+
+		}
 	}
 	
+	/**
+	 * Method to handle goal state
+	 */
+	private void endGame(){
+		
+	}
+
 	/**
 	 * Take the move coordinates and piece colour to update the board positions and GUI layout
 	 * 
@@ -162,7 +181,7 @@ public class Player implements GamePlayer {
 		board.freeSquare(move[0], move[1]);
 		board.placeMarker(move[2], move[3], piece);
 		board.placeMarker(move[4], move[5], ARROW);	
-		
+
 		if (piece == 1){
 			board.updateWhitePositions(move[0], move[1], move[2], move[3]);
 		} else {
@@ -230,8 +249,7 @@ public class Player implements GamePlayer {
 	 * 			  - 2D integer array for mapping which pieces can reach which tiles in the grid
 	 * 
 	 ***************************************************************************************/
-	private void countReachableTiles(Pair<Integer, Integer> source, int player,
-			int[][] hasChecked) {
+	private void countReachableTiles(Pair<Integer, Integer> source, int player,	int[][] hasChecked) {
 
 		int opponent;
 		switch (player) {
@@ -378,7 +396,7 @@ public class Player implements GamePlayer {
 		IXMLElement xml = (IXMLElement) iParser.parse();
 
 		String answer = parser.handleXML(xml);
-		
+
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
 			this.role = parser.getUserInfo(xml);
 			if (!role.equals("W") && !role.equals("B")){
@@ -387,30 +405,35 @@ public class Player implements GamePlayer {
 			}
 			System.out.println("Starting match.");
 			startGame();
-			
+
 		} else if (answer.equals(GameMessage.ACTION_MOVE)){
+
 			System.out.println("Opponent move recieved.");
-			
+			System.out.println(message.toString());
 			// Get the queen move and arrow marker.
-			int[] move = parser.getOpponentMove(xml);		
+			int[] move = parser.getOpponentMove(xml);	
+			isOpponentsTurn = false;	
 			// Update GUI
 			updateRepresentations(move, oppID);
+
+			
+			pickMove();
+			
 		}
 
 		return true;
 	}
-	
+
 	public static void main(String[] args) {
 		Player player = new Player("Bot-2.0001", "54321");
-		
 		if (args.length == 0){
 			player.joinServer();
 		} else {
 			player.joinServer(args[0] + " " + args[1]);
 		}
-		
-//		Player p2 = new Player("Bot-3-0001", "54321");
-//		p2.joinServer("Jackpine lake");
-		
+
+		//		Player p2 = new Player("Bot-3-0001", "54321");
+		//		p2.joinServer("Jackpine lake");
+
 	}
 }

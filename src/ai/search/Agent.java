@@ -14,7 +14,7 @@ public class Agent implements Search {
 
 	private int role;
 	private int move = 0;
-	private int DEPTH = 2;
+	private int DEPTH = 1;
 		
 	public Agent(int ourColour){
 		this.role = ourColour;
@@ -42,7 +42,16 @@ public class Agent implements Search {
 
 		move++;
 		int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
-		return moveChoice;
+		
+		for (int i = 0; i < moveChoice.length; i++){
+			if(moveChoice[i] != 0){
+				return moveChoice;
+			}
+			// If we reach this state we hit a goal condition, needs to be properly handled.
+		}
+		
+		return null;
+		
 	}
 
 	// TODO: Figure out opening move strategies

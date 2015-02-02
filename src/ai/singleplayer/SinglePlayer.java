@@ -788,15 +788,7 @@ public class SinglePlayer implements GamePlayer {
 
 			// Diagonal checks
 			if(sX > dX && sY > dY){	
-				// This is the moving from a square to one to its lower left
-				int temp = sX;
-				sX = dX;
-				dX = temp;	
-
-				temp = sY;
-				sY = dY;
-				dY = temp;	
-				return checkFirstDiagonal(sX, sY, dX, dY);
+				return checkFirstDiagonal(dX, dY, sX, sY);
 			} else if (sX < dX && sY < dY){
 				// Case where we move from a square to one to its upper right
 				return checkFirstDiagonal(sX, sY, dX, dY);

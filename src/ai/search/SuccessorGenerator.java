@@ -23,27 +23,36 @@ public class SuccessorGenerator extends GameTreeSearch {
 		// Iterate through queens
 		for (Pair<Integer, Integer> queen : queens){
 
-			int[] move = new int[6];
-
 			int fromX = queen.getLeft();
 			int fromY = queen.getRight();
 
 			// Try all possible moves from the queens position
 			for (int[] queenMove : actions.getActions()){
+				
+				Board tempBoard = new Board(board);
 
 				int toX = fromX + queenMove[0];
 				int toY = fromY + queenMove[1];
 
 				// Check that the move is valid, if so try placing arrows
-				if (moveIsValid(board, fromX, fromY, toX, toY, player, false)){
-
+				if (moveIsValid(tempBoard, fromX, fromY, toX, toY, player, false)){
+					
+					tempBoard.freeSquare(fromX, fromY);
+					tempBoard.placeMarker(toX, toY, player);
+					
+					
 					for (int[] arrowSpot : actions.getActions()){
-
+						
 						int arrowX = toX + arrowSpot[0];
 						int arrowY = toY + arrowSpot[1];
 						
+						if (fromX == toX && toX == arrowX && fromY == toY && toY == arrowY){
+							continue;
+						}
+						
 						// If queen and arrow placement is valid record the actions and push onto the list
-						if (moveIsValid(board, toX, toY, arrowX, arrowY, player, true)){
+						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
+							int[] move = new int[6];
 							move[0] = fromX;
 							move[1] = fromY;
 							move[2] = toX;
@@ -52,7 +61,13 @@ public class SuccessorGenerator extends GameTreeSearch {
 							move[5] = arrowY;
 							
 							moveList.add(move);
+													
 						}
+						
+						// Undo the action for the next round
+						tempBoard.freeSquare(toX, toY);
+						tempBoard.placeMarker(fromX, fromY, player);
+						
 					}
 				}
 			}
