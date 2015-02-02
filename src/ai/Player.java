@@ -132,6 +132,9 @@ public class Player implements GamePlayer {
 				int[] move = agent.selectMove(board);
 				
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
+				
+				System.out.println(Utility.getColumn(move[1]) + "" + move[0] + "-" + move[3] + "" + move[2] + "-" + move[5] + "" + move[4]);
+				
 				client.sendToServer(moveMessage, false);
 
 				// GUI and logic update
@@ -398,7 +401,7 @@ public class Player implements GamePlayer {
 	}
 	
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		
 		if (args.length == 0){
 			player.joinServer();

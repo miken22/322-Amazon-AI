@@ -35,6 +35,8 @@ import ai.Board;
 import ai.Pair;
 import ai.Utility;
 import ai.gui.Cells;
+import ai.search.Agent;
+import ai.search.TrivialFunction;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
 
@@ -77,7 +79,6 @@ public class SinglePlayer implements GamePlayer {
 	private JMenu file;
 	private JMenuItem exit;
 
-	private Timer gameTimer;
 	private Font font;
 
 	private int rows;
@@ -129,13 +130,13 @@ public class SinglePlayer implements GamePlayer {
 		guiBoard = new Cells[row][col];		
 		rows = row;
 		columns = col;
+		board.initialize();
 	}
 
 	public void init(){
 		createFrame();
 		drawBoard();
 		initializePositions();
-		gameTimer.startTiming();
 	}	
 
 	private void createFrame(){
@@ -149,8 +150,6 @@ public class SinglePlayer implements GamePlayer {
 		file = new JMenu("File");
 		exit = new JMenuItem("Exit");
 		
-		gameTimer = new Timer();
-
 		send = new JButton("Send");
 		clear = new JButton("Clear");
 
@@ -177,10 +176,6 @@ public class SinglePlayer implements GamePlayer {
 		frame.setSize(725, 675);
 		frame.setResizable(false);
 		frame.setJMenuBar(menu);
-
-		gameTimer.setForeground(Color.RED);
-		gameTimer.setBounds(0, 0, 250, 20);
-		gameTimer.setFont(font);
 
 		menu.setBackground(new Color(244,244,244));
 		menu.add(file);
@@ -233,7 +228,6 @@ public class SinglePlayer implements GamePlayer {
 		exit.addActionListener(new MenuListener(1));
 
 		c = frame.getContentPane();
-		c.add(gameTimer);
 		c.add(scrollChat);
 		c.add(scrollLog);
 		c.add(input);
@@ -341,6 +335,40 @@ public class SinglePlayer implements GamePlayer {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		input.requestFocus();
+		
+		inGame();
+		
+	}
+	
+	private void inGame(){
+		Agent agent = new Agent(2);
+		agent.setupHeuristic(new TrivialFunction(2));
+		
+		do{
+			if (player1Turn){
+				
+			} else {
+				int[] move = agent.selectMove(board);
+				
+				String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+				System.out.println(action);
+				updateMoveLog(action, 2);
+				
+				makeMove(board, move);
+				player1Turn = true;
+			}
+		} while(!finished);
+		
+	}
+	
+	private void makeMove(Board board, int[] move){
+		board.freeSquare(move[0], move[1]);
+		board.placeMarker(move[2], move[3], BQUEEN);
+		board.placeMarker(move[4], move[5], ARROW);	
+
+		guiBoard[move[0]][move[1]].setFree();
+		guiBoard[move[2]][move[3]].setBQueen();
+		guiBoard[move[4]][move[5]].setArrow();
 	}
 
 	/**
@@ -424,7 +452,7 @@ public class SinglePlayer implements GamePlayer {
 		
 		Stack<Pair<Integer, Integer>> stack = new Stack<>();
 		
-		hasChecked[source.getLeft()][source.getRight()] = player;
+		hasChecked[source.getLeft()][source.getRight()] = 4;
 				
 		stack.push(source);
 
@@ -535,7 +563,41 @@ public class SinglePlayer implements GamePlayer {
 			}
 		}			
 	}
+	
+	private void addText(){
+		Document doc = chat.getDocument();
+		input.setText("");
+		String in= input.getText();
+		
+		StyleConstants.setForeground(userStyle, Color.red);
+		try { 
+			chatTextarea.insertString(chatTextarea.getLength(), "\r\nUser: ",userStyle); 
+		} catch (BadLocationException e1){}
 
+		StyleConstants.setForeground(userStyle, Color.black);
+		try { 
+			chatTextarea.insertString(chatTextarea.getLength(), in, userStyle); 
+		} catch (BadLocationException e1){}
+
+		chat.select(doc.getLength(), doc.getLength());
+
+	}
+
+	private void updateMoveLog(String move, int pid) {
+		Document doc = moveLog.getDocument();
+
+		StyleConstants.setForeground(userStyle, Color.red);
+		try { 
+			moveTextarea.insertString(moveTextarea.getLength(), "\r\nPlayer " + pid + ": ",userStyle); 
+		} catch (BadLocationException e1){}
+
+		StyleConstants.setForeground(userStyle, Color.black);
+		try { 
+			moveTextarea.insertString(moveTextarea.getLength(), move, userStyle); 
+		} catch (BadLocationException e1){}
+
+		chat.select(doc.getLength(), doc.getLength());
+	}
 	/**
 	 * This class controls game play, alternating player turns and handling any updates. All game logic must
 	 * be handled within the ActionListener class. The majority of the overhead incurred here can be ignored
@@ -590,7 +652,6 @@ public class SinglePlayer implements GamePlayer {
 
 			if (finished){
 				String winner;
-				gameTimer.stopTiming();
 				if (blackTiles > whiteTiles + bothCanReach){
 					winner = "Black";
 				} else {
@@ -672,51 +733,6 @@ public class SinglePlayer implements GamePlayer {
 
 				if(isFinished()){
 					endGame();
-					finished = true;
-				}
-
-			} else {
-
-				// Check starting from an owned piece
-				if (board.getPiece(fRow, fCol) != BQUEEN){
-					JOptionPane.showMessageDialog(frame,"Must start with your own piece.", "Invalid", JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-
-				// Verify move is valid (straight/diagonal, no obstructions)
-				if (!moveIsValid(fRow,fCol,tRow,tCol,false)){
-					return;
-				}
-				
-				// Amazon piece is valid, we update the logic part of the board
-				board.freeSquare(fRow,fCol);
-				board.placeMarker(tRow,tCol, BQUEEN);
-				
-				// If the arrow throw is invalid, we must put the queen back and ask for a new move
-				if (!moveIsValid(tRow,tCol,aRow,aCol,true)){
-					board.freeSquare(tRow,tCol);
-					board.placeMarker(fRow,fCol, BQUEEN);
-					return;
-				}
-
-				// Otherwise, place the arrow on the board, update the records and GUI
-				board.placeMarker(aRow, aCol, ARROW);
-
-				board.updateBlackPositions(fRow, fCol, tRow, tCol);
-				
-				guiBoard[fRow][fCol].setFree();
-				guiBoard[tRow][tCol].setBQueen();
-				guiBoard[aRow][aCol].setArrow();
-
-				updateMoveLog(in,BQUEEN);
-
-				input.setText("");
-
-				player1Turn = true;
-				frame.repaint();
-
-				if(isFinished()){
-					endGame();	
 					finished = true;
 				}
 			}
@@ -870,40 +886,7 @@ public class SinglePlayer implements GamePlayer {
 			chat.select(doc.getLength(), doc.getLength());
 		}
 
-		private void addText(){
-			doc = chat.getDocument();
-			input.setText("");
-
-			StyleConstants.setForeground(userStyle, Color.red);
-			try { 
-				chatTextarea.insertString(chatTextarea.getLength(), "\r\nUser: ",userStyle); 
-			} catch (BadLocationException e1){}
-
-			StyleConstants.setForeground(userStyle, Color.black);
-			try { 
-				chatTextarea.insertString(chatTextarea.getLength(), in, userStyle); 
-			} catch (BadLocationException e1){}
-
-			chat.select(doc.getLength(), doc.getLength());
-
-		}
-
-		private void updateMoveLog(String move, int pid) {
-
-			doc = moveLog.getDocument();
-
-			StyleConstants.setForeground(userStyle, Color.red);
-			try { 
-				moveTextarea.insertString(moveTextarea.getLength(), "\r\nPlayer " + pid + ": ",userStyle); 
-			} catch (BadLocationException e1){}
-
-			StyleConstants.setForeground(userStyle, Color.black);
-			try { 
-				moveTextarea.insertString(moveTextarea.getLength(), in, userStyle); 
-			} catch (BadLocationException e1){}
-
-			chat.select(doc.getLength(), doc.getLength());
-		}
+		
 	}
 
 	private class MenuListener implements ActionListener {
