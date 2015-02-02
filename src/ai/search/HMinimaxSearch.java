@@ -18,7 +18,7 @@ public class HMinimaxSearch {
 	 */
 	EvaluationFunction evaluator;
 
-	public int MAXDEPTH = 1;
+	public int MAXDEPTH = 3;
 	
 	public SuccessorGenerator scg;
 	
@@ -107,7 +107,7 @@ public class HMinimaxSearch {
 			} 
 		
 			int value = evaluator.evaluate(board, player);
-			stateValues.put(board.getBoard(), value);
+			//stateValues.put(board.getBoard(), value);
 			
 			return  value;	
 		}
@@ -159,7 +159,7 @@ public class HMinimaxSearch {
 			} 
 		
 			int value = evaluator.evaluate(board, player);
-			stateValues.put(board.getBoard(), value);
+			//stateValues.put(board.getBoard(), value);
 			
 			return  value;	
 		}

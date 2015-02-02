@@ -13,7 +13,7 @@ public class Agent implements Search {
 	private HMinimaxSearch hMinimax;
 
 	private int role;
-	
+	private int move = 0;
 	private int DEPTH = 2;
 		
 	public Agent(int ourColour){
@@ -34,7 +34,20 @@ public class Agent implements Search {
 	 * array at the time of return: FromX, FromY, ToX, ToY, aRow, aCol.  
 	 */
 	public int[] selectMove(Board currentBoard){
-		int[] moveChoice = hMinimax.maxSearch(currentBoard, role);	
+		
+		if (move == 0 && role == 1){
+			move++;
+			return selectOpeningMove();
+		}
+
+		move++;
+		int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
 		return moveChoice;
+	}
+
+	// TODO: Figure out opening move strategies
+	private int[] selectOpeningMove() {
+		int[] openingMove = { 3, 0, 3, 3, 8, 3 };
+		return openingMove;
 	}
 }

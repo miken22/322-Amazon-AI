@@ -94,6 +94,8 @@ public class SinglePlayer implements GamePlayer {
 	private boolean player1Turn = true;
 	private boolean finished = false;
 	
+	private Agent agent = new Agent(2);
+	
 	/**
 	 * 2 element array, index 0 for white score, 1 for black score
 	 */
@@ -336,29 +338,7 @@ public class SinglePlayer implements GamePlayer {
 		frame.setVisible(true);
 		input.requestFocus();
 		
-		inGame();
-		
-	}
-	
-	private void inGame(){
-		Agent agent = new Agent(2);
 		agent.setupHeuristic(new TrivialFunction(2));
-		
-		do{
-			if (player1Turn){
-				
-			} else {
-				int[] move = agent.selectMove(board);
-				
-				String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
-				System.out.println(action);
-				updateMoveLog(action, 2);
-				
-				makeMove(board, move);
-				player1Turn = true;
-			}
-		} while(!finished);
-		
 	}
 	
 	private void makeMove(Board board, int[] move){
@@ -369,6 +349,7 @@ public class SinglePlayer implements GamePlayer {
 		guiBoard[move[0]][move[1]].setFree();
 		guiBoard[move[2]][move[3]].setBQueen();
 		guiBoard[move[4]][move[5]].setArrow();
+
 	}
 
 	/**
@@ -735,6 +716,18 @@ public class SinglePlayer implements GamePlayer {
 					endGame();
 					finished = true;
 				}
+	
+				System.out.println("Agent move:");
+				
+				int[] move = agent.selectMove(board);
+				
+				String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+				System.out.println(action);
+				updateMoveLog(action, 2);
+				
+				makeMove(board, move);
+				player1Turn = true;
+			
 			}
 		}
 
