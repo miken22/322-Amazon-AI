@@ -2,6 +2,12 @@ package ai.search;
 
 import ai.Board;
 
+/**
+ * The interface that a search agent should use during gameplay
+ * 
+ * @author Mike Nowicki
+ *
+ */
 public interface Search {
 
 	public final int WQUEEN = 1;

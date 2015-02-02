@@ -175,10 +175,10 @@ public class Actions {
 		actions.add(upRightEight);
 		actions.add(upRightNine);
 		
-		
 	}
 
 	public List<int[]> getActions(){	
 		return actions;
 	}
+		
 }

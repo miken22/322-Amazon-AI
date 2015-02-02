@@ -30,10 +30,29 @@ public class Board {
 		whitePositions = new ArrayList<>();
 		blackPositions = new ArrayList<>();
 		
-		initialize();		
 	}
 	
-	private void initialize(){
+	public Board(Board parent){
+		rows = 10;
+		columns = 10;
+		
+		board = new int[rows][columns];
+		whitePositions = parent.getWhitePositions();
+		blackPositions = parent.getBlackPositions();
+		
+		int[][] parentBoard = parent.getBoard();
+		
+		for (int i = 0; i < rows; i++){
+			for (int j = 0; j < columns; j++){
+				board[i][j] = parentBoard[i][j];
+			}
+		}			
+	}
+	
+	/**
+	 * Use only for the initial board to set up the initial position
+	 */
+	public void initialize(){
 		
 		for (int i = 0; i < rows; i++){
 			for (int j = 0; j < columns; j++){
@@ -117,5 +136,9 @@ public class Board {
 	
 	public ArrayList<Pair<Integer, Integer> > getWhitePositions(){
 		return whitePositions;
+	}
+	
+	public int[][] getBoard(){
+		return board;
 	}
 }

@@ -10,15 +10,23 @@ import ai.Board;
  */
 public class Agent implements Search {
 	
-	private SuccessorGenerator scg;
+	private HMinimaxSearch hMinimax;
 
-	private int rows;
-	private int columns;
+	private int role;
+	
+	private int DEPTH = 4;
 		
 	public Agent(int rows, int columns, int ourColour){
-		this.rows = rows;
-		this.columns = columns;
-		scg = new SuccessorGenerator(ourColour);
+		this.role = ourColour;
+	}
+	
+	public Agent(int rows, int columns, int ourColour, int depth){
+		this.role = ourColour;
+		DEPTH = depth;
+	}
+	
+	public void setupHeuristic(EvaluationFunction function){
+		hMinimax = new HMinimaxSearch(function, DEPTH);
 	}
 	
 	/**
@@ -26,6 +34,9 @@ public class Agent implements Search {
 	 * array at the time of return: FromX, FromY, ToX, ToY, aRow, aCol.  
 	 */
 	public int[] selectMove(Board currentBoard){
+		
+		int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
+		
 		int[] move = new int[6];
 		
 		move[0] = 3;
@@ -34,9 +45,10 @@ public class Agent implements Search {
 		move[3] = 3;
 		move[4] = 8;
 		move[5] = 3;
+		// Just to make a trivial move for now
+		moveChoice = move;
 		
-		//scg.getSuccessors(board);
-		
-		return move;		
+		return moveChoice;
+				
 	}
 }

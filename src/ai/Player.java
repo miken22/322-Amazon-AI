@@ -10,8 +10,8 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLParserFactory;
 import ai.gui.GUI;
 import ai.search.Agent;
+import ai.search.TrivialFunction;
 import ubco.ai.GameRoom;
-import ubco.ai.connection.ServerMessage;
 import ubco.ai.games.GameClient;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
@@ -35,8 +35,6 @@ public class Player implements GamePlayer {
 	private int blackTiles;
 	private int bothCanReach;
 
-	private String userName;
-
 	private final int ROWS = 10;
 	private final int COLS = 10;
 
@@ -55,12 +53,12 @@ public class Player implements GamePlayer {
 
 	public Player(String userName, String password) {
 
-		this.userName = userName;
-
 		client = new GameClient(userName, password, this);
 		board = new Board(ROWS, COLS);
 		gui = new GUI(board, ROWS, COLS);
 		parser = new XMLParser(userName);
+		
+		board.initialize();
 	
 	}
 
@@ -109,18 +107,22 @@ public class Player implements GamePlayer {
 			System.out.println("Something went wrong detecting our role");
 		}
 		
+		// TODO: Handle arguments to set properties such as heuristic choice, search depth (for difficulty)
 		agent = new Agent(ROWS, COLS, playerID);
+		
+		agent.setupHeuristic(new TrivialFunction(playerID));
+		
 		finished = false;
 		inGame();
 	}
 
 	private void inGame() {
 
-	//	do {
+		do {
 
 			if (isOpponentsTurn) {
 				// TODO: Plan ahead based on possible moves
-//				waitForMove();
+				waitForMove();
 
 				isOpponentsTurn = false;
 				finished = isFinished();
@@ -140,14 +142,12 @@ public class Player implements GamePlayer {
 				isOpponentsTurn = true;
 			}
 
-//		} while (!finished);
+		} while (!finished);
 
 	}
 
 	private void waitForMove(){
-		while (isOpponentsTurn){
-			//isOpponentsTurn = false;
-		}
+		
 	}
 	
 	/**
@@ -404,7 +404,7 @@ public class Player implements GamePlayer {
 	}
 	
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		
 		if (args.length == 0){
 			player.joinServer();
