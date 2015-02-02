@@ -62,7 +62,7 @@ public class HMinimaxSearch {
 			
 			Board child = scg.generateBoard(board, action, player);
 			
-			int result = minVal(board, 1, player);
+			int result = minVal(child, 1, player);
 			
 			// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
 			if (result > max){
