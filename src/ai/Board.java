@@ -28,8 +28,7 @@ public class Board {
 		
 		board = new int[rows][columns];
 		whitePositions = new ArrayList<>();
-		blackPositions = new ArrayList<>();
-		
+		blackPositions = new ArrayList<>();	
 	}
 	
 	public Board(Board parent){
@@ -37,8 +36,15 @@ public class Board {
 		columns = 10;
 		
 		board = new int[rows][columns];
-		whitePositions = parent.getWhitePositions();
-		blackPositions = parent.getBlackPositions();
+		whitePositions = new ArrayList<>();
+		blackPositions = new ArrayList<>();
+		
+		for (Pair<Integer, Integer> pair : parent.getWhitePositions()){
+			whitePositions.add(pair);
+		}
+		for (Pair<Integer, Integer> pair : parent.getBlackPositions()){
+			blackPositions.add(pair);
+		}
 		
 		int[][] parentBoard = parent.getBoard();
 		

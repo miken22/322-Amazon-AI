@@ -14,7 +14,7 @@ public class Agent implements Search {
 
 	private int role;
 	private int move = 0;
-	private int DEPTH = 1;
+	private int DEPTH = 2;
 		
 	public Agent(int ourColour){
 		this.role = ourColour;
@@ -37,7 +37,16 @@ public class Agent implements Search {
 		
 		if (move == 0 && role == 1){
 			move++;
+			hMinimax.setMaxDepth(2);
 			return selectOpeningMove();
+		}
+		
+		if (move > 4){
+			hMinimax.setMaxDepth(2);
+		} else if (move > 6){
+			hMinimax.setMaxDepth(3);
+		} else if (move > 8){
+			hMinimax.setMaxDepth(4);
 		}
 
 		move++;
@@ -56,7 +65,7 @@ public class Agent implements Search {
 
 	// TODO: Figure out opening move strategies
 	private int[] selectOpeningMove() {
-		int[] openingMove = { 3, 0, 3, 3, 8, 3 };
+		int[] openingMove = { 0, 3, 7, 3, 5, 1 };
 		return openingMove;
 	}
 }

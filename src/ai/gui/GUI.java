@@ -310,4 +310,8 @@ public class GUI {
 			}	
 		}
 	}
+
+	public void destroy() {
+		frame.dispose();
+	}
 }

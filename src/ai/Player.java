@@ -69,9 +69,11 @@ public class Player implements GamePlayer {
 
 		for (GameRoom g : client.roomList) {
 			try {
-				client.joinGameRoom(g.roomName);
-				roomNumber = g.roomID;
-				break;
+				if (g.userCount == 1){
+					client.joinGameRoom(g.roomName);
+					roomNumber = g.roomID;
+					break;
+				}
 			} catch (Exception e) {
 				continue;
 			}
@@ -166,7 +168,8 @@ public class Player implements GamePlayer {
 	 * Method to handle goal state
 	 */
 	private void endGame(){
-		
+		System.out.println("Game over.");
+		gui.destroy();
 	}
 
 	/**
@@ -176,6 +179,7 @@ public class Player implements GamePlayer {
 	 * @param piece - Colour of the piece moved
 	 */
 	private void updateRepresentations(int[] move, int piece){
+		
 		gui.updateGUI(move[0], move[1], move[2], move[3], move[4], move[5], piece);
 		// Update logical representation of board.
 		board.freeSquare(move[0], move[1]);
@@ -381,7 +385,7 @@ public class Player implements GamePlayer {
 
 	@Override
 	public boolean handleMessage(String message) throws Exception {
-		gui.addServerMessage("Server message: ", message);
+		System.out.println("Server message: " + message);
 		return false;
 	}
 
@@ -398,6 +402,7 @@ public class Player implements GamePlayer {
 		String answer = parser.handleXML(xml);
 
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
+			gui.init();
 			this.role = parser.getUserInfo(xml);
 			if (!role.equals("W") && !role.equals("B")){
 				System.out.println("Spectator of match.");
@@ -425,7 +430,7 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-2.0001", "54321");
+		Player player = new Player("Bot-1.0001", "54321");
 		if (args.length == 0){
 			player.joinServer();
 		} else {

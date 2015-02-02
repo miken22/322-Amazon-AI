@@ -2,6 +2,7 @@ package ai.search;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import ai.Board;
 
@@ -18,7 +19,7 @@ public class HMinimaxSearch {
 	 */
 	EvaluationFunction evaluator;
 
-	public int MAXDEPTH = 3;
+	public int MAXDEPTH = 4;
 	
 	public SuccessorGenerator scg;
 	
@@ -43,6 +44,10 @@ public class HMinimaxSearch {
 		scg = new SuccessorGenerator();
 		stateValues = new HashMap<>();
 	}
+	
+	public void setMaxDepth(int newDepth){
+		MAXDEPTH = newDepth;
+	}
 
 	/**
 	 * Takes a state and depth to perform a limited minimax search
@@ -65,6 +70,9 @@ public class HMinimaxSearch {
 				
 		List<int[]> potentialActions = scg.getSuccessors(board, player);
 		
+		int modifiedMax = Integer.MIN_VALUE;
+		
+		
 		startTime = System.currentTimeMillis();
 		
 		for (int[] action : potentialActions){
@@ -73,16 +81,24 @@ public class HMinimaxSearch {
 			
 			int result = minVal(child, 1, player);
 			
-			// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
-			if (result > max){
+			if (result == max){
+				// Skew the always even results to pick a random move
+				result = (int) (result * (1 + new Random().nextDouble()));
+				if (result > modifiedMax){
+					modifiedMax = result;
+					move = action;
+				}
+			} else if (result > max){
+				modifiedMax = result;
 				max = result;
-				move = action;
 			}
+			
+			// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
+			// Need some kind of tiebreaking, use of ordering of top solutions
 			
 			if (((System.currentTimeMillis() - startTime) / 1000) % 60  >= 28){
 				break;
 			}
-			
 		}
 		return move;
 	}
@@ -139,6 +155,12 @@ public class HMinimaxSearch {
 			ALPHA = Math.max(ALPHA, max);
 						
 		}
+		
+		if (potentialActions.size() == 0){
+			int value = evaluator.evaluate(board, player);
+			max = Math.max(max, value);
+		}
+		
 		return max;
 	}
 	/**
@@ -193,6 +215,10 @@ public class HMinimaxSearch {
 			BETA = Math.min(BETA, min);
 						
 			
+		}
+		if (potentialActions.size() == 0){
+			int value = evaluator.evaluate(board, player);
+			min = Math.min(min, value);
 		}
 		return min;
 	}

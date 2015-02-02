@@ -27,12 +27,20 @@ public class SuccessorGenerator extends GameTreeSearch {
 			int fromY = queen.getRight();
 
 			// Try all possible moves from the queens position
-			for (int[] queenMove : actions.getActions()){
+			for (int i = 0; i < actions.getActions().size(); i++){
+				
+				int[] queenMove = actions.getActions().get(i);
 				
 				Board tempBoard = new Board(board);
 
 				int toX = fromX + queenMove[0];
 				int toY = fromY + queenMove[1];
+				
+				if (player == 1){
+					tempBoard.updateWhitePositions(fromX, fromY, toX, toY);
+				} else {
+					tempBoard.updateBlackPositions(fromX, fromY, toX, toY);				
+				}
 
 				// Check that the move is valid, if so try placing arrows
 				if (moveIsValid(tempBoard, fromX, fromY, toX, toY, player, false)){
@@ -40,34 +48,23 @@ public class SuccessorGenerator extends GameTreeSearch {
 					tempBoard.freeSquare(fromX, fromY);
 					tempBoard.placeMarker(toX, toY, player);
 					
-					
-					for (int[] arrowSpot : actions.getActions()){
+					for (int j = 0; j < actions.getActions().size(); j++){
+						
+						int[] arrowSpot = actions.getActions().get(j);
 						
 						int arrowX = toX + arrowSpot[0];
 						int arrowY = toY + arrowSpot[1];
-						
+					
+						// Means we stand still and shoot at ourselves, does not mean we encounter an obstacle
 						if (fromX == toX && toX == arrowX && fromY == toY && toY == arrowY){
 							continue;
 						}
 						
 						// If queen and arrow placement is valid record the actions and push onto the list
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
-							int[] move = new int[6];
-							move[0] = fromX;
-							move[1] = fromY;
-							move[2] = toX;
-							move[3] = toY;
-							move[4] = arrowX;
-							move[5] = arrowY;
-							
+							int[] move = { fromX, fromY, toX, toY, arrowX, arrowY };						
 							moveList.add(move);
-													
-						}
-						
-						// Undo the action for the next round
-						tempBoard.freeSquare(toX, toY);
-						tempBoard.placeMarker(fromX, fromY, player);
-						
+						}											
 					}
 				}
 			}

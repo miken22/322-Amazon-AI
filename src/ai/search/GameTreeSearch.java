@@ -31,7 +31,6 @@ public class GameTreeSearch {
 		if (sX == dX){
 
 			if (sY == dY){
-
 				// No move, just throw arrow, not allowed to throw into your own tile
 				if (isArrow){
 					return false;
@@ -47,15 +46,12 @@ public class GameTreeSearch {
 
 			while(sY != dY){
 				sY += deltaY;
-
 				if (board.isMarked(dX,sY)){
 					return false;
 				}
 			}
 			return true;
-
 		}
-
 		// Check vertical move, same thing as above
 		if (sY == dY){
 
@@ -71,27 +67,20 @@ public class GameTreeSearch {
 			return true;
 		}
 
-		// Must have the same rise as run for a legal diagonal move.
+		// Must have the same rise as run for a legal diagonal move. Might be redundant with preset moves now
 		if (Math.abs(sX - dX) != Math.abs(sY - dY)){
 			return false;
 		}
 
 		// Diagonal checks
 		if(sX > dX && sY > dY){	
-			// This is the moving from a square to one to its lower left
-			int temp = sX;
-			sX = dX;
-			dX = temp;	
-
-			temp = sY;
-			sY = dY;
-			dY = temp;	
-			return checkFirstDiagonal(board, sX, sY, dX, dY, player);
+			// Moving down left
+			return checkFirstDiagonal(board, dX, dY, sX, sY, player);
 		} else if (sX < dX && sY < dY){
 			// Case where we move from a square to one to its upper right
 			return checkFirstDiagonal(board, sX, sY, dX, dY, player);
 		} else {
-			// The other two diagonal directions
+			// Up left and down right cases
 			return oppositeDiagonal(board, sX, sY, dX, dY);
 		}
 	}
@@ -108,12 +97,12 @@ public class GameTreeSearch {
 	 * @return
 	 */
 	public boolean checkFirstDiagonal(Board board, int sX, int sY, int dX, int dY, int player){		
-		while (sX <= dX || sY <= dY){
-			if (board.getPiece(sX, sY) != FREE && board.getPiece(sX, sY) != player){
-				return false;
-			}
+		while (sX != dX || sY != dY){
 			sX = sX + 1;
 			sY = sY + 1;
+			if (board.isMarked(sX, sY)){
+				return false;
+			}
 		}
 		return true;
 	}
@@ -122,6 +111,19 @@ public class GameTreeSearch {
 	 * Simple calculation to check the other two diagonal directions. We determine if we are moving up left
 	 * or down right, in either case deltaX = -(deltaY) so we compute them and iteratively move along the diagonal
 	 * like the other check does.
+	 * 
+	 * 
+	 * j3-d9-__ sX = 3, sY = 9, dX = 9, dY = 3
+	 * 
+	 * deltaX = (9 - 3)/6 = 1
+	 * deltaY = 1/(-1) = -1
+	 * 
+	 * 4, 8 -> ok
+	 * 5, 7 -> ok
+	 * 6, 6 -> ok
+	 * 7, 5 -> ok
+	 * 
+	 * 
 	 * 
 	 * @param sX - Starting x value.
 	 * @param sY - Starting y value.

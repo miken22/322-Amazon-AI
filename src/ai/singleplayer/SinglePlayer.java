@@ -91,10 +91,11 @@ public class SinglePlayer implements GamePlayer {
 	private Board board;
 	private Cells[][] guiBoard;
 	
-	private boolean player1Turn = true;
+	private boolean playerTurn = false;
 	private boolean finished = false;
 	
-	private Agent agent = new Agent(2);
+	private Agent agent = new Agent(1);
+	private Agent agent2 = new Agent(2);
 	
 	/**
 	 * 2 element array, index 0 for white score, 1 for black score
@@ -338,18 +339,80 @@ public class SinglePlayer implements GamePlayer {
 		frame.setVisible(true);
 		input.requestFocus();
 		
-		agent.setupHeuristic(new TrivialFunction(2));
+		playGame();
+		
 	}
 	
-	private void makeMove(Board board, int[] move){
+	/**
+	 * Have two agents play against each other
+	 */
+	private void playGame(){
+
+		boolean whiteTurn = true;
+		
+		agent.setupHeuristic(new TrivialFunction(1));
+		agent2.setupHeuristic(new TrivialFunction(2));
+		
+		while (!finished){
+			if (whiteTurn){
+				try{
+					int[] move = agent.selectMove(board);
+					makeMove(board, move, 1);	
+					whiteTurn = false;
+
+					String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+					System.out.println("White: " + action);
+					updateMoveLog(action, 1);
+				} catch (NullPointerException e){
+					finished = true;
+					endGame();
+					break;
+				}
+			} else {
+
+				try{
+					int[] move = agent2.selectMove(board);
+					makeMove(board, move, 2);
+					whiteTurn = true;
+
+					String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+					System.out.println("Black: " + action);
+					updateMoveLog(action, 2);
+
+				} catch (NullPointerException e){
+					finished = true;
+					endGame();
+					break;
+				}
+			}
+			finished = isFinished();
+		}
+		
+	}
+	
+	private void makeMove(Board board, int[] move, int player){
 		board.freeSquare(move[0], move[1]);
-		board.placeMarker(move[2], move[3], BQUEEN);
+		board.placeMarker(move[2], move[3], player);
 		board.placeMarker(move[4], move[5], ARROW);	
 
 		guiBoard[move[0]][move[1]].setFree();
-		guiBoard[move[2]][move[3]].setBQueen();
 		guiBoard[move[4]][move[5]].setArrow();
 
+		
+		if (player == 1){
+			board.updateWhitePositions(move[0], move[1], move[2], move[3]);
+			guiBoard[move[2]][move[3]].setWQueen();
+		} else {
+			board.updateBlackPositions(move[0], move[1], move[2], move[3]);
+			guiBoard[move[2]][move[3]].setBQueen();
+		}
+		
+
+	}
+	
+	private void endGame(){
+		System.out.println("Game Over!");
+		frame.dispose();
 	}
 
 	/**
@@ -395,9 +458,13 @@ public class SinglePlayer implements GamePlayer {
 			}
 		}
 		
+		System.out.println("Black: " + blackTiles + " White: " + whiteTiles + " Both: " + bothCanReach);
+		
 		if (blackTiles > whiteTiles + bothCanReach){
+			System.out.println("Black: " + blackTiles + " White: " + (whiteTiles + bothCanReach));
 			return true;
 		} else if (whiteTiles > blackTiles + bothCanReach){
+			System.out.println("Black: " + (blackTiles  + bothCanReach) + " White: " + (whiteTiles));
 			return true;
 		} 
 		
@@ -577,7 +644,7 @@ public class SinglePlayer implements GamePlayer {
 			moveTextarea.insertString(moveTextarea.getLength(), move, userStyle); 
 		} catch (BadLocationException e1){}
 
-		chat.select(doc.getLength(), doc.getLength());
+		moveLog.select(doc.getLength(), doc.getLength());
 	}
 	/**
 	 * This class controls game play, alternating player turns and handling any updates. All game logic must
@@ -674,10 +741,10 @@ public class SinglePlayer implements GamePlayer {
 			int aCol = Utility.getColumn(arrCol);
 			int aRow = arrow.charAt(1)-48;
 
-			if (player1Turn){
+			if (playerTurn){
 
 				// Check starting from an owned piece
-				if (board.getPiece(fRow, fCol) != WQUEEN){
+				if (board.getPiece(fRow, fCol) != BQUEEN){
 					JOptionPane.showMessageDialog(frame,"Must start with your own piece.", "Invalid", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
@@ -688,13 +755,13 @@ public class SinglePlayer implements GamePlayer {
 				}
 				
 				board.freeSquare(fRow,fCol);
-				board.placeMarker(tRow,tCol, WQUEEN);
+				board.placeMarker(tRow,tCol, BQUEEN);
 				
 				// Use same logic to validate arrow throws.
 				if (!moveIsValid(tRow,tCol,aRow,aCol,true)){
 					// Put the piece back if the arrow throw is invalid.
 					board.freeSquare(tRow, tCol);
-					board.placeMarker(fRow, fCol, WQUEEN);
+					board.placeMarker(fRow, fCol, BQUEEN);
 					return;
 				}
 
@@ -702,13 +769,13 @@ public class SinglePlayer implements GamePlayer {
 				board.updateWhitePositions(fRow, fCol, tRow, tCol);
 
 				guiBoard[fRow][fCol].setFree();
-				guiBoard[tRow][tCol].setWQueen();
+				guiBoard[tRow][tCol].setBQueen();
 				guiBoard[aRow][aCol].setArrow();
 
-				updateMoveLog(in,WQUEEN);
+				updateMoveLog(in,BQUEEN);
 
 				input.setText("");
-				player1Turn = false;
+				playerTurn = false;
 				
 				frame.repaint();
 
@@ -725,8 +792,8 @@ public class SinglePlayer implements GamePlayer {
 				System.out.println(action);
 				updateMoveLog(action, 2);
 				
-				makeMove(board, move);
-				player1Turn = true;
+				//makeMove(board, move);
+				playerTurn = true;
 			
 			}
 		}
@@ -812,10 +879,10 @@ public class SinglePlayer implements GamePlayer {
 		private boolean checkFirstDiagonal(int sX, int sY, int dX, int dY){
 
 			int player = 0;
-			if (player1Turn){
-				player = WQUEEN;
-			} else {
+			if (playerTurn){
 				player = BQUEEN;
+			} else {
+				player = WQUEEN;
 			}
 			
 			
