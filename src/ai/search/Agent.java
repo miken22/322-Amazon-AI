@@ -47,6 +47,8 @@ public class Agent implements Search {
 			hMinimax.setMaxDepth(3);
 		} else if (move > 8){
 			hMinimax.setMaxDepth(4);
+		} else if (move > 11){
+			hMinimax.setMaxDepth(6);
 		}
 
 		move++;

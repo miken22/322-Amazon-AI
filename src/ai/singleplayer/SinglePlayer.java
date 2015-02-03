@@ -339,8 +339,9 @@ public class SinglePlayer implements GamePlayer {
 		frame.setVisible(true);
 		input.requestFocus();
 		
-		playGame();
-		
+		if (!playerTurn){
+			playGame();
+		}
 	}
 	
 	/**
@@ -387,6 +388,7 @@ public class SinglePlayer implements GamePlayer {
 			}
 			finished = isFinished();
 		}
+		endGame();
 		
 	}
 	
@@ -744,7 +746,7 @@ public class SinglePlayer implements GamePlayer {
 			if (playerTurn){
 
 				// Check starting from an owned piece
-				if (board.getPiece(fRow, fCol) != BQUEEN){
+				if (board.getPiece(fRow, fCol) != WQUEEN){
 					JOptionPane.showMessageDialog(frame,"Must start with your own piece.", "Invalid", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
@@ -755,13 +757,13 @@ public class SinglePlayer implements GamePlayer {
 				}
 				
 				board.freeSquare(fRow,fCol);
-				board.placeMarker(tRow,tCol, BQUEEN);
+				board.placeMarker(tRow,tCol, WQUEEN);
 				
 				// Use same logic to validate arrow throws.
 				if (!moveIsValid(tRow,tCol,aRow,aCol,true)){
 					// Put the piece back if the arrow throw is invalid.
 					board.freeSquare(tRow, tCol);
-					board.placeMarker(fRow, fCol, BQUEEN);
+					board.placeMarker(fRow, fCol, WQUEEN);
 					return;
 				}
 
@@ -769,10 +771,10 @@ public class SinglePlayer implements GamePlayer {
 				board.updateWhitePositions(fRow, fCol, tRow, tCol);
 
 				guiBoard[fRow][fCol].setFree();
-				guiBoard[tRow][tCol].setBQueen();
+				guiBoard[tRow][tCol].setWQueen();
 				guiBoard[aRow][aCol].setArrow();
 
-				updateMoveLog(in,BQUEEN);
+				updateMoveLog(in, WQUEEN);
 
 				input.setText("");
 				playerTurn = false;
@@ -855,14 +857,28 @@ public class SinglePlayer implements GamePlayer {
 
 			// Diagonal checks
 			if(sX > dX && sY > dY){	
-				return checkFirstDiagonal(dX, dY, sX, sY);
+				return checkDownLeftDiagonal(board, sX, sY, dX, dY, 1);
 			} else if (sX < dX && sY < dY){
 				// Case where we move from a square to one to its upper right
-				return checkFirstDiagonal(sX, sY, dX, dY);
+				return checkUpRightDiagonal(board, sX, sY, dX, dY, 1);
 			} else {
 				// The other two diagonal directions
-				return oppositeDiagonal(sX, sY, dX, dY);
+				return oppositeDiagonal(board, sX, sY, dX, dY);
 			}
+		}
+
+		private boolean checkDownLeftDiagonal(Board board, int sX, int sY, int dX, int dY, int i) {
+			
+			while (sX > dX || sY > dY){
+				sX--;
+				sY--;
+				if (board.isMarked(sX, sY)){
+					System.out.println("Nope:" + sX + ", " + sY);
+					return false;
+				}
+			}
+			return true;
+			
 		}
 
 		/**
@@ -876,23 +892,14 @@ public class SinglePlayer implements GamePlayer {
 		 * @param dY - Larger y value.
 		 * @return
 		 */
-		private boolean checkFirstDiagonal(int sX, int sY, int dX, int dY){
-
-			int player = 0;
-			if (playerTurn){
-				player = BQUEEN;
-			} else {
-				player = WQUEEN;
-			}
-			
-			
-			while (sX <= dX || sY <= dY){
-				if (board.getPiece(sX, sY) != FREE && board.getPiece(sX, sY) != player){
-					JOptionPane.showMessageDialog(frame,"Illegal easy diagonal ( / ) move at [" +sX + "][" + sY + "].", "Invalid", JOptionPane.WARNING_MESSAGE);
+		public boolean checkUpRightDiagonal(Board board, int sX, int sY, int dX, int dY, int player){		
+			while (sX < dX || sY < dY){
+				sX++;
+				sY++;
+				if (board.isMarked(sX, sY)){
+					System.out.println("Nope:" + sX + ", " + sY);
 					return false;
 				}
-				sX = sX + 1;
-				sY = sY + 1;
 			}
 			return true;
 		}
@@ -902,13 +909,26 @@ public class SinglePlayer implements GamePlayer {
 		 * or down right, in either case deltaX = -(deltaY) so we compute them and iteratively move along the diagonal
 		 * like the other check does.
 		 * 
+		 * 
+		 * j3-d9-__ sX = 3, sY = 9, dX = 9, dY = 3
+		 * 
+		 * deltaX = (9 - 3)/6 = 1
+		 * deltaY = 1/(-1) = -1
+		 * 
+		 * 4, 8 -> ok
+		 * 5, 7 -> ok
+		 * 6, 6 -> ok
+		 * 7, 5 -> ok
+		 * 
+		 * 
+		 * 
 		 * @param sX - Starting x value.
 		 * @param sY - Starting y value.
 		 * @param dX - Ending x value.
 		 * @param dY - Ending y value.
 		 * @return
 		 */
-		private boolean oppositeDiagonal(int sX, int sY, int dX, int dY){
+		public boolean oppositeDiagonal(Board board, int sX, int sY, int dX, int dY){
 
 			int deltaX = dX - sX;
 			deltaX = deltaX/Math.abs(deltaX);
@@ -919,7 +939,7 @@ public class SinglePlayer implements GamePlayer {
 				sX += deltaX;
 				sY += deltaY;
 				if (board.isMarked(sX, sY)){
-					JOptionPane.showMessageDialog(frame,"Illegal diagonal ( / ) move at [" +sX + "][" + sY + "].", "Invalid", JOptionPane.WARNING_MESSAGE);
+					System.out.println("Nope:" + sX + ", " + sY);
 					return false;
 				}
 			}

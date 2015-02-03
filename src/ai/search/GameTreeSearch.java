@@ -17,7 +17,7 @@ public class GameTreeSearch {
 	public final int BQUEEN = 2;
 	public final int ARROW = 3;
 	public final int FREE = -1;
-	
+
 	public boolean moveIsValid(Board board, int sX, int sY, int dX, int dY, int player, boolean isArrow){
 
 		if (dX < 0 || dX > 9){
@@ -26,7 +26,7 @@ public class GameTreeSearch {
 		if (dY < 0 || dY > 9){
 			return false;
 		}
-		
+
 		// Check horizontal move, make sure no obstacles
 		if (sX == dX){
 
@@ -74,15 +74,38 @@ public class GameTreeSearch {
 
 		// Diagonal checks
 		if(sX > dX && sY > dY){	
-			// Moving down left
-			return checkFirstDiagonal(board, dX, dY, sX, sY, player);
+			return checkDownLeftDiagonal(board, sX, sY, dX, dY, 1);
 		} else if (sX < dX && sY < dY){
 			// Case where we move from a square to one to its upper right
-			return checkFirstDiagonal(board, sX, sY, dX, dY, player);
+			return checkUpRightDiagonal(board, sX, sY, dX, dY, 1);
 		} else {
-			// Up left and down right cases
+			// The other two diagonal directions
 			return oppositeDiagonal(board, sX, sY, dX, dY);
 		}
+	}
+	
+	/**
+	 * Simple rise/run calculation to check that the diagonal is valid. We must take as many steps
+	 * left/right as we do up/down to have a valid diagonal move. Must be sure to swap start, end
+	 * nodes if sX and sY > dX and dY for the algorithm to hold.
+	 * 
+	 * @param sX - Starting x value.
+	 * @param sY - Starting y value.
+	 * @param dX - Ending x value.
+	 * @param dY - Ending y value.
+	 * @return - {@code TRUE} if valid, {@code FALSE} otherwise.
+	 */
+	private boolean checkDownLeftDiagonal(Board board, int sX, int sY, int dX, int dY, int i) {
+
+		while (sX > dX || sY > dY){
+			sX--;
+			sY--;
+			if (board.isMarked(sX, sY)){
+				return false;
+			}
+		}
+		return true;
+
 	}
 
 	/**
@@ -90,46 +113,34 @@ public class GameTreeSearch {
 	 * left/right as we do up/down to have a valid diagonal move. Must be sure to swap start, end
 	 * nodes if sX and sY > dX and dY for the algorithm to hold.
 	 * 
-	 * @param sX - Smaller x value.
-	 * @param sY - Smaller y value.
-	 * @param dX - Larger x value.
-	 * @param dY - Larger y value.
-	 * @return
+	 * @param sX - Starting x value.
+	 * @param sY - Starting y value.
+	 * @param dX - Ending x value.
+	 * @param dY - Ending y value.
+	 * @return - {@code TRUE} if valid, {@code FALSE} otherwise.
 	 */
-	public boolean checkFirstDiagonal(Board board, int sX, int sY, int dX, int dY, int player){		
-		while (sX != dX || sY != dY){
-			sX = sX + 1;
-			sY = sY + 1;
+	public boolean checkUpRightDiagonal(Board board, int sX, int sY, int dX, int dY, int player){		
+		while (sX < dX || sY < dY){
+			sX++;
+			sY++;
 			if (board.isMarked(sX, sY)){
 				return false;
 			}
 		}
 		return true;
 	}
-
+	
 	/**
 	 * Simple calculation to check the other two diagonal directions. We determine if we are moving up left
 	 * or down right, in either case deltaX = -(deltaY) so we compute them and iteratively move along the diagonal
 	 * like the other check does.
 	 * 
 	 * 
-	 * j3-d9-__ sX = 3, sY = 9, dX = 9, dY = 3
-	 * 
-	 * deltaX = (9 - 3)/6 = 1
-	 * deltaY = 1/(-1) = -1
-	 * 
-	 * 4, 8 -> ok
-	 * 5, 7 -> ok
-	 * 6, 6 -> ok
-	 * 7, 5 -> ok
-	 * 
-	 * 
-	 * 
 	 * @param sX - Starting x value.
 	 * @param sY - Starting y value.
 	 * @param dX - Ending x value.
 	 * @param dY - Ending y value.
-	 * @return
+	 * @return - {@code TRUE} if valid, {@code FALSE} otherwise.
 	 */
 	public boolean oppositeDiagonal(Board board, int sX, int sY, int dX, int dY){
 
@@ -146,5 +157,5 @@ public class GameTreeSearch {
 			}
 		}
 		return true;
-	}	
+	}
 }

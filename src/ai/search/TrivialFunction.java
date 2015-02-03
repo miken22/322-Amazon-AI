@@ -3,70 +3,76 @@ package ai.search;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import ai.Actions;
 import ai.Board;
 import ai.Pair;
 
+/**
+ * Trivial heuristic function, trying to convert to the min-distance function. It's close but not quite there
+ * 
+ * @author Mike Nowicki
+ *
+ */
 public class TrivialFunction extends EvaluationFunction {
-	
+
 	private final int ROWS = 10;
 	private final int COLS = 10;
 
+	Actions actions = new Actions();
+	GameTreeSearch search = new GameTreeSearch();
+	
 	public TrivialFunction(int role){
 		super(role);
 	}
-	
+
 	@Override
-	public int evaluate(Board board, int player) {
-		
+	public int evaluate(Board board, int player){
+
+		int wUtility = 0;
+		int bUtility = 0;
 		ArrayList<Pair<Integer, Integer> > wPositions = board.getWhitePositions();
 		ArrayList<Pair<Integer, Integer> > bPositions = board.getBlackPositions();
 
-		int[][] hasChecked = new int[ROWS][COLS];
+		int[][] wDistanceTable = new int[ROWS][COLS];
+		int[][] bDistanceTable = new int[ROWS][COLS];
+		
+		for (int i = 0; i < 10; i++){
+			for (int j = 0; j < 10; j++){
+				wDistanceTable[i][j] = Integer.MAX_VALUE;
+				bDistanceTable[i][j] = Integer.MAX_VALUE;
+			}
+		}
 
 		for (Pair<Integer, Integer> pair : wPositions) {
-			countReachableTiles(board, pair, WQUEEN, hasChecked);
+			scoreDistance(board, pair, WQUEEN, wDistanceTable);
 		}
 
 		for (Pair<Integer, Integer> pair : bPositions) {
-			countReachableTiles(board, pair, BQUEEN, hasChecked);
+			scoreDistance(board, pair, BQUEEN, bDistanceTable);
 		}
 
-		int whiteTiles = 0;
-		int blackTiles = 0;
-		int bothCanReach = 0;
-
-		for (int i = 0; i < ROWS; i++) {
-			for (int j = 0; j < COLS; j++) {
-				switch (hasChecked[i][j]) {
-				case (1):
-					whiteTiles++;
-				break;
-				case (2):
-					blackTiles++;
-				break;
-				case (3):
-					bothCanReach++;
-				break;
+		for (int i = 0; i < 10; i++){
+			for (int j = 0; j < 10; j++){
+				if (wDistanceTable[i][j] > bDistanceTable[i][j]){
+					wUtility++;
+				} else if (wDistanceTable[i][j] < bDistanceTable[i][j]){
+					bUtility++;
 				}
 			}
 		}
-		
 		if (player == 1){
-			return whiteTiles + bothCanReach;
+			return wUtility;
 		} else {
-			return blackTiles + bothCanReach;
+			return bUtility;
 		}
-	
 	}
-	
-	private void countReachableTiles(Board board, Pair<Integer, Integer> source, int player,
-			int[][] hasChecked) {
 
+	public void scoreDistance(Board board, Pair<Integer, Integer> source, int player, int[][] distanceTable){
 		int opponent;
 		switch (player) {
 		case (WQUEEN):
 			opponent = BQUEEN;
-			break;
+		break;
 		default:
 			opponent = WQUEEN;
 		}
@@ -74,115 +80,39 @@ public class TrivialFunction extends EvaluationFunction {
 		Stack<Pair<Integer, Integer>> stack = new Stack<>();
 
 		// Used to indicate spots where queens are located.
-		hasChecked[source.getLeft()][source.getRight()] = 4;
+		distanceTable[source.getLeft()][source.getRight()] = -1;
 
 		stack.push(source);
+		
+		int step = 1;
 
 		while (!stack.empty()) {
 			// Check 8 diagonal positions.
 			Pair<Integer, Integer> top = stack.pop();
 			int xPos = top.getLeft();
 			int yPos = top.getRight();
-
-			// Check boundary
-			if (xPos - 1 >= 0) {
-				// If it is free
-				if (!board.isMarked((xPos - 1), yPos)) {
-					// If we haven't looked at it yet
-					if (hasChecked[xPos - 1][yPos] == 0) {
-						stack.push(new Pair<>(xPos - 1, yPos));
-						hasChecked[xPos - 1][yPos] = player;
-					} else if (hasChecked[xPos - 1][yPos] == opponent) {
-						stack.push(new Pair<>(xPos - 1, yPos));
-						hasChecked[xPos - 1][yPos] = ARROW;
+			
+			for (int[] action : actions.getActions()){
+			
+				int newX = xPos + action[0];
+				int newY = yPos + action[1];
+				
+				// Bound checks
+				if ((newX > 9 || newX < 0) || (newY > 9 || newY < 0)){
+					continue;
+				}
+				
+				if (!board.isMarked(newX, newY)){
+					if (search.moveIsValid(board, xPos, yPos, newX, newY, player, false)){
+						if (distanceTable[newX][newY] > step){
+							distanceTable[newX][newY] = step;
+							stack.push(new Pair<Integer, Integer>(newX, newY));
+						}
 					}
 				}
+		
 			}
-			if (xPos + 1 < ROWS) {
-				if (!board.isMarked((xPos + 1), yPos)) {
-					if (hasChecked[xPos + 1][yPos] == 0) {
-						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos + 1, yPos));
-						hasChecked[xPos + 1][yPos] = player;
-					} else if (hasChecked[xPos + 1][yPos] == opponent) {
-						stack.push(new Pair<>(xPos + 1, yPos));
-						hasChecked[xPos + 1][yPos] = ARROW;
-					}
-				}
-			}
-			if (yPos - 1 >= 0) {
-				if (!board.isMarked((xPos), yPos - 1)) {
-					if (hasChecked[xPos][yPos - 1] == 0) {
-						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos, yPos - 1));
-						hasChecked[xPos][yPos - 1] = player;
-					} else if (hasChecked[xPos][yPos - 1] == opponent) {
-						stack.push(new Pair<>(xPos, yPos - 1));
-						hasChecked[xPos][yPos - 1] = ARROW;
-					}
-				}
-			}
-			if (yPos + 1 < COLS) {
-				if (!board.isMarked(xPos, yPos + 1)) {
-					if (hasChecked[xPos][yPos + 1] == 0) {
-						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos, yPos + 1));
-						hasChecked[xPos][yPos + 1] = player;
-					} else if (hasChecked[xPos][yPos + 1] == opponent) {
-						stack.push(new Pair<>(xPos, yPos + 1));
-						hasChecked[xPos][yPos + 1] = ARROW;
-					}
-				}
-			}
-			if ((xPos + 1 < ROWS) && (yPos + 1 < COLS)) {
-				if (!board.isMarked((xPos + 1), yPos + 1)) {
-					if (hasChecked[xPos + 1][yPos + 1] == 0) {
-						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos + 1, yPos + 1));
-						hasChecked[xPos + 1][yPos + 1] = player;
-					} else if (hasChecked[xPos + 1][yPos + 1] == opponent) {
-						hasChecked[xPos + 1][yPos + 1] = ARROW;
-						stack.push(new Pair<>(xPos + 1, yPos + 1));
-					}
-				}
-			}
-			if ((xPos + 1 < ROWS) && (yPos - 1 >= 0)) {
-				if (!board.isMarked((xPos + 1), yPos - 1)) {
-					if (hasChecked[xPos + 1][yPos - 1] == 0) {
-						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos + 1, yPos - 1));
-						hasChecked[xPos + 1][yPos - 1] = player;
-					} else if (hasChecked[xPos + 1][yPos - 1] == opponent) {
-						stack.push(new Pair<>(xPos + 1, yPos - 1));
-						hasChecked[xPos + 1][yPos - 1] = ARROW;
-					}
-				}
-			}
-			if ((xPos - 1 >= 0) && (yPos + 1 < COLS)) {
-				if (!board.isMarked((xPos - 1), yPos + 1)) {
-					if (hasChecked[xPos - 1][yPos + 1] == 0) {
-						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos - 1, yPos + 1));
-						hasChecked[xPos - 1][yPos + 1] = player;
-
-					} else if (hasChecked[xPos - 1][yPos + 1] == opponent) {
-						stack.push(new Pair<>(xPos - 1, yPos + 1));
-						hasChecked[xPos - 1][yPos + 1] = ARROW;
-					}
-				}
-			}
-			if ((xPos - 1 >= 0) && (yPos - 1 >= 0)) {
-				if (!board.isMarked((xPos - 1), yPos - 1)) {
-					if (hasChecked[xPos - 1][yPos - 1] == 0) {
-						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos - 1, yPos - 1));
-						hasChecked[xPos - 1][yPos - 1] = player;
-					} else if (hasChecked[xPos - 1][yPos - 1] == opponent) {
-						stack.push(new Pair<>(xPos - 1, yPos - 1));
-						hasChecked[xPos - 1][yPos - 1] = ARROW;
-					}
-				}
-			}
+			step++;
 		}
-	}	
+	}
 }

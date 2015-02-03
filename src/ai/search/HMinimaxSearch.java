@@ -1,9 +1,8 @@
 package ai.search;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-
 import ai.Board;
 
 /**
@@ -12,37 +11,39 @@ import ai.Board;
  * @author Mike Nowicki
  *
  */
-public class HMinimaxSearch {
+public class HMinimaxSearch implements Minimax {
 	
 	/**
 	 * The heuristic being used
 	 */
 	EvaluationFunction evaluator;
 
+	private int ALPHA;
+	private int BETA;
 	public int MAXDEPTH = 4;
 	
 	public SuccessorGenerator scg;
-	
-	private int ALPHA;
-	private int BETA;
-	
+
 	private long startTime;
 	
 	/**
 	 * Doesn't work.
 	 */
 	HashMap<int[][], Integer> stateValues;
+	List<int[]> ties;
 	
 	public HMinimaxSearch(EvaluationFunction evaluator){
 		this.evaluator = evaluator;
 		scg = new SuccessorGenerator();
 		stateValues = new HashMap<>();
+		ties = new ArrayList<>();
 	}
 	public HMinimaxSearch(EvaluationFunction evaluator, int depth){
 		this.evaluator = evaluator;
 		MAXDEPTH = depth;
 		scg = new SuccessorGenerator();
 		stateValues = new HashMap<>();
+		ties = new ArrayList<>();
 	}
 	
 	public void setMaxDepth(int newDepth){
@@ -56,6 +57,7 @@ public class HMinimaxSearch {
 	 * @param player - The player colour our agent is
 	 * @return - The move combination to get to the next best state
 	 */
+	@Override
 	public int[] maxSearch(Board board, int player){
 		
 		int max = Integer.MIN_VALUE;
@@ -70,9 +72,6 @@ public class HMinimaxSearch {
 				
 		List<int[]> potentialActions = scg.getSuccessors(board, player);
 		
-		int modifiedMax = Integer.MIN_VALUE;
-		
-		
 		startTime = System.currentTimeMillis();
 		
 		for (int[] action : potentialActions){
@@ -81,16 +80,12 @@ public class HMinimaxSearch {
 			
 			int result = minVal(child, 1, player);
 			
-			if (result == max){
-				// Skew the always even results to pick a random move
-				result = (int) (result * (1 + new Random().nextDouble()));
-				if (result > modifiedMax){
-					modifiedMax = result;
-					move = action;
-				}
-			} else if (result > max){
-				modifiedMax = result;
+			if (result > max){
 				max = result;
+				move = action;
+				ties.clear();
+			} else if (result == max){
+				ties.add(action);
 			}
 			
 			// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
@@ -100,6 +95,12 @@ public class HMinimaxSearch {
 				break;
 			}
 		}
+		
+		if (ties.size() > 0){
+			move = tieBreaker();
+		}
+		
+		System.out.println("Best estimate: " + max);
 		return move;
 	}
 	
@@ -112,6 +113,7 @@ public class HMinimaxSearch {
 	 * 
 	 * @return - The heuristic value of the state
 	 */
+	@Override
 	public int maxVal(Board board,int depth, int player){
 		
 		// Switch roles for next generation
@@ -172,6 +174,7 @@ public class HMinimaxSearch {
 	 * 
 	 * @return - The heuristic value of the state
 	 */
+	@Override
 	public int minVal(Board board, int depth, int player){
 		
 		int min = Integer.MAX_VALUE;
@@ -221,5 +224,25 @@ public class HMinimaxSearch {
 			min = Math.min(min, value);
 		}
 		return min;
+	}
+	
+	@Override
+	public int[] tieBreaker() {
+		
+		int[] topSelection = new int[6];
+		int mostGround = 0;
+		
+		
+		for (int[] move : ties){
+		
+			int dQ = Math.abs(move[2] - move[0]) + Math.abs(move[3] - move[1]);
+			int dA = Math.abs(move[5] - move[3]) + Math.abs(move[4] - move[1]);
+			
+			if (dQ + dA > mostGround){
+				topSelection = move;
+			}
+			
+		}
+		return topSelection;
 	}
 }
