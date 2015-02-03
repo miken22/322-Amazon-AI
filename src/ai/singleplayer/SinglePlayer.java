@@ -361,7 +361,7 @@ public class SinglePlayer implements GamePlayer {
 					makeMove(board, move, 1);	
 					whiteTurn = false;
 
-					String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+					String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + move[2] + "-" + Utility.getColumnLetter(move[5]) + move[4];
 					System.out.println("White: " + action);
 					updateMoveLog(action, 1);
 				} catch (NullPointerException e){
@@ -375,7 +375,7 @@ public class SinglePlayer implements GamePlayer {
 					makeMove(board, move, 2);
 					whiteTurn = true;
 
-					String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+					String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
 					System.out.println("Black: " + action);
 					updateMoveLog(action, 2);
 
@@ -384,7 +384,7 @@ public class SinglePlayer implements GamePlayer {
 					break;
 				}
 			}
-			finished = isFinished();
+			//finished = isFinished();
 		}
 		endGame();
 		
@@ -412,6 +412,8 @@ public class SinglePlayer implements GamePlayer {
 	
 	private void endGame(){
 		System.out.println("Game Over!");
+//		frame.dispose();
+//		System.exit(0);
 	}
 
 	/**
@@ -429,8 +431,7 @@ public class SinglePlayer implements GamePlayer {
 	
 		for (Pair<Integer, Integer> pair : wPositions){
 			// Reach opposing amazon using legal moves then the game is not over.
-			countReachableTiles(pair, WQUEEN, hasChecked);
-		}
+			countReachableTiles(pair, WQUEEN, hasChecked);		}
 		
 		for (Pair<Integer, Integer> pair : bPositions){
 			// Reach opposing amazon using legal moves then the game is not over.
@@ -677,8 +678,6 @@ public class SinglePlayer implements GamePlayer {
 			if(e.getSource() == clear){
 				input.setText("");
 				b.setBackground(new Color(250,250,250));
-				// If user does not enter anything the chatbot will not do anything.
-
 			} else if(in.length() == 0){
 				input.requestFocus();
 				b.setBackground(new Color(250,250,250));
@@ -778,16 +777,11 @@ public class SinglePlayer implements GamePlayer {
 				
 				frame.repaint();
 
-				if(isFinished()){
-					endGame();
-					finished = true;
-				}
-	
 				System.out.println("Agent move:");
 				
 				int[] move = agent.selectMove(board);
 				
-				String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
 				System.out.println(action);
 				updateMoveLog(action, 2);
 				
@@ -942,20 +936,7 @@ public class SinglePlayer implements GamePlayer {
 			}
 			return true;
 		}
-		
-		private void endGame(){
-		
-			doc = chat.getDocument();
-
-			StyleConstants.setForeground(userStyle, Color.red);
-			try { 
-				chatTextarea.insertString(chatTextarea.getLength(), "\r\nGame Over!",userStyle); 
-			} catch (BadLocationException e1){}
-
-			chat.select(doc.getLength(), doc.getLength());
-		}
-
-		
+			
 	}
 
 	private class MenuListener implements ActionListener {

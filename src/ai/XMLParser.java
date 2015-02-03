@@ -82,11 +82,11 @@ public class XMLParser{
 	public String buildMoveForServer(int roomID, int fX, int fY, int tX, int tY,  int arow, int acol){
 
 		String actionMsg = "<action type='" +  GameMessage.ACTION_MOVE + "'>";
-		char c = Utility.getColumn(fY);
+		char c = Utility.getColumnLetter(fY);
 		actionMsg = actionMsg + "<queen move='" + c + String.valueOf(fX) + "-";  
-		c = Utility.getColumn(tY);
+		c = Utility.getColumnLetter(tY);
 		actionMsg = actionMsg + c + String.valueOf(tX) + "'>" + "</queen> ";
-		c = Utility.getColumn(acol);
+		c = Utility.getColumnLetter(acol);
 		actionMsg = actionMsg + "<arrow move='" + c + String.valueOf(arow) + "'>" + "</arrow></action>";
 
 		String msg = ServerMessage.compileGameMessage(GameMessage.MSG_GAME, roomID, actionMsg);

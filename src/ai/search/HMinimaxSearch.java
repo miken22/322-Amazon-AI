@@ -146,11 +146,6 @@ public class HMinimaxSearch implements Minimax {
 			return  value;	
 		}
 		
-		
-		if (timer.almostExpired()){
-			return max;
-		}
-		
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
 		for (int[] action : potentialActions){
@@ -206,10 +201,6 @@ public class HMinimaxSearch implements Minimax {
 			//stateValues.put(board.getBoard(), value);
 			
 			return  value;	
-		}
-		
-		if (timer.almostExpired()){
-			return min;
 		}
 		
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);

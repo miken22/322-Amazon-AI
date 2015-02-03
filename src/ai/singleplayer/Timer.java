@@ -15,4 +15,8 @@ public class Timer {
 		}
 		return false;
 	}
+	
+	public boolean isStillValid(){
+		return ((System.currentTimeMillis() - startTime) / 1000) % 60 < 30;
+	}
 }

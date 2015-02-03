@@ -30,7 +30,7 @@ public class Utility {
 		return -1;
 	}
 	
-	public static char getColumn(int c){
+	public static char getColumnLetter(int c){
 		switch(c){
 		case(0):
 			return 'a';

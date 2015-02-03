@@ -135,7 +135,7 @@ public class Player implements GamePlayer {
 				client.sendToServer(moveMessage, false);
 				
 				// GUI and logic update
-				String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
 				
 				updateRepresentations(move, playerID);
 				gui.updateMoveLog("Agent: ", action);
