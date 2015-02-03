@@ -366,7 +366,6 @@ public class SinglePlayer implements GamePlayer {
 					updateMoveLog(action, 1);
 				} catch (NullPointerException e){
 					finished = true;
-					endGame();
 					break;
 				}
 			} else {
@@ -382,7 +381,6 @@ public class SinglePlayer implements GamePlayer {
 
 				} catch (NullPointerException e){
 					finished = true;
-					endGame();
 					break;
 				}
 			}
@@ -414,7 +412,6 @@ public class SinglePlayer implements GamePlayer {
 	
 	private void endGame(){
 		System.out.println("Game Over!");
-		frame.dispose();
 	}
 
 	/**

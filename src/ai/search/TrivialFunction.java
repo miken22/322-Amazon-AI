@@ -53,10 +53,11 @@ public class TrivialFunction extends EvaluationFunction {
 
 		for (int i = 0; i < 10; i++){
 			for (int j = 0; j < 10; j++){
+				// Want to consider it "owned" if it is easier for one side to reach
 				if (wDistanceTable[i][j] > bDistanceTable[i][j]){
-					wUtility++;
-				} else if (wDistanceTable[i][j] < bDistanceTable[i][j]){
 					bUtility++;
+				} else if (wDistanceTable[i][j] < bDistanceTable[i][j]){
+					wUtility++;
 				}
 			}
 		}
@@ -68,15 +69,7 @@ public class TrivialFunction extends EvaluationFunction {
 	}
 
 	public void scoreDistance(Board board, Pair<Integer, Integer> source, int player, int[][] distanceTable){
-		int opponent;
-		switch (player) {
-		case (WQUEEN):
-			opponent = BQUEEN;
-		break;
-		default:
-			opponent = WQUEEN;
-		}
-
+	
 		Stack<Pair<Integer, Integer>> stack = new Stack<>();
 
 		// Used to indicate spots where queens are located.

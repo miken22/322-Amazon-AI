@@ -8,7 +8,7 @@ import ai.Pair;
 
 public class SuccessorGenerator extends GameTreeSearch {
 
-	public List<int[]> getSuccessors(Board board, int player){
+	public List<int[]> getRelevantActions(Board board, int player){
 
 		ArrayList<int[]> moveList = new ArrayList<>();
 
@@ -64,16 +64,40 @@ public class SuccessorGenerator extends GameTreeSearch {
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
 							int[] move = { fromX, fromY, toX, toY, arrowX, arrowY };						
 							moveList.add(move);
-						}											
+						} else {
+							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
+							// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
+							// that allow it.
+							if (arrowSpot[0] == 0){
+								j += 9 - Math.abs(arrowSpot[1]);
+							} else {
+								j += 9 - Math.abs(arrowSpot[0]);
+							}
+						}
+					}
+				} else {
+					// This relies on current ordering of actions. We proceed in one direction from the old queen, as soon as we hit an
+					// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
+					// that allow moving in the obstructed direction.
+					if (queenMove[0] == 0){
+						i += 9 - Math.abs(queenMove[1]);
+					} else {
+						i += 9 - Math.abs(queenMove[0]);
 					}
 				}
+				
 			}
 		}
+		
+		if (moveList.size() == 0){
+			int i = 0;
+		}
+		
 		return moveList;
 	}
 
 	// Applies the move sequence for the given player and returns a new board for the successor state.
-	public Board generateBoard(Board parent, int[] move, int player){
+	public Board generateSuccessor(Board parent, int[] move, int player){
 		
 		Board child = new Board(parent);
 		

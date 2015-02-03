@@ -1,7 +1,6 @@
 package ai;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.IXMLParser;
@@ -31,15 +30,9 @@ public class Player implements GamePlayer {
 	private GUI gui;
 	private XMLParser parser;
 
-	private int whiteTiles;
-	private int blackTiles;
-	private int bothCanReach;
 
 	private final int ROWS = 10;
 	private final int COLS = 10;
-
-	private final int WQUEEN = 1;
-	private final int BQUEEN = 2;
 	private final int ARROW = 3;
 
 	private int playerID;
@@ -47,7 +40,6 @@ public class Player implements GamePlayer {
 	private String role;
 
 	private boolean isOpponentsTurn;
-	private boolean finished;
 
 	private int roomNumber;
 
@@ -69,11 +61,11 @@ public class Player implements GamePlayer {
 
 		for (GameRoom g : client.roomList) {
 			try {
-				if (g.userCount == 1){
+//				if (g.userCount == 1){
 					client.joinGameRoom(g.roomName);
 					roomNumber = g.roomID;
 					break;
-				}
+//				}
 			} catch (Exception e) {
 				continue;
 			}
@@ -110,16 +102,16 @@ public class Player implements GamePlayer {
 			System.out.println("Something went wrong detecting our role");
 		}
 
-		// TODO: Handle arguments to set properties such as heuristic choice, search depth (for difficulty)
+		// TODO: Handle arguments to set properties such as heuristic choice, search depth
 		agent = new Agent(playerID);
 
 		agent.setupHeuristic(new TrivialFunction(playerID));
 
-		finished = false;
 		
 		if (!isOpponentsTurn){
 			pickMove();
 		}
+		
 	}
 
 	private void pickMove() {
@@ -140,17 +132,18 @@ public class Player implements GamePlayer {
 			try{
 				
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
-				System.out.println(Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4]);
-
 				client.sendToServer(moveMessage, false);
+				
+				// GUI and logic update
+				String action = Utility.getColumn(move[1]) + "" + move[0] + "-" + Utility.getColumn(move[3]) + "" + move[2] + "-" + Utility.getColumn(move[5]) + "" + move[4];
+				
 				updateRepresentations(move, playerID);
+				gui.updateMoveLog("Agent: ", action);
 				isOpponentsTurn = true;
 				
 			} catch (NullPointerException e){
-				finished = true;
 				endGame();
 			}
-			// GUI and logic update
 			
 		}
 
@@ -215,7 +208,6 @@ public class Player implements GamePlayer {
 		String answer = parser.handleXML(xml);
 
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
-			gui.init();
 			this.role = parser.getUserInfo(xml);
 			if (!role.equals("W") && !role.equals("B")){
 				System.out.println("Spectator of match.");
@@ -231,10 +223,12 @@ public class Player implements GamePlayer {
 			// Get the queen move and arrow marker.
 			int[] move = parser.getOpponentMove(xml);	
 			isOpponentsTurn = false;	
-			// Update GUI
-			updateRepresentations(move, oppID);
-
 			
+			// Update GUI
+			String action = parser.formatMove(xml);
+			updateRepresentations(move, oppID);
+			gui.updateMoveLog("Opponent: ", action);
+			// Start game play method
 			pickMove();
 			
 		}

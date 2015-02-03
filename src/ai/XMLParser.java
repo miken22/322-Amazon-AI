@@ -117,4 +117,17 @@ public class XMLParser{
 
 		return move;
 	}
+	
+	public String formatMove(IXMLElement xml){
+		String move = "";
+
+		IXMLElement queen = xml.getFirstChildNamed("queen");
+		move += queen.getAttribute("move", "default") + "-";
+
+		IXMLElement arrow = xml.getFirstChildNamed("arrow");
+		move += arrow.getAttribute("move", "defalut");
+		
+		return move;
+	}
+	
 }

@@ -3,7 +3,9 @@ package ai.search;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import ai.Board;
+import ai.singleplayer.Timer;
 
 /**
  * The general minimax heuristic search algorithm
@@ -16,15 +18,14 @@ public class HMinimaxSearch implements Minimax {
 	/**
 	 * The heuristic being used
 	 */
-	EvaluationFunction evaluator;
+	private EvaluationFunction evaluator;
 
 	private int ALPHA;
 	private int BETA;
 	public int MAXDEPTH = 4;
 	
-	public SuccessorGenerator scg;
-
-	private long startTime;
+	private SuccessorGenerator scg;
+	private Timer timer;
 	
 	/**
 	 * Doesn't work.
@@ -37,6 +38,7 @@ public class HMinimaxSearch implements Minimax {
 		scg = new SuccessorGenerator();
 		stateValues = new HashMap<>();
 		ties = new ArrayList<>();
+		timer = new Timer();
 	}
 	public HMinimaxSearch(EvaluationFunction evaluator, int depth){
 		this.evaluator = evaluator;
@@ -44,14 +46,15 @@ public class HMinimaxSearch implements Minimax {
 		scg = new SuccessorGenerator();
 		stateValues = new HashMap<>();
 		ties = new ArrayList<>();
+		timer = new Timer();
 	}
 	
 	public void setMaxDepth(int newDepth){
-		MAXDEPTH = newDepth;
+		this.MAXDEPTH = newDepth;
 	}
 
 	/**
-	 * Takes a state and depth to perform a limited minimax search
+	 * Takes a state and depth to perform a limited alpha-beta search
 	 * 
 	 * @param board - Current state of the game
 	 * @param player - The player colour our agent is
@@ -70,13 +73,13 @@ public class HMinimaxSearch implements Minimax {
 			stateValues.clear();
 		}
 				
-		List<int[]> potentialActions = scg.getSuccessors(board, player);
+		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
-		startTime = System.currentTimeMillis();
+		timer.startTiming();
 		
 		for (int[] action : potentialActions){
 			
-			Board child = scg.generateBoard(board, action, player);
+			Board child = scg.generateSuccessor(board, action, player);
 			
 			int result = minVal(child, 1, player);
 			
@@ -89,19 +92,25 @@ public class HMinimaxSearch implements Minimax {
 			}
 			
 			// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
-			// Need some kind of tiebreaking, use of ordering of top solutions
+			// Need some kind of tie breaking, use of ordering of top solutions
 			
-			if (((System.currentTimeMillis() - startTime) / 1000) % 60  >= 28){
+			if (timer.almostExpired()){
 				break;
 			}
+		}
+		
+		if (potentialActions.size() == 0){
+			System.out.println("No possible moves detected.");
 		}
 		
 		if (ties.size() > 0){
 			move = tieBreaker();
 		}
-		
+
+		ties.clear();
 		System.out.println("Best estimate: " + max);
 		return move;
+	
 	}
 	
 	/**
@@ -109,12 +118,14 @@ public class HMinimaxSearch implements Minimax {
 	 * 
 	 * @param board - State of the amazons game being evaluated
 	 * @param depth - The current depth of the search
-	 * @param player - The player being evaluated, {@value 1} for max, {@value 2} for min
+	 * @param player - The player being evaluated, 1 for max, 2 for min
 	 * 
 	 * @return - The heuristic value of the state
 	 */
 	@Override
 	public int maxVal(Board board,int depth, int player){
+
+		int max = Integer.MIN_VALUE;
 		
 		// Switch roles for next generation
 		if (player == 1){
@@ -135,20 +146,19 @@ public class HMinimaxSearch implements Minimax {
 			return  value;	
 		}
 		
-		int max = Integer.MIN_VALUE;
-
-		List<int[]> potentialActions = scg.getSuccessors(board, player);
+		
+		if (timer.almostExpired()){
+			return max;
+		}
+		
+		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
 		for (int[] action : potentialActions){
 
-			Board child = scg.generateBoard(board, action, player);
+			Board child = scg.generateSuccessor(board, action, player);
 			int result = minVal(child, depth+1, player);
 
 			max = Math.max(max, result);
-			
-			if (((System.currentTimeMillis() - startTime) / 1000) % 60  >= 27){
-				return max;
-			}
 			
 			if (max >= BETA){
 				return max;
@@ -170,7 +180,7 @@ public class HMinimaxSearch implements Minimax {
 	 * 
 	 * @param board - State of the amazons game being evaluated
 	 * @param depth - The current depth of the search
-	 * @param player - The player being evaluated, {@value 1} for max, {@value 2} for min
+	 * @param player - The player being evaluated, 1 for max, 2 for min
 	 * 
 	 * @return - The heuristic value of the state
 	 */
@@ -198,18 +208,18 @@ public class HMinimaxSearch implements Minimax {
 			return  value;	
 		}
 		
-		List<int[]> potentialActions = scg.getSuccessors(board, player);
+		if (timer.almostExpired()){
+			return min;
+		}
+		
+		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
 		for (int[] action : potentialActions){
 
-			Board child = scg.generateBoard(board, action, player);
+			Board child = scg.generateSuccessor(board, action, player);
 			int result = maxVal(child, depth+1, player);
 			
 			min = Math.min(min, result);
-			
-			if (((System.currentTimeMillis() - startTime) / 1000) % 60  >= 27){
-				return min;
-			}
 			
 			if (min <= ALPHA){
 				return min;
@@ -217,7 +227,6 @@ public class HMinimaxSearch implements Minimax {
 			
 			BETA = Math.min(BETA, min);
 						
-			
 		}
 		if (potentialActions.size() == 0){
 			int value = evaluator.evaluate(board, player);
@@ -225,7 +234,9 @@ public class HMinimaxSearch implements Minimax {
 		}
 		return min;
 	}
-	
+	/**
+	 * Tie breaker that selects the operator that moves a piece the farthest.
+	 */
 	@Override
 	public int[] tieBreaker() {
 		
@@ -236,9 +247,8 @@ public class HMinimaxSearch implements Minimax {
 		for (int[] move : ties){
 		
 			int dQ = Math.abs(move[2] - move[0]) + Math.abs(move[3] - move[1]);
-			int dA = Math.abs(move[5] - move[3]) + Math.abs(move[4] - move[1]);
 			
-			if (dQ + dA > mostGround){
+			if (dQ > mostGround){
 				topSelection = move;
 			}
 			

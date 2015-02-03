@@ -42,11 +42,11 @@ public class Agent implements Search {
 		}
 		
 		if (move > 4){
-			hMinimax.setMaxDepth(2);
-		} else if (move > 6){
 			hMinimax.setMaxDepth(3);
-		} else if (move > 8){
+		} else if (move > 6){
 			hMinimax.setMaxDepth(4);
+		} else if (move > 8){
+			hMinimax.setMaxDepth(5);
 		} else if (move > 11){
 			hMinimax.setMaxDepth(6);
 		}
@@ -58,9 +58,10 @@ public class Agent implements Search {
 			if(moveChoice[i] != 0){
 				return moveChoice;
 			}
-			// If we reach this state we hit a goal condition, needs to be properly handled.
 		}
 		
+		// If we reach end of this loop the operator says to stand still and shoot an arrow
+		// at yourself, not possible so we must be in a goal state.
 		return null;
 		
 	}
