@@ -36,6 +36,7 @@ import ai.Pair;
 import ai.Utility;
 import ai.gui.Cells;
 import ai.search.Agent;
+import ai.search.BlindFunction;
 import ai.search.TrivialFunction;
 import ubco.ai.games.GameMessage;
 import ubco.ai.games.GamePlayer;
@@ -351,8 +352,11 @@ public class SinglePlayer implements GamePlayer {
 
 		boolean whiteTurn = true;
 		
-		agent.setupHeuristic(new TrivialFunction(1));
-		agent2.setupHeuristic(new TrivialFunction(2));
+//		agent.setupHeuristic(new TrivialFunction(1));
+//		agent2.setupHeuristic(new TrivialFunction(2));
+		
+		agent.setupHeuristic(new BlindFunction(1));
+		agent2.setupHeuristic(new BlindFunction(2));
 		
 		while (!finished){
 			if (whiteTurn){
@@ -364,6 +368,7 @@ public class SinglePlayer implements GamePlayer {
 					String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + move[2] + "-" + Utility.getColumnLetter(move[5]) + move[4];
 					System.out.println("White: " + action);
 					updateMoveLog(action, 1);
+					writeToFile("White: " + action);
 				} catch (NullPointerException e){
 					finished = true;
 					break;
@@ -378,15 +383,19 @@ public class SinglePlayer implements GamePlayer {
 					String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
 					System.out.println("Black: " + action);
 					updateMoveLog(action, 2);
-
+					writeToFile("Black: " + action);
 				} catch (NullPointerException e){
 					finished = true;
 					break;
 				}
 			}
-			//finished = isFinished();
+			finished = isFinished();
 		}
 		endGame();
+		
+	}
+	
+	private void writeToFile(String move){
 		
 	}
 	
@@ -412,10 +421,25 @@ public class SinglePlayer implements GamePlayer {
 	
 	private void endGame(){
 		System.out.println("Game Over!");
+		addText("Game over!");
 //		frame.dispose();
 //		System.exit(0);
 	}
 
+	private void addText(String message){
+		Document doc = chat.getDocument();		
+		StyleConstants.setForeground(userStyle, Color.red);
+		try { 
+			chatTextarea.insertString(chatTextarea.getLength(), "\r\nSystem: ",userStyle); 
+		} catch (BadLocationException e1){}
+
+		StyleConstants.setForeground(userStyle, Color.black);
+		try { 
+			chatTextarea.insertString(chatTextarea.getLength(), message, userStyle); 
+		} catch (BadLocationException e1){}
+		chat.select(doc.getLength(), doc.getLength());
+	}
+	
 	/**
 	 * Search board starting from each of the players pieces. If there is no path to any opposing colour then the game
 	 * is over.
@@ -438,8 +462,8 @@ public class SinglePlayer implements GamePlayer {
 			countReachableTiles(pair, BQUEEN, hasChecked);
 		}
 		
-		whiteTiles = 0;
-		blackTiles = 0; 
+		whiteTiles = 4;
+		blackTiles = 4; 
 		bothCanReach = 0;
 		
 		for (int i = 0; i < rows; i++){
@@ -461,9 +485,11 @@ public class SinglePlayer implements GamePlayer {
 		System.out.println("Black: " + blackTiles + " White: " + whiteTiles + " Both: " + bothCanReach);
 		
 		if (blackTiles > whiteTiles + bothCanReach){
+			System.out.println("Black wins");
 			System.out.println("Black: " + blackTiles + " White: " + (whiteTiles + bothCanReach));
 			return true;
 		} else if (whiteTiles > blackTiles + bothCanReach){
+			System.out.println("White wins!");
 			System.out.println("Black: " + (blackTiles  + bothCanReach) + " White: " + (whiteTiles));
 			return true;
 		} 
@@ -612,25 +638,6 @@ public class SinglePlayer implements GamePlayer {
 		}			
 	}
 	
-	private void addText(){
-		Document doc = chat.getDocument();
-		input.setText("");
-		String in= input.getText();
-		
-		StyleConstants.setForeground(userStyle, Color.red);
-		try { 
-			chatTextarea.insertString(chatTextarea.getLength(), "\r\nUser: ",userStyle); 
-		} catch (BadLocationException e1){}
-
-		StyleConstants.setForeground(userStyle, Color.black);
-		try { 
-			chatTextarea.insertString(chatTextarea.getLength(), in, userStyle); 
-		} catch (BadLocationException e1){}
-
-		chat.select(doc.getLength(), doc.getLength());
-
-	}
-
 	private void updateMoveLog(String move, int pid) {
 		Document doc = moveLog.getDocument();
 
@@ -687,7 +694,7 @@ public class SinglePlayer implements GamePlayer {
 				if (in.contains("-")){
 					handleMove();
 				} else {
-					addText();
+					addText(in);
 					input.setText("");
 				}
 

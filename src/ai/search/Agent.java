@@ -41,30 +41,24 @@ public class Agent implements Search {
 			move = 1;
 			hMinimax.setMaxDepth(1);
 			if (role == 1){
-//				return selectOpeningMove();
+				return selectOpeningMove();
 			}
 		}
 		
-
-		if (move == 14){
-			hMinimax.setMaxDepth(4);
-		} 
-//		else if (move == 8){
-//			hMinimax.setMaxDepth(6);
-//		}
-
+		if (move == 12){
+			hMinimax.setMaxDepth(3);
+		}
+		
 		move++;
 		int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
 		
-		for (int i = 0; i < moveChoice.length; i++){
-			if(moveChoice[i] != 0){
-				return moveChoice;
-			}
-		}
-		
-		// If we reach end of this loop the operator says to stand still and shoot an arrow
-		// at yourself, not possible so we must be in a goal state.
-		return null;
+		// Checks that we never pick a move standing stil and shooting at self
+//		for (int i = 0; i < moveChoice.length; i++){
+//			if(moveChoice[i] != 0){
+//				return moveChoice;
+//			}
+//		}
+		return moveChoice;
 		
 	}
 

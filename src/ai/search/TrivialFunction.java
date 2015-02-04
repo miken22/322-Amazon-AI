@@ -42,7 +42,7 @@ public class TrivialFunction extends EvaluationFunction {
 				bDistanceTable[i][j] = Integer.MAX_VALUE;
 			}
 		}
-
+		
 		for (Pair<Integer, Integer> pair : wPositions) {
 			scoreDistance(board, pair, WQUEEN, wDistanceTable);
 		}
@@ -51,18 +51,17 @@ public class TrivialFunction extends EvaluationFunction {
 			scoreDistance(board, pair, BQUEEN, bDistanceTable);
 		}
 
-		for (int i = 9; i  >= 0; i--){
-			for (int j = 0; j < 10; j++){
-				if (wDistanceTable[i][j] == Integer.MAX_VALUE){
-					System.out.print(0 + " | ");
-				} else {
-					System.out.print(wDistanceTable[i][j] + " | ");
-				}
-			}
-			System.out.println("");
-		}
-		System.out.println("--------------------------");
-		
+//		for (int i = 9; i  >= 0; i--){
+//			for (int j = 0; j < 10; j++){
+//				if (wDistanceTable[i][j] == Integer.MAX_VALUE){
+//					System.out.print(0 + " | ");
+//				} else {
+//					System.out.print(wDistanceTable[i][j] + " | ");
+//				}
+//			}
+//			System.out.println("");
+//		}
+//		System.out.println("--------------------------");
 		
 		for (int i = 0; i < 10; i++){
 			for (int j = 0; j < 10; j++){
@@ -121,8 +120,7 @@ public class TrivialFunction extends EvaluationFunction {
 							stack.push(new Pair<Integer, Integer>(newX, newY));
 						}
 					}
-				}
-		
+				}		
 			}
 		}
 	}
