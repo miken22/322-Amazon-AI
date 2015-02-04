@@ -93,6 +93,12 @@ public class XMLParser{
 		return msg;
 	}
 
+	/**
+	 * Convert the opponents XML move into a set of 6 integers for the boards logic
+	 * 
+	 * @param xml - The XML game message from the server
+	 * @return - A six element int[] representing the move.
+	 */
 	public int[] getOpponentMove(IXMLElement xml) {
 
 		int[] move = new int[6];
@@ -118,6 +124,12 @@ public class XMLParser{
 		return move;
 	}
 	
+	/**
+	 * Pretty print opponent move after received from server fro GUI
+	 * 
+	 * @param xml - The XML game message returned from the server
+	 * @return - A string to display the opponents move.
+	 */
 	public String formatMove(IXMLElement xml){
 		String move = "";
 

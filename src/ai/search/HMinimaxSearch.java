@@ -22,7 +22,8 @@ public class HMinimaxSearch implements Minimax {
 
 	private int ALPHA;
 	private int BETA;
-	public int MAXDEPTH = 4;
+	public int MAXDEPTH = 2;
+	private int ourPlayer;
 	
 	private SuccessorGenerator scg;
 	private Timer timer;
@@ -72,6 +73,8 @@ public class HMinimaxSearch implements Minimax {
 		if (stateValues.size() > 250000){
 			stateValues.clear();
 		}
+		
+		ourPlayer = player;
 				
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
@@ -94,9 +97,9 @@ public class HMinimaxSearch implements Minimax {
 			// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
 			// Need some kind of tie breaking, use of ordering of top solutions
 			
-			if (timer.almostExpired()){
-				break;
-			}
+//			if (timer.almostExpired()){
+//				break;
+//			}
 		}
 		
 		if (potentialActions.size() == 0){
@@ -140,7 +143,7 @@ public class HMinimaxSearch implements Minimax {
 				return stateValues.get(board.getBoard());
 			} 
 		
-			int value = evaluator.evaluate(board, player);
+			int value = evaluator.evaluate(board, ourPlayer);
 			//stateValues.put(board.getBoard(), value);
 			
 			return  value;	
@@ -162,15 +165,15 @@ public class HMinimaxSearch implements Minimax {
 			ALPHA = Math.max(ALPHA, max);
 						
 		}
-		
+		// We ran out of moves, no good!
 		if (potentialActions.size() == 0){
-			int value = evaluator.evaluate(board, player);
-			max = Math.max(max, value);
+			max = Integer.MIN_VALUE;
 		}
 		
 		return max;
 	}
 	/**
+	 * 
 	 * Returns the evaluation of the board for the player
 	 * 
 	 * @param board - State of the amazons game being evaluated
@@ -197,7 +200,7 @@ public class HMinimaxSearch implements Minimax {
 				return stateValues.get(board.getBoard());
 			} 
 		
-			int value = evaluator.evaluate(board, player);
+			int value = evaluator.evaluate(board, ourPlayer);
 			//stateValues.put(board.getBoard(), value);
 			
 			return  value;	
@@ -219,9 +222,9 @@ public class HMinimaxSearch implements Minimax {
 			BETA = Math.min(BETA, min);
 						
 		}
+		// No moves, goal state so we win!
 		if (potentialActions.size() == 0){
-			int value = evaluator.evaluate(board, player);
-			min = Math.min(min, value);
+			min = Integer.MAX_VALUE;
 		}
 		return min;
 	}

@@ -35,15 +35,17 @@ public class Agent implements Search {
 	 */
 	public int[] selectMove(Board currentBoard){
 		
-		if (move == 0 && role == 1){
+		if (move == 0){
 			move = 1;
-			hMinimax.setMaxDepth(2);
-			return selectOpeningMove();
+			hMinimax.setMaxDepth(1);
+			if (role == 1){
+				return selectOpeningMove();
+			}
 		}
 		
 
-		if (move == 4){
-			hMinimax.setMaxDepth(4);
+		if (move == 16){
+			hMinimax.setMaxDepth(3);
 		} 
 //		else if (move == 8){
 //			hMinimax.setMaxDepth(6);

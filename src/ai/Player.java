@@ -208,6 +208,7 @@ public class Player implements GamePlayer {
 		String answer = parser.handleXML(xml);
 
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
+						
 			this.role = parser.getUserInfo(xml);
 			if (!role.equals("W") && !role.equals("B")){
 				System.out.println("Spectator of match.");
@@ -237,15 +238,11 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		if (args.length == 0){
 			player.joinServer();
 		} else {
 			player.joinServer(args[0] + " " + args[1]);
 		}
-
-		//		Player p2 = new Player("Bot-3-0001", "54321");
-		//		p2.joinServer("Jackpine lake");
-
 	}
 }
