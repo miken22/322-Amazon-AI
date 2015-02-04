@@ -51,6 +51,19 @@ public class TrivialFunction extends EvaluationFunction {
 			scoreDistance(board, pair, BQUEEN, bDistanceTable);
 		}
 
+		for (int i = 9; i  >= 0; i--){
+			for (int j = 0; j < 10; j++){
+				if (wDistanceTable[i][j] == Integer.MAX_VALUE){
+					System.out.print(0 + " | ");
+				} else {
+					System.out.print(wDistanceTable[i][j] + " | ");
+				}
+			}
+			System.out.println("");
+		}
+		System.out.println("--------------------------");
+		
+		
 		for (int i = 0; i < 10; i++){
 			for (int j = 0; j < 10; j++){
 				// Want to consider it "owned" if it is easier for one side to reach
@@ -77,16 +90,20 @@ public class TrivialFunction extends EvaluationFunction {
 
 		stack.push(source);
 		
-		int step = 1;
-
 		while (!stack.empty()) {
 			// Check 8 diagonal positions.
 			Pair<Integer, Integer> top = stack.pop();
 			int xPos = top.getLeft();
 			int yPos = top.getRight();
 			
-			for (int[] action : actions.getActions()){
 			
+			for (int[] action : actions.getActions()){
+
+				int currentDistance = distanceTable[xPos][yPos];
+				if (currentDistance == -1){
+					currentDistance = 0;
+				}
+				
 				int newX = xPos + action[0];
 				int newY = yPos + action[1];
 				
@@ -95,17 +112,18 @@ public class TrivialFunction extends EvaluationFunction {
 					continue;
 				}
 				
+				currentDistance++;
+				
 				if (!board.isMarked(newX, newY)){
 					if (search.moveIsValid(board, xPos, yPos, newX, newY, player, false)){
-						if (distanceTable[newX][newY] > step){
-							distanceTable[newX][newY] = step;
+						if (distanceTable[newX][newY] > currentDistance){
+							distanceTable[newX][newY] = currentDistance;
 							stack.push(new Pair<Integer, Integer>(newX, newY));
 						}
 					}
 				}
 		
 			}
-			step++;
 		}
 	}
 }

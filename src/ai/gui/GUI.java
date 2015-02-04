@@ -314,4 +314,10 @@ public class GUI {
 	public void destroy() {
 		frame.dispose();
 	}
+
+	public void removeArrow(int i, int j) {
+		
+		guiBoard[i][j].setFree();
+		
+	}
 }

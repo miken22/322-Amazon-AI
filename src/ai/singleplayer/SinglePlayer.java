@@ -776,17 +776,8 @@ public class SinglePlayer implements GamePlayer {
 				playerTurn = false;
 				
 				frame.repaint();
-
-				System.out.println("Agent move:");
 				
-				int[] move = agent.selectMove(board);
-				
-				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
-				System.out.println(action);
-				updateMoveLog(action, 2);
-				
-				//makeMove(board, move);
-				playerTurn = true;
+				playGame();
 			
 			}
 		}

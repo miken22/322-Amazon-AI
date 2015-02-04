@@ -1,5 +1,7 @@
 package ai.search;
 
+import java.util.Random;
+
 import ai.Board;
 
 /**
@@ -39,13 +41,13 @@ public class Agent implements Search {
 			move = 1;
 			hMinimax.setMaxDepth(1);
 			if (role == 1){
-				return selectOpeningMove();
+//				return selectOpeningMove();
 			}
 		}
 		
 
-		if (move == 16){
-			hMinimax.setMaxDepth(3);
+		if (move == 14){
+			hMinimax.setMaxDepth(4);
 		} 
 //		else if (move == 8){
 //			hMinimax.setMaxDepth(6);
@@ -68,7 +70,13 @@ public class Agent implements Search {
 
 	// TODO: Figure out opening move strategies
 	private int[] selectOpeningMove() {
-		int[] openingMove = { 0, 3, 7, 3, 5, 1 };
-		return openingMove;
+		int[] openingMove1 = { 0, 3, 7, 3, 5, 1 };
+		int[] openingMove2 = { 0, 6, 7, 6, 5, 8 };
+		
+		int random = new Random().nextInt() % 2;
+		if (random == 0) {
+			return openingMove1;
+		}
+		return openingMove2;
 	}
 }

@@ -6,6 +6,16 @@ import java.util.List;
 import ai.Board;
 import ai.Pair;
 
+/**
+ * Generic successor generator for Amazons. Close to generating all possible moves in a partially better than brute force
+ * way. Currently generates 80 more than literature says possible for the first move. We search in one direction until 
+ * we hit an obstacle preventing the queen from moving, then we know we cannot move farther in that direction so we skip 
+ * and go to the next one. Arrows are generated from farthest to closest so this pruning does not work, however some 
+ * technique can be created to overcome this.
+ * 
+ * @author Mike Nowicki
+ *
+ */
 public class SuccessorGenerator extends GameTreeSearch {
 
 	public List<int[]> getRelevantActions(Board board, int player){
@@ -48,13 +58,12 @@ public class SuccessorGenerator extends GameTreeSearch {
 					tempBoard.freeSquare(fromX, fromY);
 					tempBoard.placeMarker(toX, toY, player);
 					
-					for (int j = 0; j < actions.getActions().size(); j++){
-						
-						int[] arrowSpot = actions.getActions().get(j);
+					// Use a different ordering for the arrows, start looking farthest away and then work in
+					for (int[] arrowSpot : actions.getArrowThrows()){
 						
 						int arrowX = toX + arrowSpot[0];
 						int arrowY = toY + arrowSpot[1];
-					
+											
 						// Means we stand still and shoot at ourselves, does not mean we encounter an obstacle
 						if (fromX == toX && toX == arrowX && fromY == toY && toY == arrowY){
 							continue;
@@ -64,15 +73,6 @@ public class SuccessorGenerator extends GameTreeSearch {
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
 							int[] move = { fromX, fromY, toX, toY, arrowX, arrowY };						
 							moveList.add(move);
-						} else {
-							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
-							// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
-							// that allow it.
-							if (arrowSpot[0] == 0){
-								j += 9 - Math.abs(arrowSpot[1]);
-							} else {
-								j += 9 - Math.abs(arrowSpot[0]);
-							}
 						}
 					}
 				} else {
@@ -87,12 +87,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 				}
 				
 			}
-		}
-		
-		if (moveList.size() == 0){
-			int i = 0;
-		}
-		
+		}		
 		return moveList;
 	}
 
@@ -100,7 +95,6 @@ public class SuccessorGenerator extends GameTreeSearch {
 	public Board generateSuccessor(Board parent, int[] move, int player){
 		
 		Board child = new Board(parent);
-		
 		// Update the logical positions on the board
 		child.freeSquare(move[0], move[1]);
 		child.placeMarker(move[2], move[3], player);
@@ -112,7 +106,6 @@ public class SuccessorGenerator extends GameTreeSearch {
 		} else {
 			child.updateBlackPositions(move[0], move[1], move[2], move[3]);
 		}
-		
 		return child;	
 	}
 }

@@ -1,8 +1,8 @@
 package ai.search;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import ai.Board;
 import ai.singleplayer.Timer;
@@ -28,16 +28,11 @@ public class HMinimaxSearch implements Minimax {
 	private SuccessorGenerator scg;
 	private Timer timer;
 	
-	/**
-	 * Doesn't work.
-	 */
-	HashMap<int[][], Integer> stateValues;
 	List<int[]> ties;
 	
 	public HMinimaxSearch(EvaluationFunction evaluator){
 		this.evaluator = evaluator;
 		scg = new SuccessorGenerator();
-		stateValues = new HashMap<>();
 		ties = new ArrayList<>();
 		timer = new Timer();
 	}
@@ -45,7 +40,6 @@ public class HMinimaxSearch implements Minimax {
 		this.evaluator = evaluator;
 		MAXDEPTH = depth;
 		scg = new SuccessorGenerator();
-		stateValues = new HashMap<>();
 		ties = new ArrayList<>();
 		timer = new Timer();
 	}
@@ -69,11 +63,7 @@ public class HMinimaxSearch implements Minimax {
 		
 		ALPHA = Integer.MIN_VALUE;
 		BETA = Integer.MAX_VALUE;
-		
-		if (stateValues.size() > 250000){
-			stateValues.clear();
-		}
-		
+				
 		ourPlayer = player;
 				
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
@@ -138,14 +128,7 @@ public class HMinimaxSearch implements Minimax {
 		}
 		
 		if (depth == MAXDEPTH){
-			
-			if (stateValues.containsKey(board.getBoard())){
-				return stateValues.get(board.getBoard());
-			} 
-		
 			int value = evaluator.evaluate(board, ourPlayer);
-			//stateValues.put(board.getBoard(), value);
-			
 			return  value;	
 		}
 		
@@ -195,14 +178,7 @@ public class HMinimaxSearch implements Minimax {
 		}
 		
 		if (depth == MAXDEPTH){
-			
-			if (stateValues.containsKey(board.getBoard())){
-				return stateValues.get(board.getBoard());
-			} 
-		
 			int value = evaluator.evaluate(board, ourPlayer);
-			//stateValues.put(board.getBoard(), value);
-			
 			return  value;	
 		}
 		
@@ -229,24 +205,11 @@ public class HMinimaxSearch implements Minimax {
 		return min;
 	}
 	/**
-	 * Tie breaker that selects the operator that moves a piece the farthest.
+	 * Tie breaker that selects the operator at random.
 	 */
 	@Override
 	public int[] tieBreaker() {
-		
-		int[] topSelection = new int[6];
-		int mostGround = 0;
-		
-		
-		for (int[] move : ties){
-		
-			int dQ = Math.abs(move[2] - move[0]) + Math.abs(move[3] - move[1]);
-			
-			if (dQ > mostGround){
-				topSelection = move;
-			}
-			
-		}
-		return topSelection;
+		int choice = new Random().nextInt(ties.size());
+		return ties.get(choice);
 	}
 }

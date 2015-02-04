@@ -77,23 +77,25 @@ public class Actions {
 	public int[] upRightEight = { 8, 8 };
 	public int[] upRightNine = { 9, 9 };
 
-	public int[] upLeftOne = { -1, 1 };
-	public int[] upLeftTwo = { -2, 2 };
-	public int[] upLeftThree = { -3, 3 };
-	public int[] upLeftFour = { -4, 4 };
-	public int[] upLeftFive = { -5, 5 };
-	public int[] upLeftSix = { -6, 6 };
-	public int[] upLeftSeven = { -7, 7 };
-	public int[] upLeftEight = { -8, 8 };
-	public int[] upLeftNine = { -9, 9 };
+	public int[] upLeftOne = { 1, -1 };
+	public int[] upLeftTwo = { 2, -2 };
+	public int[] upLeftThree = { 3, -3 };
+	public int[] upLeftFour = { 4, -4 };
+	public int[] upLeftFive = { 5, -5 };
+	public int[] upLeftSix = { 6, -6 };
+	public int[] upLeftSeven = { 7, -7 };
+	public int[] upLeftEight = { 8, -8 };
+	public int[] upLeftNine = { 9, -9 };
 	
 	List<int[]> actions;
+	List<int[]> arrowThrows;
 	
 	public Actions(){
 		
 		actions = new ArrayList<>();
+		arrowThrows = new ArrayList<>();
 	
-actions.add(stayStill);
+		actions.add(stayStill);
 		
 		actions.add(leftOne);
 		actions.add(leftTwo);
@@ -175,10 +177,95 @@ actions.add(stayStill);
 		actions.add(upRightEight);
 		actions.add(upRightNine);
 		
+		arrowThrows.add(leftNine);
+		arrowThrows.add(leftEight);
+		arrowThrows.add(leftSeven);
+		arrowThrows.add(leftSix);
+		arrowThrows.add(leftFive);
+		arrowThrows.add(leftFour);
+		arrowThrows.add(leftThree);
+		arrowThrows.add(leftTwo);
+		arrowThrows.add(leftOne);
+
+		arrowThrows.add(rightNine);
+		arrowThrows.add(rightEight);
+		arrowThrows.add(rightSeven);
+		arrowThrows.add(rightSix);
+		arrowThrows.add(rightFive);
+		arrowThrows.add(rightFour);
+		arrowThrows.add(rightThree);
+		arrowThrows.add(rightTwo);
+		arrowThrows.add(rightOne);
+
+		arrowThrows.add(upNine);
+		arrowThrows.add(upEight);
+		arrowThrows.add(upSeven);
+		arrowThrows.add(upSix);
+		arrowThrows.add(upFive);
+		arrowThrows.add(upFour);
+		arrowThrows.add(upThree);
+		arrowThrows.add(upTwo);
+		arrowThrows.add(upOne);
+
+		arrowThrows.add(downNine);
+		arrowThrows.add(downEight);
+		arrowThrows.add(downSeven);
+		arrowThrows.add(downSix);
+		arrowThrows.add(downFive);
+		arrowThrows.add(downFour);
+		arrowThrows.add(downThree);
+		arrowThrows.add(downTwo);
+		arrowThrows.add(downOne);
+
+		arrowThrows.add(downLeftNine);
+		arrowThrows.add(downLeftEight);
+		arrowThrows.add(downLeftSeven);
+		arrowThrows.add(downLeftSix);
+		arrowThrows.add(downLeftFive);
+		arrowThrows.add(downLeftFour);
+		arrowThrows.add(downLeftThree);
+		arrowThrows.add(downLeftTwo);
+		arrowThrows.add(downLeftOne);
+
+		arrowThrows.add(downRightNine);
+		arrowThrows.add(downRightEight);
+		arrowThrows.add(downRightSeven);
+		arrowThrows.add(downRightSix);
+		arrowThrows.add(downRightFive);
+		arrowThrows.add(downRightFour);
+		arrowThrows.add(downRightThree);
+		arrowThrows.add(downRightTwo);
+		arrowThrows.add(downRightOne);
+
+		arrowThrows.add(upLeftNine);
+		arrowThrows.add(upLeftEight);
+		arrowThrows.add(upLeftSeven);
+		arrowThrows.add(upLeftSix);
+		arrowThrows.add(upLeftFive);
+		arrowThrows.add(upLeftFour);
+		arrowThrows.add(upLeftThree);
+		arrowThrows.add(upLeftTwo);
+		arrowThrows.add(upLeftOne);
+		
+		arrowThrows.add(upRightNine);
+		arrowThrows.add(upRightEight);
+		arrowThrows.add(upRightSeven);
+		arrowThrows.add(upRightSix);
+		arrowThrows.add(upRightFive);
+		arrowThrows.add(upRightFour);
+		arrowThrows.add(upRightThree);
+		arrowThrows.add(upRightTwo);
+		arrowThrows.add(upRightOne);
+
+		
 	}
 
 	public List<int[]> getActions(){	
 		return actions;
+	}
+	
+	public List<int[]> getArrowThrows(){
+		return arrowThrows;
 	}
 		
 }
