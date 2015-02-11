@@ -197,7 +197,7 @@ public class HMinimaxSearch implements Minimax {
 			Board child = scg.generateSuccessor(board, action, player);
 
 			if (timer.almostExpired()){
-				return Math.max(Integer.MAX_VALUE, min);
+				return Math.min(Integer.MAX_VALUE, min);
 			}
 			
 			int result = maxVal(child, depth+1, player);

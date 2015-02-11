@@ -59,7 +59,9 @@ public class SuccessorGenerator extends GameTreeSearch {
 					tempBoard.placeMarker(toX, toY, player);
 					
 					// Use a different ordering for the arrows, start looking farthest away and then work in
-					for (int[] arrowSpot : actions.getArrowThrows()){
+					for (int j = 0; j < actions.getActions().size(); j++){
+						
+						int[] arrowSpot = actions.getActions().get(j);
 						
 						int arrowX = toX + arrowSpot[0];
 						int arrowY = toY + arrowSpot[1];
@@ -73,6 +75,15 @@ public class SuccessorGenerator extends GameTreeSearch {
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
 							int[] move = { fromX, fromY, toX, toY, arrowX, arrowY };						
 							moveList.add(move);
+						} else {
+							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
+							// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
+							// that allow moving in the obstructed direction.
+							if (arrowSpot[0] == 0){
+								j += 9 - Math.abs(arrowSpot[1]);
+							} else {
+								j += 9 - Math.abs(arrowSpot[0]);
+							}
 						}
 					}
 				} else {

@@ -47,7 +47,7 @@ public class Player implements GamePlayer {
 
 		client = new GameClient(userName, password, this);
 		board = new Board(ROWS, COLS);
-		gui = new GUI(board, ROWS, COLS);
+		gui = new GUI(ROWS, COLS);
 		parser = new XMLParser(userName);
 
 

@@ -352,10 +352,10 @@ public class SinglePlayer implements GamePlayer {
 
 		boolean whiteTurn = true;
 		
-//		agent.setupHeuristic(new TrivialFunction(1));
+		agent.setupHeuristic(new TrivialFunction(1));
 //		agent2.setupHeuristic(new TrivialFunction(2));
 		
-		agent.setupHeuristic(new BlindFunction(1));
+//		agent.setupHeuristic(new BlindFunction(1));
 		agent2.setupHeuristic(new BlindFunction(2));
 		
 		while (!finished){

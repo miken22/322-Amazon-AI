@@ -64,7 +64,7 @@ public class GUI {
 	public final int ARROW = 3;
 	public final int FREE = -1;	
 
-	public GUI(Board board, int rows, int columns){
+	public GUI(int rows, int columns){
 		this.rows = rows;
 		this.columns = columns;
 	}

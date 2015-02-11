@@ -20,7 +20,7 @@ public class TestClass {
 		Board board = new Board(10, 10);
 		board.initialize();
 		
-		GUI gui = new GUI(board, 10, 10);
+		GUI gui = new GUI(10, 10);
 		gui.init();
 		
 //		board.placeMarker(0, 2, 3);
