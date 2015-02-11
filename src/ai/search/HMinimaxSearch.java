@@ -70,26 +70,29 @@ public class HMinimaxSearch implements Minimax {
 		
 		timer.startTiming();
 		
-		for (int[] action : potentialActions){
-			
-			Board child = scg.generateSuccessor(board, action, player);
-			
-			int result = minVal(child, 1, player);
-			
-			if (result > max){
-				max = result;
-				move = action;
-				ties.clear();
-			} else if (result == max){
-				ties.add(action);
+		while (timer.isStillValid()){
+
+			for (int[] action : potentialActions){
+				
+				Board child = scg.generateSuccessor(board, action, player);
+				
+				int result = minVal(child, 1, player);
+				
+				if (result > max){
+					max = result;
+					move = action;
+					ties.clear();
+				} else if (result == max){
+					ties.add(action);
+				}
+				
+				// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
+				// Need some kind of tie breaking, use of ordering of top solutions
+				
+//				if (timer.almostExpired()){
+//					break;
+//				}
 			}
-			
-			// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
-			// Need some kind of tie breaking, use of ordering of top solutions
-			
-//			if (timer.almostExpired()){
-//				break;
-//			}
 		}
 		
 		if (potentialActions.size() == 0){
@@ -137,6 +140,11 @@ public class HMinimaxSearch implements Minimax {
 		for (int[] action : potentialActions){
 
 			Board child = scg.generateSuccessor(board, action, player);
+			
+			if (timer.almostExpired()){
+				return Math.max(Integer.MIN_VALUE, max);
+			}
+			
 			int result = minVal(child, depth+1, player);
 
 			max = Math.max(max, result);
@@ -187,6 +195,11 @@ public class HMinimaxSearch implements Minimax {
 		for (int[] action : potentialActions){
 
 			Board child = scg.generateSuccessor(board, action, player);
+
+			if (timer.almostExpired()){
+				return Math.max(Integer.MAX_VALUE, min);
+			}
+			
 			int result = maxVal(child, depth+1, player);
 			
 			min = Math.min(min, result);
