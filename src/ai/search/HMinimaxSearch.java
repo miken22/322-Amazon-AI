@@ -22,7 +22,7 @@ public class HMinimaxSearch implements Minimax {
 
 	private int ALPHA;
 	private int BETA;
-	public int MAXDEPTH = 2;
+	public int MAXDEPTH;
 	private int ourPlayer;
 	
 	private SuccessorGenerator scg;
@@ -36,18 +36,7 @@ public class HMinimaxSearch implements Minimax {
 		ties = new ArrayList<>();
 		timer = new Timer();
 	}
-	public HMinimaxSearch(EvaluationFunction evaluator, int depth){
-		this.evaluator = evaluator;
-		MAXDEPTH = depth;
-		scg = new SuccessorGenerator();
-		ties = new ArrayList<>();
-		timer = new Timer();
-	}
 	
-	public void setMaxDepth(int newDepth){
-		this.MAXDEPTH = newDepth;
-	}
-
 	/**
 	 * Takes a state and depth to perform a limited alpha-beta search
 	 * 
@@ -70,6 +59,8 @@ public class HMinimaxSearch implements Minimax {
 		
 		timer.startTiming();
 		
+		MAXDEPTH = 1;
+		
 		while (timer.isStillValid()){
 
 			for (int[] action : potentialActions){
@@ -86,13 +77,8 @@ public class HMinimaxSearch implements Minimax {
 					ties.add(action);
 				}
 				
-				// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
-				// Need some kind of tie breaking, use of ordering of top solutions
-				
-//				if (timer.almostExpired()){
-//					break;
-//				}
 			}
+			MAXDEPTH++;
 		}
 		
 		if (potentialActions.size() == 0){
@@ -105,6 +91,7 @@ public class HMinimaxSearch implements Minimax {
 
 		ties.clear();
 		System.out.println("Best estimate: " + max);
+		System.out.println("Got to depth: " + MAXDEPTH);
 		return move;
 	
 	}
@@ -141,13 +128,13 @@ public class HMinimaxSearch implements Minimax {
 
 			Board child = scg.generateSuccessor(board, action, player);
 			
-			if (timer.almostExpired()){
-				return Math.max(Integer.MIN_VALUE, max);
-			}
-			
 			int result = minVal(child, depth+1, player);
 
 			max = Math.max(max, result);
+
+			if (timer.almostExpired()){
+				return max;
+			}
 			
 			if (max >= BETA){
 				return max;
@@ -196,13 +183,13 @@ public class HMinimaxSearch implements Minimax {
 
 			Board child = scg.generateSuccessor(board, action, player);
 
-			if (timer.almostExpired()){
-				return Math.min(Integer.MAX_VALUE, min);
-			}
-			
 			int result = maxVal(child, depth+1, player);
 			
 			min = Math.min(min, result);
+			
+			if (timer.almostExpired()){
+				return min;
+			}
 			
 			if (min <= ALPHA){
 				return min;

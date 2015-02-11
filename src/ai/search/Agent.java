@@ -28,7 +28,7 @@ public class Agent implements Search {
 	}
 	
 	public void setupHeuristic(EvaluationFunction function){
-		hMinimax = new HMinimaxSearch(function, DEPTH);
+		hMinimax = new HMinimaxSearch(function);
 	}
 	
 	/**
@@ -39,14 +39,9 @@ public class Agent implements Search {
 		
 		if (move == 0){
 			move = 1;
-			hMinimax.setMaxDepth(1);
 			if (role == 1){
-				return selectOpeningMove();
+//				return selectOpeningMove();
 			}
-		}
-		
-		if (move == 12){
-			hMinimax.setMaxDepth(3);
 		}
 		
 		move++;

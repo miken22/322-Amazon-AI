@@ -312,30 +312,6 @@ public class SinglePlayer implements GamePlayer {
 		guiBoard[9][3].setBQueen();
 		guiBoard[9][6].setBQueen();	
 	
-/* ********* For trivial goal testing ************	
-		guiBoard[5][0].setArrow();
-		guiBoard[5][1].setArrow();
-		guiBoard[5][2].setArrow();
-		guiBoard[5][3].setArrow();
-		guiBoard[5][4].setArrow();
-		guiBoard[5][5].setArrow();
-		guiBoard[5][6].setArrow();
-		guiBoard[5][7].setArrow();
-		guiBoard[5][8].setArrow();
-		guiBoard[5][9].setArrow();
-
-		board.placeMarker(5, 0, ARROW);
-		board.placeMarker(5, 1, ARROW);
-		board.placeMarker(5, 2, ARROW);
-		board.placeMarker(5, 3, ARROW);
-		board.placeMarker(5, 4, ARROW);
-		board.placeMarker(5, 5, ARROW);
-		board.placeMarker(5, 6, ARROW);
-		board.placeMarker(5, 7, ARROW);
-		board.placeMarker(5, 8, ARROW);
-		board.placeMarker(5, 9, ARROW);
-***************************************************/	
-
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		input.requestFocus();
@@ -353,10 +329,10 @@ public class SinglePlayer implements GamePlayer {
 		boolean whiteTurn = true;
 		
 		agent.setupHeuristic(new TrivialFunction(1));
-//		agent2.setupHeuristic(new TrivialFunction(2));
+		agent2.setupHeuristic(new TrivialFunction(2));
 		
 //		agent.setupHeuristic(new BlindFunction(1));
-		agent2.setupHeuristic(new BlindFunction(2));
+//		agent2.setupHeuristic(new BlindFunction(2));
 		
 		while (!finished){
 			if (whiteTurn){
@@ -368,7 +344,6 @@ public class SinglePlayer implements GamePlayer {
 					String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + move[2] + "-" + Utility.getColumnLetter(move[5]) + move[4];
 					System.out.println("White: " + action);
 					updateMoveLog(action, 1);
-					writeToFile("White: " + action);
 				} catch (NullPointerException e){
 					finished = true;
 					break;
@@ -383,7 +358,6 @@ public class SinglePlayer implements GamePlayer {
 					String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
 					System.out.println("Black: " + action);
 					updateMoveLog(action, 2);
-					writeToFile("Black: " + action);
 				} catch (NullPointerException e){
 					finished = true;
 					break;
@@ -392,10 +366,6 @@ public class SinglePlayer implements GamePlayer {
 			finished = isFinished();
 		}
 		endGame();
-		
-	}
-	
-	private void writeToFile(String move){
 		
 	}
 	
