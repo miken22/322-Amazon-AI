@@ -130,7 +130,7 @@ public class Player implements GamePlayer {
 
 	private void pickMove() {
 
-		GamePlay game = new GamePlay(board, playerID);
+		GamePlay game = new GamePlay(board, playerID, new HMinimaxSearch(new TrivialFunction(playerID)));
 		futureList.add(eService.submit(game));
 		
 		if (isOpponentsTurn) {
@@ -149,7 +149,7 @@ public class Player implements GamePlayer {
 			
 			try{
 				
-				game.startTimer();
+//				game.startTimer();
 				
 				int[] move = null;
 				
@@ -168,6 +168,7 @@ public class Player implements GamePlayer {
 				isOpponentsTurn = true;
 				
 			} catch (NullPointerException e){
+				e.printStackTrace();
 				endGame();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -270,13 +271,15 @@ public class Player implements GamePlayer {
 	private class GamePlay implements Callable<int[]>{
 		
 		private Board currentBoard;
+		private HMinimaxSearch hMinimax;
 
 		private int role;
 		private int move = 0;
 		
-		public GamePlay(Board board, int role){
+		public GamePlay(Board board, int role, HMinimaxSearch hMinimax){
 			this.currentBoard = board;
 			this.role = role;
+			this.hMinimax = hMinimax;
 		}
 
 		@Override
@@ -284,7 +287,6 @@ public class Player implements GamePlayer {
 			return selectMove(currentBoard);
 		}
 		
-		private HMinimaxSearch hMinimax;
 
 		
 		private boolean thinking = false;
