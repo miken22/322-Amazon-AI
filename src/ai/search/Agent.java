@@ -124,17 +124,12 @@ public class Agent implements Search {
 		}
 
 
-		if (role == 1){
-			if (whiteTiles > blackTiles + bothCanReach){
-				winningState = true;
-				return true;
-			} 
-		} else {
-			if (blackTiles > whiteTiles + bothCanReach){
-				winningState = true;
-				return true;
-			}
+		// Test for winning or losing winning state
+		if ((whiteTiles > blackTiles + bothCanReach) || (blackTiles > whiteTiles + bothCanReach)) {
+			winningState = true;
+			return true;
 		}
+
 
 		return false;
 	}

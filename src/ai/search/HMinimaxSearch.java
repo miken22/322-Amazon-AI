@@ -217,7 +217,7 @@ public class HMinimaxSearch implements Minimax {
 			BETA = Math.min(BETA, min);
 						
 		}
-		// No moves, goal state so we win!
+		// No moves, goal state so we win, scew the results!
 		if (potentialActions.size() == 0){
 			min = Integer.MAX_VALUE;
 		}

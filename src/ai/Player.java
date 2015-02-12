@@ -145,7 +145,6 @@ public class Player implements GamePlayer {
 	 */
 	private void endGame(){
 		System.out.println("Game over.");
-		gui.destroy();
 	}
 
 	/**
