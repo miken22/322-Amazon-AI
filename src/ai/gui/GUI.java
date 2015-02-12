@@ -26,8 +26,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import ai.Board;
-
 public class GUI {
 
 	private JFrame frame;
@@ -150,7 +148,7 @@ public class GUI {
 		c.add(input);
 		c.add(send);
 		c.add(clear);
-
+		
 	}
 	
 	/**

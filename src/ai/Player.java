@@ -129,9 +129,10 @@ public class Player implements GamePlayer {
 			
 			System.out.println("Agents move:");
 
-			int[] move = agent.selectMove(board);
 			
 			try{
+				
+				int[] move = agent.selectMove(board);
 				
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
 				client.sendToServer(moveMessage, false);
