@@ -33,7 +33,7 @@ public class Agent implements Search {
 	 */
 	public int[] selectMove(Board currentBoard){
 		
-		thinking = true;
+		
 		
 		if (move == 0){
 			move = 1;
@@ -43,18 +43,22 @@ public class Agent implements Search {
 		}
 		
 		move++;
+		
+		thinking = true;
+		
 		int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
-		
-		// Checks that we never pick a move standing stil and shooting at self
-//		for (int i = 0; i < moveChoice.length; i++){
-//			if(moveChoice[i] != 0){
-//				return moveChoice;
-//			}
-//		}
-		
+
 		thinking = false;
 		
-		return moveChoice;
+		// Checks that we never pick a move standing stil and shooting at self
+		for (int i = 0; i < moveChoice.length; i++){
+			if(moveChoice[i] != 0){
+				return moveChoice;
+			}
+		}
+		
+		
+		return null;
 		
 	}
 

@@ -293,7 +293,7 @@ public class GUI {
 			moveTextarea.insertString(moveTextarea.getLength(), move, userStyle); 
 		} catch (BadLocationException e1){}
 
-		chat.select(doc.getLength(), doc.getLength());
+		moveLog.select(doc.getLength(), doc.getLength());
 	
 	}
 	

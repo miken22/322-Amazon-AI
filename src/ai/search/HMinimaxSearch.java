@@ -22,13 +22,14 @@ public class HMinimaxSearch implements Minimax {
 
 	private int ALPHA;
 	private int BETA;
-	public int MAXDEPTH;
+	private int MAXDEPTH;
 	private int ourPlayer;
 	
 	private SuccessorGenerator scg;
 	private Timer timer;
 	
-	private boolean timerStarted;
+	private final int ABSOLUTEDEPTH = 10;
+	
 	
 	List<int[]> ties;
 	
@@ -56,7 +57,6 @@ public class HMinimaxSearch implements Minimax {
 		BETA = Integer.MAX_VALUE;
 				
 		ourPlayer = player;
-		timerStarted = false;
 				
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
@@ -82,6 +82,9 @@ public class HMinimaxSearch implements Minimax {
 
 			}
 			MAXDEPTH++;
+			if (MAXDEPTH > ABSOLUTEDEPTH){
+				break;
+			}
 		}
 
 

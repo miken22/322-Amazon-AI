@@ -10,7 +10,7 @@ public class Timer {
 	
 	public boolean almostExpired(){
 		long currentTime = ((System.currentTimeMillis() - startTime) / 1000) % 60;
-		if (currentTime > 15){
+		if (currentTime > 5){
 			return true;
 		}
 		return false;
@@ -22,7 +22,7 @@ public class Timer {
 			return true;
 		}
 		
-		return ((System.currentTimeMillis() - startTime) / 1000) % 60 < 15;
+		return ((System.currentTimeMillis() - startTime) / 1000) % 60 < 5;
 	}
 	
 	public boolean hasStarted(){
