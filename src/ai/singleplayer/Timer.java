@@ -10,13 +10,30 @@ public class Timer {
 	
 	public boolean almostExpired(){
 		long currentTime = ((System.currentTimeMillis() - startTime) / 1000) % 60;
-		if (currentTime > 29){
+		if (currentTime > 25){
 			return true;
 		}
 		return false;
 	}
 	
 	public boolean isStillValid(){
-		return ((System.currentTimeMillis() - startTime) / 1000) % 60 < 30;
+		
+		if (startTime == 0){
+			return true;
+		}
+		
+		return ((System.currentTimeMillis() - startTime) / 1000) % 60 < 25;
 	}
+	
+	public boolean hasStarted(){
+		if (startTime == 0){
+			return false;
+		}
+		return true;
+	}
+	
+	public void resetTimer(){
+		startTime = 0;
+	}
+	
 }

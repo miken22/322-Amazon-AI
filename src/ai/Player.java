@@ -22,7 +22,7 @@ import ubco.ai.games.GamePlayer;
  *
  */
 
-public class Player implements GamePlayer {
+public class Player implements GamePlayer, Runnable {
 
 	private GameClient client;
 	private Agent agent;
@@ -86,7 +86,7 @@ public class Player implements GamePlayer {
 	}
 
 
-	public void startGame() {
+	public void run() {
 
 		System.out.println("Game started");
 
@@ -215,7 +215,7 @@ public class Player implements GamePlayer {
 				return false;
 			}
 			System.out.println("Starting match.");
-			startGame();
+			this.run();
 
 		} else if (answer.equals(GameMessage.ACTION_MOVE)){
 

@@ -16,31 +16,29 @@ public class Agent implements Search {
 
 	private int role;
 	private int move = 0;
-	private int DEPTH = 2;
+	
+	private boolean thinking = false;
 		
 	public Agent(int ourColour){
 		this.role = ourColour;
 	}
 	
-	public Agent(int ourColour, int depth){
-		this.role = ourColour;
-		DEPTH = depth;
-	}
-	
 	public void setupHeuristic(EvaluationFunction function){
 		hMinimax = new HMinimaxSearch(function);
 	}
-	
+
 	/**
 	 * Method to return the move that the search agent has selected. Six entries must be in the move
 	 * array at the time of return: FromX, FromY, ToX, ToY, aRow, aCol.  
 	 */
 	public int[] selectMove(Board currentBoard){
 		
+		thinking = true;
+		
 		if (move == 0){
 			move = 1;
 			if (role == 1){
-//				return selectOpeningMove();
+				return selectOpeningMove();
 			}
 		}
 		
@@ -53,6 +51,9 @@ public class Agent implements Search {
 //				return moveChoice;
 //			}
 //		}
+		
+		thinking = false;
+		
 		return moveChoice;
 		
 	}
@@ -68,4 +69,14 @@ public class Agent implements Search {
 		}
 		return openingMove2;
 	}
+	
+	public void startTimer(){
+		hMinimax.startTimer();
+	}
+
+	public boolean isThinking(){
+		return thinking;
+	}
+
+	
 }

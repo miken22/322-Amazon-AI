@@ -28,6 +28,8 @@ public class HMinimaxSearch implements Minimax {
 	private SuccessorGenerator scg;
 	private Timer timer;
 	
+	private boolean timerStarted;
+	
 	List<int[]> ties;
 	
 	public HMinimaxSearch(EvaluationFunction evaluator){
@@ -54,6 +56,7 @@ public class HMinimaxSearch implements Minimax {
 		BETA = Integer.MAX_VALUE;
 				
 		ourPlayer = player;
+		timerStarted = false;
 				
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
@@ -61,14 +64,14 @@ public class HMinimaxSearch implements Minimax {
 		
 		MAXDEPTH = 1;
 		
-		while (timer.isStillValid()){
+		while (!timer.hasStarted() || timer.isStillValid()){
 
 			for (int[] action : potentialActions){
-				
+
 				Board child = scg.generateSuccessor(board, action, player);
-				
+
 				int result = minVal(child, 1, player);
-				
+
 				if (result > max){
 					max = result;
 					move = action;
@@ -76,10 +79,12 @@ public class HMinimaxSearch implements Minimax {
 				} else if (result == max){
 					ties.add(action);
 				}
-				
+
 			}
 			MAXDEPTH++;
 		}
+
+
 		
 		if (potentialActions.size() == 0){
 			System.out.println("No possible moves detected.");
@@ -90,6 +95,8 @@ public class HMinimaxSearch implements Minimax {
 		}
 
 		ties.clear();
+		timer.resetTimer();
+		
 		System.out.println("Best estimate: " + max);
 		System.out.println("Got to depth: " + MAXDEPTH);
 		return move;
@@ -212,4 +219,9 @@ public class HMinimaxSearch implements Minimax {
 		int choice = new Random().nextInt(ties.size());
 		return ties.get(choice);
 	}
+	
+	public void startTimer(){
+		timer.startTiming();
+	}
+	
 }
