@@ -190,7 +190,9 @@ public class Player implements GamePlayer {
 		String answer = parser.handleXML(xml);
 
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
-						
+			
+			System.out.println(message.toString());
+			
 			this.role = parser.getUserInfo(xml);
 			if (!role.equals("W") && !role.equals("B")){
 				System.out.println("Spectator of match.");
@@ -201,7 +203,7 @@ public class Player implements GamePlayer {
 
 		} else if (answer.equals(GameMessage.ACTION_MOVE)){
 
-			System.out.println("Opponent move:");
+			System.out.println("Opponent move recieved.");
 			System.out.println(message.toString());
 			// Get the queen move and arrow marker.
 			int[] move = parser.getOpponentMove(xml);	
@@ -220,8 +222,8 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-2.0001", "54321");
-		if (args.length == 0){
+		Player player = new Player("Bot-1.0001", "54321");
+		if (args.length == 0 ){
 			player.joinServer();
 		} else {
 			player.joinServer(args[0] + " " + args[1]);
