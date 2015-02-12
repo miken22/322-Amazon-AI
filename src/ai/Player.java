@@ -130,9 +130,6 @@ public class Player implements GamePlayer {
 
 	private void pickMove() {
 
-		GamePlay game = new GamePlay(board, playerID, new HMinimaxSearch(new TrivialFunction(playerID)));
-		futureList.add(eService.submit(game));
-		
 		if (isOpponentsTurn) {
 			// TODO: Plan ahead based on possible moves
 
@@ -146,16 +143,10 @@ public class Player implements GamePlayer {
 			
 			System.out.println("Agents move:");
 
-			
 			try{
 				
-//				game.startTimer();
 				
-				int[] move = null;
-				
-				while (move == null){
-					move = futureList.get(0).get();	
-				}
+				int[] move = agent.selectMove(board);
 				
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
 				client.sendToServer(moveMessage, false);
@@ -168,12 +159,7 @@ public class Player implements GamePlayer {
 				isOpponentsTurn = true;
 				
 			} catch (NullPointerException e){
-				e.printStackTrace();
 				endGame();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
 			}
 			
 		}
@@ -266,78 +252,6 @@ public class Player implements GamePlayer {
 		}
 
 		return true;
-	}
-	
-	private class GamePlay implements Callable<int[]>{
-		
-		private Board currentBoard;
-		private HMinimaxSearch hMinimax;
-
-		private int role;
-		private int move = 0;
-		
-		public GamePlay(Board board, int role, HMinimaxSearch hMinimax){
-			this.currentBoard = board;
-			this.role = role;
-			this.hMinimax = hMinimax;
-		}
-
-		@Override
-		public int[] call() {
-			return selectMove(currentBoard);
-		}
-		
-
-		
-		private boolean thinking = false;
-
-		/**
-		 * Method to return the move that the search agent has selected. Six entries must be in the move
-		 * array at the time of return: FromX, FromY, ToX, ToY, aRow, aCol.  
-		 */
-		public int[] selectMove(Board currentBoard){
-			
-			if (move == 0){
-				move = 1;
-				if (role == 1){
-					return selectOpeningMove();
-				}
-			}
-			
-			move++;
-			
-			thinking = true;
-			
-			int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
-
-			thinking = false;
-			
-			// Checks that we never pick a move standing stil and shooting at self
-			for (int i = 0; i < moveChoice.length; i++){
-				if(moveChoice[i] != 0){
-					return moveChoice;
-				}
-			}
-			
-			return null;
-			
-		}
-
-		// TODO: Figure out opening move strategies
-		private int[] selectOpeningMove() {
-			int[] openingMove1 = { 0, 3, 7, 3, 5, 1 };
-			int[] openingMove2 = { 0, 6, 7, 6, 5, 8 };
-			
-			int random = new Random().nextInt() % 2;
-			if (random == 0) {
-				return openingMove1;
-			}
-			return openingMove2;
-		}
-		
-		public synchronized void startTimer(){
-			hMinimax.startTimer();
-		}		
 	}
 
 	public static void main(String[] args) {
