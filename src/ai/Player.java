@@ -1,13 +1,6 @@
 package ai;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.IXMLParser;
 import net.n3.nanoxml.IXMLReader;
@@ -15,7 +8,7 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLParserFactory;
 import ai.gui.GUI;
 import ai.search.Agent;
-import ai.search.HMinimaxSearch;
+import ai.search.CountReachableTilesHeuristic;
 import ai.search.TrivialFunction;
 import ubco.ai.GameRoom;
 import ubco.ai.games.GameClient;
@@ -49,10 +42,6 @@ public class Player implements GamePlayer {
 	private boolean isOpponentsTurn;
 
 	private int roomNumber;
-	
-	private int nOfProcessors;
-	private ExecutorService eService;
-	private ArrayList<Future<int[]>> futureList;
 
 	public Player(String userName, String password) {
 
@@ -60,10 +49,6 @@ public class Player implements GamePlayer {
 		board = new Board(ROWS, COLS);
 		gui = new GUI(ROWS, COLS);
 		parser = new XMLParser(userName);
-
-		nOfProcessors = Runtime.getRuntime().availableProcessors();
-		eService = Executors.newFixedThreadPool(1);
-		futureList = new ArrayList<>();
 		
 		board.initialize();
 
@@ -116,11 +101,8 @@ public class Player implements GamePlayer {
 			System.out.println("Something went wrong detecting our role");
 		}
 
-		// TODO: Handle arguments to set properties such as heuristic choice, search depth
 		agent = new Agent(playerID);
-
 		agent.setupHeuristic(new TrivialFunction(playerID));
-
 		
 		if (!isOpponentsTurn){
 			pickMove();
@@ -130,48 +112,34 @@ public class Player implements GamePlayer {
 
 	private void pickMove() {
 
-		if (isOpponentsTurn) {
-			// TODO: Plan ahead based on possible moves
+		System.out.println("Agents move:");
 
-			System.out.println("Opponents turn:");
-
-			waitForMove();
-
-		} else {
-
-			agent.startTimer();
+		try{
 			
-			System.out.println("Agents move:");
+			int[] move = agent.selectMove(board);
 
-			try{
-				
-				
-				int[] move = agent.selectMove(board);
-				
-				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
-				client.sendToServer(moveMessage, false);
-				
-				// GUI and logic update
-				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
-				
-				updateRepresentations(move, playerID);
-				gui.updateMoveLog("Agent: ", action);
-				isOpponentsTurn = true;
-				
-			} catch (NullPointerException e){
-				endGame();
+			String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
+			client.sendToServer(moveMessage, false);
+
+			// GUI and logic update
+			String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
+
+			updateRepresentations(move, playerID);
+			gui.updateMoveLog("Agent: ", action);
+			isOpponentsTurn = true;
+
+			if (agent.isFinished()){
+				// Switch to some end-game heuristic
+				System.out.println("Switching to endgame heuristic.");
+				agent.setupHeuristic(new CountReachableTilesHeuristic(playerID));
 			}
 			
-		}
-
+			
+		} catch (NullPointerException e){
+			endGame();
+		}	
 	}
 
-	private void waitForMove(){
-		while (isOpponentsTurn){
-
-		}
-	}
-	
 	/**
 	 * Method to handle goal state
 	 */
@@ -215,8 +183,6 @@ public class Player implements GamePlayer {
 	@Override
 	public boolean handleMessage(GameMessage message) throws Exception {
 
-		gui.addServerMessage("Server other message: ", message.toString());
-
 		IXMLParser iParser = XMLParserFactory.createDefaultXMLParser();
 		IXMLReader reader = StdXMLReader.stringReader(message.toString());
 		iParser.setReader(reader);
@@ -236,7 +202,7 @@ public class Player implements GamePlayer {
 
 		} else if (answer.equals(GameMessage.ACTION_MOVE)){
 
-			System.out.println("Opponent move recieved.");
+			System.out.println("Opponent move:");
 			System.out.println(message.toString());
 			// Get the queen move and arrow marker.
 			int[] move = parser.getOpponentMove(xml);	

@@ -51,21 +51,29 @@ public class HMinimaxSearch implements Minimax {
 	public int[] maxSearch(Board board, int player){
 		
 		int max = Integer.MIN_VALUE;
-		int[] move = new int[6];
+		int[] move = null;
 		
+		// Setup alpha beta bounds
 		ALPHA = Integer.MIN_VALUE;
 		BETA = Integer.MAX_VALUE;
 				
 		ourPlayer = player;
 				
+		// Get list of possible actions that can be made from the state
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
 		timer.startTiming();
 		
 		depth = 1;
 		
-		while (!timer.hasStarted() || timer.isStillValid()){
+		// Timer controlled search
+		while (timer.isStillValid()){
 
+			if (potentialActions.size() == 0){
+				break;
+			}
+			
+			// Generate the child of the root state, performing depth first alpha-beta search
 			for (int[] action : potentialActions){
 
 				Board child = scg.generateSuccessor(board, action, player);
@@ -81,7 +89,9 @@ public class HMinimaxSearch implements Minimax {
 				}
 
 			}
+			// Increase bounds on the search
 			depth++;
+			// Attempt to enforce unnecessary search late in the game
 			if (depth > ABSOLUTEDEPTH){
 				break;
 			}
@@ -98,7 +108,6 @@ public class HMinimaxSearch implements Minimax {
 		}
 
 		ties.clear();
-		timer.resetTimer();
 		
 		System.out.println("Best estimate: " + max);
 		System.out.println("Got to depth: " + depth);
@@ -221,10 +230,6 @@ public class HMinimaxSearch implements Minimax {
 	public int[] tieBreaker() {
 		int choice = new Random().nextInt(ties.size());
 		return ties.get(choice);
-	}
-	
-	public void startTimer(){
-		timer.startTiming();
 	}
 	
 }
