@@ -22,7 +22,7 @@ public class HMinimaxSearch implements Minimax {
 
 	private int ALPHA;
 	private int BETA;
-	private int MAXDEPTH;
+	private int depth;
 	private int ourPlayer;
 	
 	private SuccessorGenerator scg;
@@ -62,7 +62,7 @@ public class HMinimaxSearch implements Minimax {
 		
 		timer.startTiming();
 		
-		MAXDEPTH = 1;
+		depth = 1;
 		
 		while (!timer.hasStarted() || timer.isStillValid()){
 
@@ -81,8 +81,8 @@ public class HMinimaxSearch implements Minimax {
 				}
 
 			}
-			MAXDEPTH++;
-			if (MAXDEPTH > ABSOLUTEDEPTH){
+			depth++;
+			if (depth > ABSOLUTEDEPTH){
 				break;
 			}
 		}
@@ -101,7 +101,7 @@ public class HMinimaxSearch implements Minimax {
 		timer.resetTimer();
 		
 		System.out.println("Best estimate: " + max);
-		System.out.println("Got to depth: " + MAXDEPTH);
+		System.out.println("Got to depth: " + depth);
 		return move;
 	
 	}
@@ -116,7 +116,7 @@ public class HMinimaxSearch implements Minimax {
 	 * @return - The heuristic value of the state
 	 */
 	@Override
-	public int maxVal(Board board,int depth, int player){
+	public int maxVal(Board board,int searchDepth, int player){
 
 		int max = Integer.MIN_VALUE;
 		
@@ -127,7 +127,7 @@ public class HMinimaxSearch implements Minimax {
 			player = 1;
 		}
 		
-		if (depth == MAXDEPTH){
+		if (searchDepth == depth){
 			int value = evaluator.evaluate(board, ourPlayer);
 			return  value;	
 		}
@@ -138,7 +138,7 @@ public class HMinimaxSearch implements Minimax {
 
 			Board child = scg.generateSuccessor(board, action, player);
 			
-			int result = minVal(child, depth+1, player);
+			int result = minVal(child, searchDepth+1, player);
 
 			max = Math.max(max, result);
 
@@ -171,7 +171,7 @@ public class HMinimaxSearch implements Minimax {
 	 * @return - The heuristic value of the state
 	 */
 	@Override
-	public int minVal(Board board, int depth, int player){
+	public int minVal(Board board, int searchDepth, int player){
 		
 		int min = Integer.MAX_VALUE;
 
@@ -182,7 +182,7 @@ public class HMinimaxSearch implements Minimax {
 			player = 1;
 		}
 		
-		if (depth == MAXDEPTH){
+		if (searchDepth == depth){
 			int value = evaluator.evaluate(board, ourPlayer);
 			return  value;	
 		}
@@ -193,7 +193,7 @@ public class HMinimaxSearch implements Minimax {
 
 			Board child = scg.generateSuccessor(board, action, player);
 
-			int result = maxVal(child, depth+1, player);
+			int result = maxVal(child, searchDepth+1, player);
 			
 			min = Math.min(min, result);
 			

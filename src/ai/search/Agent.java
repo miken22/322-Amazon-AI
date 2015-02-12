@@ -1,6 +1,7 @@
 package ai.search;
 
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 import ai.Board;
 
@@ -32,8 +33,6 @@ public class Agent implements Search {
 	 * array at the time of return: FromX, FromY, ToX, ToY, aRow, aCol.  
 	 */
 	public int[] selectMove(Board currentBoard){
-		
-		
 		
 		if (move == 0){
 			move = 1;
@@ -81,5 +80,4 @@ public class Agent implements Search {
 		return thinking;
 	}
 
-	
 }

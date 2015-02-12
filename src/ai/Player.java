@@ -1,6 +1,12 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.IXMLParser;
@@ -9,6 +15,7 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLParserFactory;
 import ai.gui.GUI;
 import ai.search.Agent;
+import ai.search.HMinimaxSearch;
 import ai.search.TrivialFunction;
 import ubco.ai.GameRoom;
 import ubco.ai.games.GameClient;
@@ -42,6 +49,10 @@ public class Player implements GamePlayer {
 	private boolean isOpponentsTurn;
 
 	private int roomNumber;
+	
+	private int nOfProcessors;
+	private ExecutorService eService;
+	private ArrayList<Future<int[]>> futureList;
 
 	public Player(String userName, String password) {
 
@@ -50,7 +61,10 @@ public class Player implements GamePlayer {
 		gui = new GUI(ROWS, COLS);
 		parser = new XMLParser(userName);
 
-
+		nOfProcessors = Runtime.getRuntime().availableProcessors();
+		eService = Executors.newFixedThreadPool(1);
+		futureList = new ArrayList<>();
+		
 		board.initialize();
 
 	}
@@ -86,7 +100,7 @@ public class Player implements GamePlayer {
 	}
 
 
-	public void run() {
+	public void startGame() {
 
 		System.out.println("Game started");
 
@@ -116,6 +130,9 @@ public class Player implements GamePlayer {
 
 	private void pickMove() {
 
+		GamePlay game = new GamePlay(board, playerID);
+		futureList.add(eService.submit(game));
+		
 		if (isOpponentsTurn) {
 			// TODO: Plan ahead based on possible moves
 
@@ -132,7 +149,13 @@ public class Player implements GamePlayer {
 			
 			try{
 				
-				int[] move = agent.selectMove(board);
+				game.startTimer();
+				
+				int[] move = null;
+				
+				while (move == null){
+					move = futureList.get(0).get();	
+				}
 				
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
 				client.sendToServer(moveMessage, false);
@@ -146,6 +169,10 @@ public class Player implements GamePlayer {
 				
 			} catch (NullPointerException e){
 				endGame();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
 			}
 			
 		}
@@ -218,7 +245,7 @@ public class Player implements GamePlayer {
 				return false;
 			}
 			System.out.println("Starting match.");
-			this.run();
+			this.startGame();
 
 		} else if (answer.equals(GameMessage.ACTION_MOVE)){
 
@@ -239,9 +266,80 @@ public class Player implements GamePlayer {
 
 		return true;
 	}
+	
+	private class GamePlay implements Callable<int[]>{
+		
+		private Board currentBoard;
+
+		private int role;
+		private int move = 0;
+		
+		public GamePlay(Board board, int role){
+			this.currentBoard = board;
+			this.role = role;
+		}
+
+		@Override
+		public int[] call() {
+			return selectMove(currentBoard);
+		}
+		
+		private HMinimaxSearch hMinimax;
+
+		
+		private boolean thinking = false;
+
+		/**
+		 * Method to return the move that the search agent has selected. Six entries must be in the move
+		 * array at the time of return: FromX, FromY, ToX, ToY, aRow, aCol.  
+		 */
+		public int[] selectMove(Board currentBoard){
+			
+			if (move == 0){
+				move = 1;
+				if (role == 1){
+					return selectOpeningMove();
+				}
+			}
+			
+			move++;
+			
+			thinking = true;
+			
+			int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
+
+			thinking = false;
+			
+			// Checks that we never pick a move standing stil and shooting at self
+			for (int i = 0; i < moveChoice.length; i++){
+				if(moveChoice[i] != 0){
+					return moveChoice;
+				}
+			}
+			
+			return null;
+			
+		}
+
+		// TODO: Figure out opening move strategies
+		private int[] selectOpeningMove() {
+			int[] openingMove1 = { 0, 3, 7, 3, 5, 1 };
+			int[] openingMove2 = { 0, 6, 7, 6, 5, 8 };
+			
+			int random = new Random().nextInt() % 2;
+			if (random == 0) {
+				return openingMove1;
+			}
+			return openingMove2;
+		}
+		
+		public synchronized void startTimer(){
+			hMinimax.startTimer();
+		}		
+	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		if (args.length == 0){
 			player.joinServer();
 		} else {
