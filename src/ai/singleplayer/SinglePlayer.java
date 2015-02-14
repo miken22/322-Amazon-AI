@@ -307,9 +307,7 @@ public class SinglePlayer {
 					System.out.println("White: " + action);
 					updateMoveLog(action, 1);
 					
-					if (agent.isFinished()){
- 						agent.setupHeuristic(new CountReachableTilesHeuristic(1));
-					}
+					agent.checkIfFinished();
 					
 				} catch (NullPointerException e){
 					finished = true;
@@ -326,9 +324,7 @@ public class SinglePlayer {
 					System.out.println("Black: " + action);
 					updateMoveLog(action, 2);
 					
-					if (agent2.isFinished()){
-						agent2.setupHeuristic(new CountReachableTilesHeuristic(2));
-					}
+					agent2.checkIfFinished();
 					
 				} catch (NullPointerException e){
 					finished = true;

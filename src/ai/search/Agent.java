@@ -83,7 +83,7 @@ public class Agent implements Search {
 	 * position. We should then 
 	 * 
 	 */
-	public boolean isFinished() {	
+	public boolean checkIfFinished() {	
 
 		if (winningState){
 			return true;
@@ -127,6 +127,8 @@ public class Agent implements Search {
 		// Test for winning or losing winning state
 		if ((whiteTiles > blackTiles + bothCanReach) || (blackTiles > whiteTiles + bothCanReach)) {
 			winningState = true;
+			// Switch to a heuristic that maximizes total area controlled.
+			setupHeuristic(new CountReachableTilesHeuristic(role));
 			return true;
 		}
 

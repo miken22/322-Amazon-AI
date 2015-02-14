@@ -128,11 +128,7 @@ public class Player implements GamePlayer {
 			gui.updateMoveLog("Agent: ", action);
 			isOpponentsTurn = true;
 
-			if (agent.isFinished()){
-				// Switch to some end-game heuristic
-				System.out.println("Switching to endgame heuristic.");
-				agent.setupHeuristic(new CountReachableTilesHeuristic(playerID));
-			}
+			agent.checkIfFinished();
 			
 			
 		} catch (NullPointerException e){
