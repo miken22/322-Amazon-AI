@@ -31,7 +31,7 @@ import ai.Utility;
 import ai.gui.Cells;
 import ai.search.Agent;
 import ai.search.CountReachableTilesHeuristic;
-import ai.search.TrivialFunction;
+import ai.search.MinDistanceHeuristic;
 
 /**
  * Two bots playing game of amazons
@@ -290,8 +290,8 @@ public class SinglePlayer {
 
 		boolean whiteTurn = true;
 		
-		agent.setupHeuristic(new TrivialFunction(1));
-		agent2.setupHeuristic(new TrivialFunction(2));
+		agent.setupHeuristic(new MinDistanceHeuristic(1));
+		agent2.setupHeuristic(new MinDistanceHeuristic(2));
 		
 //		agent.setupHeuristic(new BlindFunction(1));
 //		agent2.setupHeuristic(new BlindFunction(2));

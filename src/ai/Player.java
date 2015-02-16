@@ -8,7 +8,7 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLParserFactory;
 import ai.gui.GUI;
 import ai.search.Agent;
-import ai.search.TrivialFunction;
+import ai.search.MinDistanceHeuristic;
 import ubco.ai.GameRoom;
 import ubco.ai.games.GameClient;
 import ubco.ai.games.GameMessage;
@@ -98,7 +98,7 @@ public class Player implements GamePlayer {
 		}
 
 		agent = new Agent(playerID);
-		agent.setupHeuristic(new TrivialFunction(playerID));
+		agent.setupHeuristic(new MinDistanceHeuristic(playerID));
 		
 		if (!isOpponentsTurn){
 			pickMove();

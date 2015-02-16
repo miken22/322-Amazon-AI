@@ -13,7 +13,7 @@ import ai.Pair;
  * @author Mike Nowicki
  *
  */
-public class TrivialFunction extends EvaluationFunction {
+public class MinDistanceHeuristic extends EvaluationFunction {
 
 	private final int ROWS = 10;
 	private final int COLS = 10;
@@ -21,7 +21,7 @@ public class TrivialFunction extends EvaluationFunction {
 	Actions actions = new Actions();
 	GameTreeSearch search = new GameTreeSearch();
 	
-	public TrivialFunction(int role){
+	public MinDistanceHeuristic(int role){
 		super(role);
 	}
 
