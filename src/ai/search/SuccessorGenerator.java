@@ -23,28 +23,28 @@ public class SuccessorGenerator extends GameTreeSearch {
 		ArrayList<int[]> moveList = new ArrayList<>();
 
 		// Get the starting positions of the queens
-		ArrayList<Pair<Integer, Integer> > queens;
+		ArrayList<Pair<Integer, Integer> > amazons;
 		if (player == 1){
-			queens = board.getWhitePositions();
+			amazons = board.getWhitePositions();
 		} else {
-			queens = board.getBlackPositions();
+			amazons = board.getBlackPositions();
 		}
 
 		// Iterate through queens
-		for (Pair<Integer, Integer> queen : queens){
+		for (Pair<Integer, Integer> amazon : amazons){
 
-			int fromX = queen.getLeft();
-			int fromY = queen.getRight();
+			int fromX = amazon.getLeft();
+			int fromY = amazon.getRight();
 
 			// Try all possible moves from the queens position
 			for (int i = 0; i < actions.getActions().size(); i++){
 				
-				int[] queenMove = actions.getActions().get(i);
+				int[] amazonMove = actions.getActions().get(i);
 				
 				Board tempBoard = new Board(board);
 
-				int toX = fromX + queenMove[0];
-				int toY = fromY + queenMove[1];
+				int toX = fromX + amazonMove[0];
+				int toY = fromY + amazonMove[1];
 				
 				if (player == 1){
 					tempBoard.updateWhitePositions(fromX, fromY, toX, toY);
@@ -58,8 +58,9 @@ public class SuccessorGenerator extends GameTreeSearch {
 					tempBoard.freeSquare(fromX, fromY);
 					tempBoard.placeMarker(toX, toY, player);
 					
-					// Use a different ordering for the arrows, start looking farthest away and then work in
-					for (int[] arrowSpot : actions.getArrowThrows()){
+					for (int j = 0; j < actions.getActions().size(); j++){
+						
+						int[] arrowSpot = actions.getActions().get(j);
 						
 						int arrowX = toX + arrowSpot[0];
 						int arrowY = toY + arrowSpot[1];
@@ -73,16 +74,25 @@ public class SuccessorGenerator extends GameTreeSearch {
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
 							int[] move = { fromX, fromY, toX, toY, arrowX, arrowY };						
 							moveList.add(move);
+						} else {
+							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
+							// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
+							// that allow moving in the obstructed direction.
+							if (arrowSpot[0] == 0){
+								j += 9 - Math.abs(arrowSpot[1]);
+							} else {
+								j += 9 - Math.abs(arrowSpot[0]);
+							}
 						}
 					}
 				} else {
 					// This relies on current ordering of actions. We proceed in one direction from the old queen, as soon as we hit an
 					// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
 					// that allow moving in the obstructed direction.
-					if (queenMove[0] == 0){
-						i += 9 - Math.abs(queenMove[1]);
+					if (amazonMove[0] == 0){
+						i += 9 - Math.abs(amazonMove[1]);
 					} else {
-						i += 9 - Math.abs(queenMove[0]);
+						i += 9 - Math.abs(amazonMove[0]);
 					}
 				}
 				

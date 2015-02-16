@@ -19,6 +19,7 @@ public class Board {
 	public final int ARROW = 3;
 	public final int FREE = -1;
 	
+	// Used to keep track of where each amazon is for easier lookup
 	ArrayList<Pair<Integer, Integer> > whitePositions;
 	ArrayList<Pair<Integer, Integer> > blackPositions;
 	

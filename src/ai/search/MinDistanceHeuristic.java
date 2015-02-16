@@ -13,7 +13,7 @@ import ai.Pair;
  * @author Mike Nowicki
  *
  */
-public class TrivialFunction extends EvaluationFunction {
+public class MinDistanceHeuristic extends EvaluationFunction {
 
 	private final int ROWS = 10;
 	private final int COLS = 10;
@@ -21,7 +21,7 @@ public class TrivialFunction extends EvaluationFunction {
 	Actions actions = new Actions();
 	GameTreeSearch search = new GameTreeSearch();
 	
-	public TrivialFunction(int role){
+	public MinDistanceHeuristic(int role){
 		super(role);
 	}
 
@@ -90,14 +90,14 @@ public class TrivialFunction extends EvaluationFunction {
 		stack.push(source);
 		
 		while (!stack.empty()) {
-			// Check 8 diagonal positions.
+
 			Pair<Integer, Integer> top = stack.pop();
 			int xPos = top.getLeft();
 			int yPos = top.getRight();
 			
-			
+			// We try every possible move from the current position an amazon is or could be at
 			for (int[] action : actions.getActions()){
-
+				
 				int currentDistance = distanceTable[xPos][yPos];
 				if (currentDistance == -1){
 					currentDistance = 0;
@@ -112,8 +112,10 @@ public class TrivialFunction extends EvaluationFunction {
 				}
 				
 				currentDistance++;
-				
+				// We set each tile in the set of actions equal to 1 + cost to source tile
 				if (!board.isMarked(newX, newY)){
+					// If we can move to that tile, and the cost of the movement is less than the current shortest path
+					// score the distance and place the tile on the stack
 					if (search.moveIsValid(board, xPos, yPos, newX, newY, player, false)){
 						if (distanceTable[newX][newY] > currentDistance){
 							distanceTable[newX][newY] = currentDistance;

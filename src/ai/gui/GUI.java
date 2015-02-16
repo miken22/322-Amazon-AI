@@ -26,23 +26,16 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import ai.Board;
-
 public class GUI {
 
 	private JFrame frame;
 
-	private JScrollPane scrollChat;
 	private JScrollPane scrollLog;
 
-	private JTextPane chat;
 	private JTextPane moveLog ;
 	private JTextArea input;
 
 	private Style userStyle;
-	private Style agentStyle;
-
-	private StyledDocument chatTextarea;
 	private StyledDocument moveTextarea;
 
 	private JButton send;
@@ -64,7 +57,7 @@ public class GUI {
 	public final int ARROW = 3;
 	public final int FREE = -1;	
 
-	public GUI(Board board, int rows, int columns){
+	public GUI(int rows, int columns){
 		this.rows = rows;
 		this.columns = columns;
 	}
@@ -93,13 +86,9 @@ public class GUI {
 		moveLog = new JTextPane();
 		scrollLog = new JScrollPane(moveLog);
 
-		chat = new JTextPane();
-		scrollChat = new JScrollPane(chat);
-
 		input = new JTextArea();
 
-		userStyle = chat.addStyle("userin", null);
-		agentStyle = chat.addStyle("agentstyle", null);
+		userStyle = moveLog.addStyle("userin", null);
 
 		try {
 			font = Font.createFont(0,this.getClass().getResourceAsStream("/Trebuchet MS.ttf"));
@@ -110,23 +99,13 @@ public class GUI {
 
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(725, 700);
+		frame.setSize(725, 580);
 		frame.setResizable(false);
 		frame.setJMenuBar(menu);
 
 		menu.setBackground(new Color(244,244,244));
 		menu.add(file);
 		file.add(exit);
-
-		chat.setEditable(false);
-		chat.setContentType("text/html");
-		chat.setBorder(b);
-		chat.setBackground(new Color(252,252,252));
-		chat.setFont(font);
-
-		scrollChat.setBounds(0, 530, 720, 120);
-		scrollChat.setBackground(new Color(252,252,252));
-		scrollChat.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Message History:"));
 
 		moveLog.setEditable(false);
 		moveLog.setContentType("text/html");
@@ -138,19 +117,17 @@ public class GUI {
 		scrollLog.setBackground(new Color(252,252,252));
 		scrollLog.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Move History:"));	
 
-		chatTextarea = chat.getStyledDocument();
 		moveTextarea = moveLog.getStyledDocument();
 
 		exit.addActionListener(new MenuListener(1));
 		
 		
 		c = frame.getContentPane();
-		c.add(scrollChat);
 		c.add(scrollLog);
 		c.add(input);
 		c.add(send);
 		c.add(clear);
-
+		
 	}
 	
 	/**
@@ -257,29 +234,6 @@ public class GUI {
 		}	
 	}
 	
-	/**
-	 * Put the message from the server onto the GUI
-	 * @param type - Server message type.
-	 * @param message - Server message.
-	 */
-	public void addServerMessage(String type, String message) {
-		Document doc = chat.getDocument();
-		input.setText("");
-		
-		StyleConstants.setForeground(agentStyle, Color.GREEN);
-		try { 
-			chatTextarea.insertString(chatTextarea.getLength(), "\r\n" + type + " ",agentStyle); 
-		} catch (BadLocationException e1){}
-
-		StyleConstants.setForeground(agentStyle, Color.black);
-		try { 
-			chatTextarea.insertString(chatTextarea.getLength(), message, agentStyle); 
-		} catch (BadLocationException e1){}
-
-		chat.select(doc.getLength(), doc.getLength());
-
-	}
-	
 	public void updateMoveLog(String player, String move){
 		Document doc = moveLog.getDocument();
 
@@ -293,7 +247,7 @@ public class GUI {
 			moveTextarea.insertString(moveTextarea.getLength(), move, userStyle); 
 		} catch (BadLocationException e1){}
 
-		chat.select(doc.getLength(), doc.getLength());
+		moveLog.select(doc.getLength(), doc.getLength());
 	
 	}
 	

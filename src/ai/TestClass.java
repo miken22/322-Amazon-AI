@@ -20,7 +20,7 @@ public class TestClass {
 		Board board = new Board(10, 10);
 		board.initialize();
 		
-		GUI gui = new GUI(board, 10, 10);
+		GUI gui = new GUI(10, 10);
 		gui.init();
 		
 //		board.placeMarker(0, 2, 3);
@@ -40,22 +40,23 @@ public class TestClass {
 			System.out.println(move[0] + "" + move[1] + "-" + move[2] + "" + move[3] + "-" + move[4] + "" + move[5]);
 			
 			// See move
-			board.freeSquare(move[0], move[1]);
-			board.placeMarker(move[2], move[3], 1);
-			board.placeMarker(move[4], move[5], 3);
+//			board.freeSquare(move[0], move[1]);
+//			board.placeMarker(move[2], move[3], 1);
+//			board.placeMarker(move[4], move[5], 3);
 			
 			gui.updateGUI(move[0], move[1], move[2], move[3], move[4], move[5], 1);
+//			gui.removeArrow(move[4], move[5]);
 			
-			String s = "";
-			for (int i = 0; i < 1000; i++){
-				s += "";
-			}
-			// Undo move
-			board.freeSquare(move[2], move[3]);
-			board.freeSquare(move[4], move[5]);
-			board.placeMarker(move[0], move[1], 1);
-			gui.updateGUI(move[2], move[3], move[0], move[1], move[4], move[5], 1);
-			gui.removeArrow(move[4], move[5]);
+//			String s = "";
+//			for (int i = 0; i < 1000; i++){
+//				s += "";
+//			}
+//			// Undo move
+//			board.freeSquare(move[2], move[3]);
+//			board.freeSquare(move[4], move[5]);
+//			board.placeMarker(move[0], move[1], 1);
+//			gui.updateGUI(move[2], move[3], move[0], move[1], move[4], move[5], 1);
+//			gui.removeArrow(move[4], move[5]);
 
 			
 		}

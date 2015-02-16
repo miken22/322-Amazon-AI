@@ -1,7 +1,6 @@
 package ai;
 
 import java.util.ArrayList;
-
 import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.IXMLParser;
 import net.n3.nanoxml.IXMLReader;
@@ -9,7 +8,7 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLParserFactory;
 import ai.gui.GUI;
 import ai.search.Agent;
-import ai.search.TrivialFunction;
+import ai.search.MinDistanceHeuristic;
 import ubco.ai.GameRoom;
 import ubco.ai.games.GameClient;
 import ubco.ai.games.GameMessage;
@@ -30,7 +29,6 @@ public class Player implements GamePlayer {
 	private GUI gui;
 	private XMLParser parser;
 
-
 	private final int ROWS = 10;
 	private final int COLS = 10;
 	private final int ARROW = 3;
@@ -47,10 +45,9 @@ public class Player implements GamePlayer {
 
 		client = new GameClient(userName, password, this);
 		board = new Board(ROWS, COLS);
-		gui = new GUI(board, ROWS, COLS);
+		gui = new GUI(ROWS, COLS);
 		parser = new XMLParser(userName);
-
-
+		
 		board.initialize();
 
 	}
@@ -61,11 +58,9 @@ public class Player implements GamePlayer {
 
 		for (GameRoom g : client.roomList) {
 			try {
-//				if (g.userCount == 1){
-					client.joinGameRoom(g.roomName);
-					roomNumber = g.roomID;
-					break;
-//				}
+				client.joinGameRoom(g.roomName);
+				roomNumber = g.roomID;
+				break;
 			} catch (Exception e) {
 				continue;
 			}
@@ -102,11 +97,8 @@ public class Player implements GamePlayer {
 			System.out.println("Something went wrong detecting our role");
 		}
 
-		// TODO: Handle arguments to set properties such as heuristic choice, search depth
 		agent = new Agent(playerID);
-
-		agent.setupHeuristic(new TrivialFunction(playerID));
-
+		agent.setupHeuristic(new MinDistanceHeuristic(playerID));
 		
 		if (!isOpponentsTurn){
 			pickMove();
@@ -116,51 +108,35 @@ public class Player implements GamePlayer {
 
 	private void pickMove() {
 
-		if (isOpponentsTurn) {
-			// TODO: Plan ahead based on possible moves
+		System.out.println("Agents move:");
 
-			System.out.println("Opponents turn:");
-
-			waitForMove();
-
-		} else {
-
-			System.out.println("Agents move:");
-
+		try{
+			
 			int[] move = agent.selectMove(board);
-			
-			try{
-				
-				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
-				client.sendToServer(moveMessage, false);
-				
-				// GUI and logic update
-				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
-				
-				updateRepresentations(move, playerID);
-				gui.updateMoveLog("Agent: ", action);
-				isOpponentsTurn = true;
-				
-			} catch (NullPointerException e){
-				endGame();
-			}
-			
-		}
 
+			String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
+			client.sendToServer(moveMessage, true);
+
+			// GUI and logic update
+			String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
+
+			updateRepresentations(move, playerID);
+			gui.updateMoveLog("Agent: ", action);
+			isOpponentsTurn = true;
+
+			agent.checkIfFinished();
+			
+			
+		} catch (NullPointerException e){
+			endGame();
+		}	
 	}
 
-	private void waitForMove(){
-		while (isOpponentsTurn){
-
-		}
-	}
-	
 	/**
 	 * Method to handle goal state
 	 */
 	private void endGame(){
 		System.out.println("Game over.");
-		gui.destroy();
 	}
 
 	/**
@@ -198,8 +174,6 @@ public class Player implements GamePlayer {
 	@Override
 	public boolean handleMessage(GameMessage message) throws Exception {
 
-		gui.addServerMessage("Server other message: ", message.toString());
-
 		IXMLParser iParser = XMLParserFactory.createDefaultXMLParser();
 		IXMLReader reader = StdXMLReader.stringReader(message.toString());
 		iParser.setReader(reader);
@@ -208,14 +182,16 @@ public class Player implements GamePlayer {
 		String answer = parser.handleXML(xml);
 
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
-						
+			
+			System.out.println(message.toString());
+			
 			this.role = parser.getUserInfo(xml);
 			if (!role.equals("W") && !role.equals("B")){
 				System.out.println("Spectator of match.");
 				return false;
 			}
 			System.out.println("Starting match.");
-			startGame();
+			this.startGame();
 
 		} else if (answer.equals(GameMessage.ACTION_MOVE)){
 
@@ -239,7 +215,7 @@ public class Player implements GamePlayer {
 
 	public static void main(String[] args) {
 		Player player = new Player("Bot-2.0001", "54321");
-		if (args.length == 0){
+		if (args.length == 0 ){
 			player.joinServer();
 		} else {
 			player.joinServer(args[0] + " " + args[1]);

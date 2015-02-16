@@ -1,6 +1,7 @@
 package ai.search;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -22,11 +23,15 @@ public class HMinimaxSearch implements Minimax {
 
 	private int ALPHA;
 	private int BETA;
-	public int MAXDEPTH = 2;
+	private int depth;
 	private int ourPlayer;
 	
 	private SuccessorGenerator scg;
 	private Timer timer;
+	
+	private final int ABSOLUTEDEPTH = 10;
+	
+	private HashMap<Integer, Integer> transitionTable;
 	
 	List<int[]> ties;
 	
@@ -35,19 +40,9 @@ public class HMinimaxSearch implements Minimax {
 		scg = new SuccessorGenerator();
 		ties = new ArrayList<>();
 		timer = new Timer();
-	}
-	public HMinimaxSearch(EvaluationFunction evaluator, int depth){
-		this.evaluator = evaluator;
-		MAXDEPTH = depth;
-		scg = new SuccessorGenerator();
-		ties = new ArrayList<>();
-		timer = new Timer();
+		transitionTable = new HashMap<>();
 	}
 	
-	public void setMaxDepth(int newDepth){
-		this.MAXDEPTH = newDepth;
-	}
-
 	/**
 	 * Takes a state and depth to perform a limited alpha-beta search
 	 * 
@@ -59,25 +54,42 @@ public class HMinimaxSearch implements Minimax {
 	public int[] maxSearch(Board board, int player){
 		
 		int max = Integer.MIN_VALUE;
-		int[] move = new int[6];
+		int[] move = null;
 		
+		// Setup alpha beta bounds
 		ALPHA = Integer.MIN_VALUE;
 		BETA = Integer.MAX_VALUE;
 				
 		ourPlayer = player;
 				
+		// Get list of possible actions that can be made from the state
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
+		
+		if (transitionTable.size() > 500000){
+			transitionTable.clear();
+		}
+		
 		
 		timer.startTiming();
 		
+		
+		
+		depth = 1;
+		
+		// Timer controlled search
 		while (timer.isStillValid()){
 
+			if (potentialActions.size() == 0){
+				break;
+			}
+			
+			// Generate the child of the root state, performing depth first alpha-beta search
 			for (int[] action : potentialActions){
-				
+
 				Board child = scg.generateSuccessor(board, action, player);
-				
-				int result = minVal(child, 1, player);
-				
+
+				int result = maxVal(child, 1, player);
+
 				if (result > max){
 					max = result;
 					move = action;
@@ -85,15 +97,17 @@ public class HMinimaxSearch implements Minimax {
 				} else if (result == max){
 					ties.add(action);
 				}
-				
-				// Want to find the maximum value that we can achieve after the opponent tries to minimize us optimally
-				// Need some kind of tie breaking, use of ordering of top solutions
-				
-//				if (timer.almostExpired()){
-//					break;
-//				}
+
+			}
+			// Increase bounds on the search
+			depth++;
+			// Attempt to enforce unnecessary search late in the game
+			if (depth > ABSOLUTEDEPTH){
+				break;
 			}
 		}
+
+
 		
 		if (potentialActions.size() == 0){
 			System.out.println("No possible moves detected.");
@@ -104,7 +118,9 @@ public class HMinimaxSearch implements Minimax {
 		}
 
 		ties.clear();
+		
 		System.out.println("Best estimate: " + max);
+		System.out.println("Got to depth: " + depth);
 		return move;
 	
 	}
@@ -119,7 +135,7 @@ public class HMinimaxSearch implements Minimax {
 	 * @return - The heuristic value of the state
 	 */
 	@Override
-	public int maxVal(Board board,int depth, int player){
+	public int maxVal(Board board,int searchDepth, int player){
 
 		int max = Integer.MIN_VALUE;
 		
@@ -130,8 +146,18 @@ public class HMinimaxSearch implements Minimax {
 			player = 1;
 		}
 		
-		if (depth == MAXDEPTH){
+		if (searchDepth == depth){
+			
+			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
+			
+			if (transitionTable.containsKey(hashValue)){
+				return transitionTable.get(hashValue);
+			}
+			
 			int value = evaluator.evaluate(board, ourPlayer);
+			
+			transitionTable.put(hashValue, value);
+			
 			return  value;	
 		}
 		
@@ -141,13 +167,13 @@ public class HMinimaxSearch implements Minimax {
 
 			Board child = scg.generateSuccessor(board, action, player);
 			
-			if (timer.almostExpired()){
-				return Math.max(Integer.MIN_VALUE, max);
-			}
-			
-			int result = minVal(child, depth+1, player);
+			int result = minVal(child, searchDepth+1, player);
 
 			max = Math.max(max, result);
+
+			if (timer.almostExpired()){
+				return max;
+			}
 			
 			if (max >= BETA){
 				return max;
@@ -174,7 +200,7 @@ public class HMinimaxSearch implements Minimax {
 	 * @return - The heuristic value of the state
 	 */
 	@Override
-	public int minVal(Board board, int depth, int player){
+	public int minVal(Board board, int searchDepth, int player){
 		
 		int min = Integer.MAX_VALUE;
 
@@ -185,8 +211,18 @@ public class HMinimaxSearch implements Minimax {
 			player = 1;
 		}
 		
-		if (depth == MAXDEPTH){
+		if (searchDepth == depth){
+
+			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
+			
+			if (transitionTable.containsKey(hashValue)){
+				return transitionTable.get(hashValue);
+			}
+			
 			int value = evaluator.evaluate(board, ourPlayer);
+			
+			transitionTable.put(hashValue, value);
+			
 			return  value;	
 		}
 		
@@ -196,13 +232,13 @@ public class HMinimaxSearch implements Minimax {
 
 			Board child = scg.generateSuccessor(board, action, player);
 
-			if (timer.almostExpired()){
-				return Math.max(Integer.MAX_VALUE, min);
-			}
-			
-			int result = maxVal(child, depth+1, player);
+			int result = maxVal(child, searchDepth+1, player);
 			
 			min = Math.min(min, result);
+			
+			if (timer.almostExpired()){
+				return min;
+			}
 			
 			if (min <= ALPHA){
 				return min;
@@ -211,7 +247,7 @@ public class HMinimaxSearch implements Minimax {
 			BETA = Math.min(BETA, min);
 						
 		}
-		// No moves, goal state so we win!
+		// No moves, goal state so we win, scew the results!
 		if (potentialActions.size() == 0){
 			min = Integer.MAX_VALUE;
 		}
