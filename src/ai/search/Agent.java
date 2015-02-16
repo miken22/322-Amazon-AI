@@ -44,17 +44,17 @@ public class Agent implements Search {
 		this.board = currentBoard;
 
 		if (move == 0){
-			move = 1;
-			if (role == 1){
-				return selectOpeningMove();
-			}
+			move++;
+//			if (role == 1){
+//				return selectOpeningMove();
+//			}
 		}
 
 		move++;
 
 		int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
 
-		// Checks that we never pick a move standing stil and shooting at self
+		// Checks that we never pick a move standing still and shooting at self
 		for (int i = 0; i < moveChoice.length; i++){
 			if(moveChoice[i] != 0){
 				return moveChoice;
@@ -67,14 +67,23 @@ public class Agent implements Search {
 
 	// TODO: Figure out opening move strategies
 	private int[] selectOpeningMove() {
+		
+		ArrayList<int[]> openingMoves = new ArrayList<>();
+				
 		int[] openingMove1 = { 0, 3, 7, 3, 5, 1 };
 		int[] openingMove2 = { 0, 6, 7, 6, 5, 8 };
-
-		int random = new Random().nextInt() % 2;
-		if (random == 0) {
-			return openingMove1;
-		}
-		return openingMove2;
+		
+		int[] openingMove3 = { 0, 3, 7, 3, 6, 1 };
+		int[] openingMove4 = { 0, 6, 7, 6, 6, 8 };
+		
+		openingMoves.add(openingMove1);
+		openingMoves.add(openingMove2);
+		openingMoves.add(openingMove3);
+		openingMoves.add(openingMove4);
+		
+		int random = new Random().nextInt() % 4;
+		
+		return openingMoves.get(random);
 	}
 
 	/**
