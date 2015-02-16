@@ -8,7 +8,6 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLParserFactory;
 import ai.gui.GUI;
 import ai.search.Agent;
-import ai.search.CountReachableTilesHeuristic;
 import ai.search.TrivialFunction;
 import ubco.ai.GameRoom;
 import ubco.ai.games.GameClient;
@@ -29,7 +28,6 @@ public class Player implements GamePlayer {
 	private Board board;
 	private GUI gui;
 	private XMLParser parser;
-
 
 	private final int ROWS = 10;
 	private final int COLS = 10;
@@ -60,11 +58,9 @@ public class Player implements GamePlayer {
 
 		for (GameRoom g : client.roomList) {
 			try {
-//				if (g.userCount == 1){
-					client.joinGameRoom(g.roomName);
-					roomNumber = g.roomID;
-					break;
-//				}
+				client.joinGameRoom(g.roomName);
+				roomNumber = g.roomID;
+				break;
 			} catch (Exception e) {
 				continue;
 			}
@@ -119,7 +115,7 @@ public class Player implements GamePlayer {
 			int[] move = agent.selectMove(board);
 
 			String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
-			client.sendToServer(moveMessage, false);
+			client.sendToServer(moveMessage, true);
 
 			// GUI and logic update
 			String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
@@ -218,7 +214,7 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		if (args.length == 0 ){
 			player.joinServer();
 		} else {

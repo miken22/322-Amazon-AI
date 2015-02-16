@@ -8,18 +8,16 @@ public class Timer {
 		startTime = System.currentTimeMillis();
 	}
 	
-	public boolean almostExpired(){
+	public boolean almostExpired(){	
 		long currentTime = ((System.currentTimeMillis() - startTime) / 1000) % 60;
-		if (currentTime > 15){
+		if (currentTime > 25){
+			startTime = 0;
 			return true;
 		}
 		return false;
 	}
 	
 	public boolean isStillValid(){
-	
-		return ((System.currentTimeMillis() - startTime) / 1000) % 60 < 15;
-	}
-	
-	
+		return ((System.currentTimeMillis() - startTime) / 1000) % 60 < 25;
+	}	
 }

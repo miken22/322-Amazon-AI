@@ -1,6 +1,7 @@
 package ai.search;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -30,6 +31,7 @@ public class HMinimaxSearch implements Minimax {
 	
 	private final int ABSOLUTEDEPTH = 10;
 	
+	private HashMap<Integer, Integer> transitionTable;
 	
 	List<int[]> ties;
 	
@@ -38,6 +40,7 @@ public class HMinimaxSearch implements Minimax {
 		scg = new SuccessorGenerator();
 		ties = new ArrayList<>();
 		timer = new Timer();
+		transitionTable = new HashMap<>();
 	}
 	
 	/**
@@ -62,7 +65,14 @@ public class HMinimaxSearch implements Minimax {
 		// Get list of possible actions that can be made from the state
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
+		if (transitionTable.size() > 500000){
+			transitionTable.clear();
+		}
+		
+		
 		timer.startTiming();
+		
+		
 		
 		depth = 1;
 		
@@ -78,7 +88,7 @@ public class HMinimaxSearch implements Minimax {
 
 				Board child = scg.generateSuccessor(board, action, player);
 
-				int result = minVal(child, 1, player);
+				int result = maxVal(child, 1, player);
 
 				if (result > max){
 					max = result;
@@ -137,7 +147,17 @@ public class HMinimaxSearch implements Minimax {
 		}
 		
 		if (searchDepth == depth){
+			
+			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
+			
+			if (transitionTable.containsKey(hashValue)){
+				return transitionTable.get(hashValue);
+			}
+			
 			int value = evaluator.evaluate(board, ourPlayer);
+			
+			transitionTable.put(hashValue, value);
+			
 			return  value;	
 		}
 		
@@ -192,7 +212,17 @@ public class HMinimaxSearch implements Minimax {
 		}
 		
 		if (searchDepth == depth){
+
+			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
+			
+			if (transitionTable.containsKey(hashValue)){
+				return transitionTable.get(hashValue);
+			}
+			
 			int value = evaluator.evaluate(board, ourPlayer);
+			
+			transitionTable.put(hashValue, value);
+			
 			return  value;	
 		}
 		
@@ -231,5 +261,4 @@ public class HMinimaxSearch implements Minimax {
 		int choice = new Random().nextInt(ties.size());
 		return ties.get(choice);
 	}
-	
 }

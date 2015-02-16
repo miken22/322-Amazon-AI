@@ -45,9 +45,9 @@ public class Agent implements Search {
 
 		if (move == 0){
 			move++;
-//			if (role == 1){
-//				return selectOpeningMove();
-//			}
+			if (role == 1){
+				return selectOpeningMove();
+			}
 		}
 
 		move++;
@@ -81,7 +81,7 @@ public class Agent implements Search {
 		openingMoves.add(openingMove3);
 		openingMoves.add(openingMove4);
 		
-		int random = new Random().nextInt() % 4;
+		int random = new Random().nextInt(4);
 		
 		return openingMoves.get(random);
 	}
