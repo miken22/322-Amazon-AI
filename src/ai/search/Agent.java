@@ -137,6 +137,8 @@ public class Agent implements Search {
 		if ((whiteTiles > blackTiles + bothCanReach) || (blackTiles > whiteTiles + bothCanReach)) {
 			winningState = true;
 			// Switch to a heuristic that maximizes total area controlled.
+			System.out.println("Switching to max reachable tiles heuristic for endgame.");
+			
 			setupHeuristic(new CountReachableTilesHeuristic(role));
 			return true;
 		}

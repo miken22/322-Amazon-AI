@@ -81,18 +81,24 @@ public class HMinimaxSearch implements Minimax {
 			}
 			
 			// Generate the child of the root state, performing depth first alpha-beta search
-			for (int[] action : potentialActions){
+			for (int i = 0; i < potentialActions.size(); i++){
 
+				int[] action = potentialActions.get(i);
+				
 				Board child = scg.generateSuccessor(board, action, player);
 
 				// Oppoenent wants to minimize our possible moves from the root
 				int result = minVal(child, 1, player);
 
 				if (result > max){
+					// TODO: Trying a move ordering technique
+					potentialActions = moveToFront(potentialActions, action);
+					
 					max = result;
 					move = action;
 					ties.clear();
 				} else if (result == max){
+					potentialActions = moveToFront(potentialActions, action);
 					ties.add(action);
 				}
 
@@ -104,8 +110,6 @@ public class HMinimaxSearch implements Minimax {
 				break;
 			}
 		}
-
-
 		
 		if (potentialActions.size() == 0){
 			System.out.println("No possible moves detected.");
@@ -123,6 +127,19 @@ public class HMinimaxSearch implements Minimax {
 	
 	}
 	
+	private List<int[]> moveToFront(List<int[]> potentialActions, int[] action) {
+		
+		potentialActions.remove(action);
+		
+		List<int[]> tempList = new ArrayList<>();
+		tempList.add(action);
+		tempList.addAll(potentialActions);
+		
+		potentialActions = tempList;
+		
+		return potentialActions;
+	}
+
 	/**
 	 * Returns the evaluation of the board for the player
 	 * 
@@ -256,6 +273,11 @@ public class HMinimaxSearch implements Minimax {
 	 */
 	@Override
 	public int[] tieBreaker() {
+		
+		// TODO: Try to find an algorithm to pick the state that blocks opponent best (arrow closest or something)
+		
+		System.out.println("Number of ties: " + ties.size());
+		
 		int choice = new Random().nextInt(ties.size());
 		return ties.get(choice);
 	}
