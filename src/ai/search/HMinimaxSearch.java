@@ -23,7 +23,7 @@ public class HMinimaxSearch implements Minimax {
 
 	private int ALPHA;
 	private int BETA;
-	private int depth;
+	private int DEPTH;
 	private int ourPlayer;
 	
 	private SuccessorGenerator scg;
@@ -69,14 +69,11 @@ public class HMinimaxSearch implements Minimax {
 			transitionTable.clear();
 		}
 		
-		
 		timer.startTiming();
 		
+		DEPTH = 1;
 		
-		
-		depth = 1;
-		
-		// Timer controlled search
+		// Timer controlled search, level 0 of the search
 		while (timer.isStillValid()){
 
 			if (potentialActions.size() == 0){
@@ -88,7 +85,8 @@ public class HMinimaxSearch implements Minimax {
 
 				Board child = scg.generateSuccessor(board, action, player);
 
-				int result = maxVal(child, 1, player);
+				// Oppoenent wants to minimize our possible moves from the root
+				int result = minVal(child, 1, player);
 
 				if (result > max){
 					max = result;
@@ -100,9 +98,9 @@ public class HMinimaxSearch implements Minimax {
 
 			}
 			// Increase bounds on the search
-			depth++;
+			DEPTH++;
 			// Attempt to enforce unnecessary search late in the game
-			if (depth > ABSOLUTEDEPTH){
+			if (DEPTH > ABSOLUTEDEPTH){
 				break;
 			}
 		}
@@ -120,7 +118,7 @@ public class HMinimaxSearch implements Minimax {
 		ties.clear();
 		
 		System.out.println("Best estimate: " + max);
-		System.out.println("Got to depth: " + depth);
+		System.out.println("Got to depth: " + DEPTH);
 		return move;
 	
 	}
@@ -129,7 +127,7 @@ public class HMinimaxSearch implements Minimax {
 	 * Returns the evaluation of the board for the player
 	 * 
 	 * @param board - State of the amazons game being evaluated
-	 * @param depth - The current depth of the search
+	 * @param DEPTH - The current depth of the search
 	 * @param player - The player being evaluated, 1 for max, 2 for min
 	 * 
 	 * @return - The heuristic value of the state
@@ -146,7 +144,7 @@ public class HMinimaxSearch implements Minimax {
 			player = 1;
 		}
 		
-		if (searchDepth == depth){
+		if (searchDepth == DEPTH){
 			
 			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
 			
@@ -167,9 +165,9 @@ public class HMinimaxSearch implements Minimax {
 
 			Board child = scg.generateSuccessor(board, action, player);
 			
-			max = minVal(child, searchDepth+1, player);
+			int result = minVal(child, searchDepth+1, player);
 
-			//max = Math.max(max, result);
+			max = Math.max(max, result);
 
 			if (timer.almostExpired()){
 				return max;
@@ -194,7 +192,7 @@ public class HMinimaxSearch implements Minimax {
 	 * Returns the evaluation of the board for the player
 	 * 
 	 * @param board - State of the amazons game being evaluated
-	 * @param depth - The current depth of the search
+	 * @param DEPTH - The current depth of the search
 	 * @param player - The player being evaluated, 1 for max, 2 for min
 	 * 
 	 * @return - The heuristic value of the state
@@ -211,7 +209,7 @@ public class HMinimaxSearch implements Minimax {
 			player = 1;
 		}
 		
-		if (searchDepth == depth){
+		if (searchDepth == DEPTH){
 
 			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
 			
@@ -232,9 +230,9 @@ public class HMinimaxSearch implements Minimax {
 
 			Board child = scg.generateSuccessor(board, action, player);
 
-			min = maxVal(child, searchDepth+1, player);
+			int result = maxVal(child, searchDepth+1, player);
 			
-			//min = Math.min(min, result);
+			min = Math.min(min, result);
 			
 			if (timer.almostExpired()){
 				return min;
