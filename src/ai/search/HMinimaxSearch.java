@@ -1,5 +1,7 @@
 package ai.search;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,26 +17,28 @@ import ai.singleplayer.Timer;
  *
  */
 public class HMinimaxSearch implements Minimax {
-	
+
 	/**
 	 * The heuristic being used
 	 */
 	private EvaluationFunction evaluator;
 	private int DEPTH;
 	private int ourPlayer;
-	
+
 	private SuccessorGenerator scg;
 	private Timer timer;
-	
+
 	int ALPHA;
 	int BETA;
-	
+
+	int cacheHits = 0;
+
 	private final int ABSOLUTEDEPTH = 10;
-	
+
 	private HashMap<Integer, Integer> transitionTable;
-	
+
 	List<int[]> ties;
-	
+
 	public HMinimaxSearch(EvaluationFunction evaluator){
 		this.evaluator = evaluator;
 		scg = new SuccessorGenerator();
@@ -42,7 +46,7 @@ public class HMinimaxSearch implements Minimax {
 		timer = new Timer();
 		transitionTable = new HashMap<>();
 	}
-	
+
 	/**
 	 * Takes a state and depth to perform a limited alpha-beta search
 	 * 
@@ -52,48 +56,48 @@ public class HMinimaxSearch implements Minimax {
 	 */
 	@Override
 	public int[] maxSearch(Board board, int player){
-		
+
 		int max = Integer.MIN_VALUE;
 		int[] move = null;
-		
+
 		// Setup alpha beta bounds
 		ALPHA = Integer.MIN_VALUE;
 		BETA = Integer.MAX_VALUE;
-				
+
 		ourPlayer = player;
-				
+
 		// Get list of possible actions that can be made from the state
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
-		
+
 		if (transitionTable.size() > 2000000){
 			System.out.println("Flushing transition table.");
 			transitionTable.clear();
 		}
-		
+
 		timer.startTiming();
-		
+
 		DEPTH = 2;
-		
+
 		// Timer controlled search, level 0 of the search
 		while (timer.isStillValid()){
 
 			if (potentialActions.size() == 0){
 				break;
 			}
-			
+
 			// Generate the child of the root state, performing depth first alpha-beta search
 			for (int i = 0; i < potentialActions.size(); i++){
 
 				int[] action = potentialActions.get(i);
 				Board child = scg.generateSuccessor(board, action, player);
 				// Opponent wants to minimize our possible moves from the root
-				
+
 				int result = minVal(child, 1, player);
 
 				if (result > max){
 					// TODO: Trying a move ordering technique
 					potentialActions = moveToFront(potentialActions, action);
-					
+
 					max = result;
 					move = action;
 					ties.clear();
@@ -110,21 +114,23 @@ public class HMinimaxSearch implements Minimax {
 				break;
 			}
 		}
-		
+
+		System.out.println("Number of cache hits: " + cacheHits);
+
 		if (potentialActions.size() == 0){
 			System.out.println("No possible moves detected.");
 		}
-		
+
 		if (ties.size() > 1){
 			move = tieBreaker();
 		}
 
 		ties.clear();
-		
+
 		System.out.println("Best estimate: " + max);
 		System.out.println("Got to depth: " + DEPTH);
 		return move;
-	
+
 	}
 
 	/**
@@ -140,35 +146,36 @@ public class HMinimaxSearch implements Minimax {
 	public int maxVal(Board board, int searchDepth, int player){
 
 		int max = Integer.MIN_VALUE;
-		
+
 		// Switch roles for next generation
 		if (player == 1){
 			player = 2;
 		} else {
 			player = 1;
 		}
-		
+
 		if (searchDepth == DEPTH){
-			
+
 			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
-			
+
 			if (transitionTable.containsKey(hashValue)){
+				cacheHits++;
 				return transitionTable.get(hashValue);
 			}
-			
+
 			int value = evaluator.evaluate(board, ourPlayer);
-			
+
 			transitionTable.put(hashValue, value);
-			
+
 			return  value;	
 		}
-		
+
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
-		
+
 		for (int[] action : potentialActions){
 
 			Board child = scg.generateSuccessor(board, action, player);
-			
+
 			int result = minVal(child, searchDepth+1, player);
 
 			max = Math.max(max, result);
@@ -176,19 +183,19 @@ public class HMinimaxSearch implements Minimax {
 			if (timer.almostExpired()){
 				return max;
 			}
-			
+
 			if (max >= BETA){
 				return max;
 			}
-			
+
 			ALPHA = Math.max(ALPHA, max);
-						
+
 		}
 		// We ran out of moves, no good!
 		if (potentialActions.size() == 0){
 			max = Integer.MIN_VALUE;
 		}
-		
+
 		return max;
 	}
 	/**
@@ -203,7 +210,7 @@ public class HMinimaxSearch implements Minimax {
 	 */
 	@Override
 	public int minVal(Board board, int searchDepth, int player){
-		
+
 		int min = Integer.MAX_VALUE;
 
 		// Switch roles for next generation
@@ -212,42 +219,43 @@ public class HMinimaxSearch implements Minimax {
 		} else {
 			player = 1;
 		}
-		
+
 		if (searchDepth == DEPTH){
 
 			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
-			
+
 			if (transitionTable.containsKey(hashValue)){
+				cacheHits++;
 				return transitionTable.get(hashValue);
 			}
-			
+
 			int value = evaluator.evaluate(board, ourPlayer);
-			
+
 			transitionTable.put(hashValue, value);
-			
+
 			return  value;	
 		}
-		
+
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
-		
+
 		for (int[] action : potentialActions){
 
 			Board child = scg.generateSuccessor(board, action, player);
 
 			int result = maxVal(child, searchDepth+1, player);
-			
+
 			min = Math.min(min, result);
-			
+
 			if (timer.almostExpired()){
 				return min;
 			}
-			
+
 			if (min <= ALPHA){
 				return min;
 			}
-			
+
 			BETA = Math.min(BETA, min);
-						
+
 		}
 		// No moves, goal state so we win, skew the results!
 		if (potentialActions.size() == 0){
@@ -255,7 +263,7 @@ public class HMinimaxSearch implements Minimax {
 		}
 		return min;
 	}
-	
+
 	/**
 	 * Swaps the location of the newest best potential action by moving it to the front of the array for
 	 * the next round of alpha-beta search.
@@ -265,28 +273,28 @@ public class HMinimaxSearch implements Minimax {
 	 * @return The updated array with the best action at the front.
 	 */
 	private List<int[]> moveToFront(List<int[]> potentialActions, int[] action) {
-		
+
 		potentialActions.remove(action);
-		
+
 		List<int[]> tempList = new ArrayList<>();
 		tempList.add(action);
 		tempList.addAll(potentialActions);
-		
+
 		potentialActions = tempList;
-		
+
 		return potentialActions;
 	}
-	
+
 	/**
 	 * Tie breaker that selects the operator at random.
 	 */
 	@Override
 	public int[] tieBreaker() {
-		
+
 		// TODO: Try to find an algorithm to pick the state that blocks opponent best (arrow closest or something)
-		
+
 		System.out.println("Number of ties: " + ties.size());
-		
+
 		int choice = new Random().nextInt(ties.size());
 		return ties.get(choice);
 	}

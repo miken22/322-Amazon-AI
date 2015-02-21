@@ -59,9 +59,9 @@ public class CountReachableTilesHeuristic extends EvaluationFunction {
 
 		// Return the appropriate score, we want the difference between the area controlled.
 		if (OURCOLOUR == 1){
-			return whiteTiles - blackTiles;
+			return whiteTiles;// - blackTiles;
 		} else {
-			return blackTiles - whiteTiles;
+			return blackTiles;// - whiteTiles;
 		}
 		
 	}

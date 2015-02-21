@@ -1,6 +1,8 @@
 package ai.search;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.Stack;
 
 import ai.Actions;
@@ -44,12 +46,15 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 		}
 		
 		for (Pair<Integer, Integer> pair : wPositions) {
-			scoreDistance(board, pair, WQUEEN, wDistanceTable);
+			wDistanceTable[pair.getLeft()][pair.getRight()] = -1;
 		}
 
 		for (Pair<Integer, Integer> pair : bPositions) {
-			scoreDistance(board, pair, BQUEEN, bDistanceTable);
+			bDistanceTable[pair.getLeft()][pair.getRight()] = -1;
 		}
+		
+		findDistances(board, WQUEEN, wDistanceTable);
+		findDistances(board, BQUEEN, bDistanceTable);
 
 //		for (int i = 9; i  >= 0; i--){
 //			for (int j = 0; j < 10; j++){
@@ -73,29 +78,45 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 				}
 			}
 		}
+		
+//		System.out.println(wUtility);
+		
 		if (player == 1){
 			return wUtility;
 		} else {
 			return bUtility;
 		}
 	}
-
-	public void scoreDistance(Board board, Pair<Integer, Integer> source, int player, int[][] distanceTable){
 	
-		Stack<Pair<Integer, Integer>> stack = new Stack<>();
+	/**
+	 * Different way to compute distances, acts like a DFS outwards from each queen, supposed to be faster.
+	 * 
+	 * @param board - State being evaluated.
+	 * @param player - Colour evaluating for.
+	 * @param distanceTable - The matrix representing distances.
+	 */
+	public void findDistances(Board board, int player, int[][] distanceTable){
 
-		// Used to indicate spots where queens are located.
-		distanceTable[source.getLeft()][source.getRight()] = -1;
-
-		stack.push(source);
+		ArrayList<Pair<Integer, Integer> > positions = null;
+		Queue<Pair<Integer, Integer> > queue = new ArrayDeque<>();
 		
-		while (!stack.empty()) {
-
-			Pair<Integer, Integer> top = stack.pop();
+		if (player == 1){
+			positions = board.getWhitePositions();
+		} else {
+			positions = board.getBlackPositions();
+		}
+		
+		for (Pair<Integer, Integer> pair : positions) {
+			queue.add(pair);
+		}
+		
+		while (!queue.isEmpty()){
+			
+			Pair<Integer, Integer> top = queue.poll();
+	
 			int xPos = top.getLeft();
 			int yPos = top.getRight();
 			
-			// We try every possible move from the current position an amazon is or could be at
 			for (int[] action : actions.getActions()){
 				
 				int currentDistance = distanceTable[xPos][yPos];
@@ -119,11 +140,11 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 					if (search.moveIsValid(board, xPos, yPos, newX, newY, player, false)){
 						if (distanceTable[newX][newY] > currentDistance){
 							distanceTable[newX][newY] = currentDistance;
-							stack.push(new Pair<Integer, Integer>(newX, newY));
+							queue.add(new Pair<Integer, Integer>(newX, newY));
 						}
 					}
 				}		
-			}
+			}	
 		}
 	}
 }
