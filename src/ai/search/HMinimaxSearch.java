@@ -116,7 +116,8 @@ public class HMinimaxSearch implements Minimax {
 		}
 
 		System.out.println("Number of cache hits: " + cacheHits);
-
+		cacheHits = 0;
+		
 		if (potentialActions.size() == 0){
 			System.out.println("No possible moves detected.");
 		}
