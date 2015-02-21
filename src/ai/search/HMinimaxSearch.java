@@ -20,14 +20,14 @@ public class HMinimaxSearch implements Minimax {
 	 * The heuristic being used
 	 */
 	private EvaluationFunction evaluator;
-
-	private int ALPHA;
-	private int BETA;
 	private int DEPTH;
 	private int ourPlayer;
 	
 	private SuccessorGenerator scg;
 	private Timer timer;
+	
+	int ALPHA;
+	int BETA;
 	
 	private final int ABSOLUTEDEPTH = 10;
 	
@@ -65,13 +65,14 @@ public class HMinimaxSearch implements Minimax {
 		// Get list of possible actions that can be made from the state
 		List<int[]> potentialActions = scg.getRelevantActions(board, player);
 		
-		if (transitionTable.size() > 500000){
+		if (transitionTable.size() > 2000000){
+			System.out.println("Flushing transition table.");
 			transitionTable.clear();
 		}
 		
 		timer.startTiming();
 		
-		DEPTH = 1;
+		DEPTH = 2;
 		
 		// Timer controlled search, level 0 of the search
 		while (timer.isStillValid()){
@@ -84,10 +85,9 @@ public class HMinimaxSearch implements Minimax {
 			for (int i = 0; i < potentialActions.size(); i++){
 
 				int[] action = potentialActions.get(i);
-				
 				Board child = scg.generateSuccessor(board, action, player);
-
-				// Oppoenent wants to minimize our possible moves from the root
+				// Opponent wants to minimize our possible moves from the root
+				
 				int result = minVal(child, 1, player);
 
 				if (result > max){
@@ -115,7 +115,7 @@ public class HMinimaxSearch implements Minimax {
 			System.out.println("No possible moves detected.");
 		}
 		
-		if (ties.size() > 0){
+		if (ties.size() > 1){
 			move = tieBreaker();
 		}
 
@@ -125,19 +125,6 @@ public class HMinimaxSearch implements Minimax {
 		System.out.println("Got to depth: " + DEPTH);
 		return move;
 	
-	}
-	
-	private List<int[]> moveToFront(List<int[]> potentialActions, int[] action) {
-		
-		potentialActions.remove(action);
-		
-		List<int[]> tempList = new ArrayList<>();
-		tempList.add(action);
-		tempList.addAll(potentialActions);
-		
-		potentialActions = tempList;
-		
-		return potentialActions;
 	}
 
 	/**
@@ -150,7 +137,7 @@ public class HMinimaxSearch implements Minimax {
 	 * @return - The heuristic value of the state
 	 */
 	@Override
-	public int maxVal(Board board,int searchDepth, int player){
+	public int maxVal(Board board, int searchDepth, int player){
 
 		int max = Integer.MIN_VALUE;
 		
@@ -262,12 +249,34 @@ public class HMinimaxSearch implements Minimax {
 			BETA = Math.min(BETA, min);
 						
 		}
-		// No moves, goal state so we win, scew the results!
+		// No moves, goal state so we win, skew the results!
 		if (potentialActions.size() == 0){
 			min = Integer.MAX_VALUE;
 		}
 		return min;
 	}
+	
+	/**
+	 * Swaps the location of the newest best potential action by moving it to the front of the array for
+	 * the next round of alpha-beta search.
+	 * 
+	 * @param potentialActions - The arraylist of actions.
+	 * @param action - The action moving to the front.
+	 * @return The updated array with the best action at the front.
+	 */
+	private List<int[]> moveToFront(List<int[]> potentialActions, int[] action) {
+		
+		potentialActions.remove(action);
+		
+		List<int[]> tempList = new ArrayList<>();
+		tempList.add(action);
+		tempList.addAll(potentialActions);
+		
+		potentialActions = tempList;
+		
+		return potentialActions;
+	}
+	
 	/**
 	 * Tie breaker that selects the operator at random.
 	 */

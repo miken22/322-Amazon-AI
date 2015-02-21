@@ -73,8 +73,8 @@ public class Agent implements Search {
 		int[] openingMove1 = { 0, 3, 7, 3, 5, 1 };
 		int[] openingMove2 = { 0, 6, 7, 6, 5, 8 };
 		
-		int[] openingMove3 = { 0, 3, 7, 3, 6, 1 };
-		int[] openingMove4 = { 0, 6, 7, 6, 6, 8 };
+		int[] openingMove3 = { 0, 3, 6, 3, 6, 1 };
+		int[] openingMove4 = { 0, 6, 6, 6, 6, 8 };
 		
 		openingMoves.add(openingMove1);
 		openingMoves.add(openingMove2);
