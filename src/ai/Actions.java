@@ -5,90 +5,90 @@ import java.util.List;
 
 public class Actions {
 
-	public int[] stayStill = { 0, 0 };
+	public byte[] stayStill = { 0, 0 };
 
-	public int[] leftOne = { -1, 0 };
-	public int[] leftTwo = { -2, 0 };
-	public int[] leftThree = { -3, 0 };
-	public int[] leftFour = { -4, 0 };
-	public int[] leftFive = { -5, 0 };
-	public int[] leftSix = { -6, 0 };
-	public int[] leftSeven = { -7, 0 };
-	public int[] leftEight = { -8, 0 };
-	public int[] leftNine = { -9, 0 };
+	public byte[] leftOne = { -1, 0 };
+	public byte[] leftTwo = { -2, 0 };
+	public byte[] leftThree = { -3, 0 };
+	public byte[] leftFour = { -4, 0 };
+	public byte[] leftFive = { -5, 0 };
+	public byte[] leftSix = { -6, 0 };
+	public byte[] leftSeven = { -7, 0 };
+	public byte[] leftEight = { -8, 0 };
+	public byte[] leftNine = { -9, 0 };
 
-	public int[] rightOne = { 1, 0 };
-	public int[] rightTwo = { 2, 0 };
-	public int[] rightThree = { 3, 0 };
-	public int[] rightFour = { 4, 0 };
-	public int[] rightFive = { 5, 0 };
-	public int[] rightSix = { 6, 0 };
-	public int[] rightSeven = { 7, 0 };
-	public int[] rightEight = { 8, 0 };
-	public int[] rightNine = { 9, 0 };
+	public byte[] rightOne = { 1, 0 };
+	public byte[] rightTwo = { 2, 0 };
+	public byte[] rightThree = { 3, 0 };
+	public byte[] rightFour = { 4, 0 };
+	public byte[] rightFive = { 5, 0 };
+	public byte[] rightSix = { 6, 0 };
+	public byte[] rightSeven = { 7, 0 };
+	public byte[] rightEight = { 8, 0 };
+	public byte[] rightNine = { 9, 0 };
 
-	public int[] upOne = { 0, -1 };
-	public int[] upTwo = { 0, -2 };
-	public int[] upThree = { 0, -3 };
-	public int[] upFour = { 0, -4 };
-	public int[] upFive = { 0, -5 };
-	public int[] upSix = { 0, -6 };
-	public int[] upSeven = { 0, -7 };
-	public int[] upEight = { 0, -8 };
-	public int[] upNine = { 0, -9 };
+	public byte[] upOne = { 0, -1 };
+	public byte[] upTwo = { 0, -2 };
+	public byte[] upThree = { 0, -3 };
+	public byte[] upFour = { 0, -4 };
+	public byte[] upFive = { 0, -5 };
+	public byte[] upSix = { 0, -6 };
+	public byte[] upSeven = { 0, -7 };
+	public byte[] upEight = { 0, -8 };
+	public byte[] upNine = { 0, -9 };
 
-	public int[] downOne = { 0, 1 };
-	public int[] downTwo = { 0, 2 };
-	public int[] downThree = { 0, 3 };
-	public int[] downFour = { 0, 4 };
-	public int[] downFive = { 0, 5 };
-	public int[] downSix = { 0, 6 };
-	public int[] downSeven = { 0, 7 };
-	public int[] downEight = { 0, 8 };
-	public int[] downNine = { 0, 9 };
+	public byte[] downOne = { 0, 1 };
+	public byte[] downTwo = { 0, 2 };
+	public byte[] downThree = { 0, 3 };
+	public byte[] downFour = { 0, 4 };
+	public byte[] downFive = { 0, 5 };
+	public byte[] downSix = { 0, 6 };
+	public byte[] downSeven = { 0, 7 };
+	public byte[] downEight = { 0, 8 };
+	public byte[] downNine = { 0, 9 };
 	
-	public int[] downLeftOne = { -1, -1 };
-	public int[] downLeftTwo = { -2, -2 };
-	public int[] downLeftThree = { -3, -3 };
-	public int[] downLeftFour = { -4, -4 };
-	public int[] downLeftFive = { -5, -5 };
-	public int[] downLeftSix = { -6, -6 };
-	public int[] downLeftSeven = { -7, -7 };
-	public int[] downLeftEight = { -8, -8 };
-	public int[] downLeftNine = { -9, -9 };
+	public byte[] downLeftOne = { -1, -1 };
+	public byte[] downLeftTwo = { -2, -2 };
+	public byte[] downLeftThree = { -3, -3 };
+	public byte[] downLeftFour = { -4, -4 };
+	public byte[] downLeftFive = { -5, -5 };
+	public byte[] downLeftSix = { -6, -6 };
+	public byte[] downLeftSeven = { -7, -7 };
+	public byte[] downLeftEight = { -8, -8 };
+	public byte[] downLeftNine = { -9, -9 };
 	
-	public int[] downRightOne = { -1, 1 };
-	public int[] downRightTwo = { -2, 2 };
-	public int[] downRightThree = { -3, 3 };
-	public int[] downRightFour = { -4, 4 };
-	public int[] downRightFive = { -5, 5 };
-	public int[] downRightSix = { -6, 6 };
-	public int[] downRightSeven = { -7, 7 };
-	public int[] downRightEight = { -8, 8 };
-	public int[] downRightNine = { -9, 9 };
+	public byte[] downRightOne = { -1, 1 };
+	public byte[] downRightTwo = { -2, 2 };
+	public byte[] downRightThree = { -3, 3 };
+	public byte[] downRightFour = { -4, 4 };
+	public byte[] downRightFive = { -5, 5 };
+	public byte[] downRightSix = { -6, 6 };
+	public byte[] downRightSeven = { -7, 7 };
+	public byte[] downRightEight = { -8, 8 };
+	public byte[] downRightNine = { -9, 9 };
 
-	public int[] upRightOne = { 1, 1 };
-	public int[] upRightTwo = { 2, 2 };
-	public int[] upRightThree = { 3, 3 };
-	public int[] upRightFour = { 4, 4 };
-	public int[] upRightFive = { 5, 5 };
-	public int[] upRightSix = { 6, 6 };
-	public int[] upRightSeven = { 7, 7 };
-	public int[] upRightEight = { 8, 8 };
-	public int[] upRightNine = { 9, 9 };
+	public byte[] upRightOne = { 1, 1 };
+	public byte[] upRightTwo = { 2, 2 };
+	public byte[] upRightThree = { 3, 3 };
+	public byte[] upRightFour = { 4, 4 };
+	public byte[] upRightFive = { 5, 5 };
+	public byte[] upRightSix = { 6, 6 };
+	public byte[] upRightSeven = { 7, 7 };
+	public byte[] upRightEight = { 8, 8 };
+	public byte[] upRightNine = { 9, 9 };
 
-	public int[] upLeftOne = { 1, -1 };
-	public int[] upLeftTwo = { 2, -2 };
-	public int[] upLeftThree = { 3, -3 };
-	public int[] upLeftFour = { 4, -4 };
-	public int[] upLeftFive = { 5, -5 };
-	public int[] upLeftSix = { 6, -6 };
-	public int[] upLeftSeven = { 7, -7 };
-	public int[] upLeftEight = { 8, -8 };
-	public int[] upLeftNine = { 9, -9 };
+	public byte[] upLeftOne = { 1, -1 };
+	public byte[] upLeftTwo = { 2, -2 };
+	public byte[] upLeftThree = { 3, -3 };
+	public byte[] upLeftFour = { 4, -4 };
+	public byte[] upLeftFive = { 5, -5 };
+	public byte[] upLeftSix = { 6, -6 };
+	public byte[] upLeftSeven = { 7, -7 };
+	public byte[] upLeftEight = { 8, -8 };
+	public byte[] upLeftNine = { 9, -9 };
 	
-	List<int[]> actions;
-	List<int[]> arrowThrows;
+	List<byte[]> actions;
+	List<byte[]> arrowThrows;
 	
 	public Actions(){
 		
@@ -260,11 +260,11 @@ public class Actions {
 		
 	}
 
-	public List<int[]> getActions(){	
+	public List<byte[]> getActions(){	
 		return actions;
 	}
 	
-	public List<int[]> getArrowThrows(){
+	public List<byte[]> getArrowThrows(){
 		return arrowThrows;
 	}
 		

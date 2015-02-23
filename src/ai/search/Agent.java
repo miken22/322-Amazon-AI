@@ -39,7 +39,7 @@ public class Agent implements Search {
 	 * Method to return the move that the search agent has selected. Six entries must be in the move
 	 * array at the time of return: FromX, FromY, ToX, ToY, aRow, aCol.  
 	 */
-	public int[] selectMove(Board currentBoard){
+	public byte[] selectMove(Board currentBoard){
 
 		this.board = currentBoard;
 
@@ -52,7 +52,7 @@ public class Agent implements Search {
 
 		move++;
 
-		int[] moveChoice = hMinimax.maxSearch(currentBoard, role);
+		byte[] moveChoice = hMinimax.maxSearch(currentBoard, role);
 
 		// Checks that we never pick a move standing still and shooting at self
 		for (int i = 0; i < moveChoice.length; i++){
@@ -61,20 +61,20 @@ public class Agent implements Search {
 			}
 		}
 
-		return null;
+		return moveChoice;
 
 	}
 
 	// TODO: Figure out opening move strategies
-	private int[] selectOpeningMove() {
+	private byte[] selectOpeningMove() {
 		
-		ArrayList<int[]> openingMoves = new ArrayList<>();
+		ArrayList<byte[]> openingMoves = new ArrayList<>();
 				
-		int[] openingMove1 = { 0, 3, 7, 3, 5, 1 };
-		int[] openingMove2 = { 0, 6, 7, 6, 5, 8 };
+		byte[] openingMove1 = { 0, 3, 7, 3, 5, 1 };
+		byte[] openingMove2 = { 0, 6, 7, 6, 5, 8 };
 		
-		int[] openingMove3 = { 0, 3, 6, 3, 6, 1 };
-		int[] openingMove4 = { 0, 6, 6, 6, 6, 8 };
+		byte[] openingMove3 = { 0, 3, 6, 3, 6, 1 };
+		byte[] openingMove4 = { 0, 6, 6, 6, 6, 8 };
 		
 		openingMoves.add(openingMove1);
 		openingMoves.add(openingMove2);
@@ -98,17 +98,17 @@ public class Agent implements Search {
 			return true;
 		}
 
-		ArrayList<Pair<Integer, Integer> > wPositions = board.getWhitePositions();
-		ArrayList<Pair<Integer, Integer> > bPositions = board.getBlackPositions();
+		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
+		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
 
 
 		int[][] hasChecked = new int[rows][columns];
 
-		for (Pair<Integer, Integer> pair : wPositions){
+		for (Pair<Byte, Byte> pair : wPositions){
 			hasChecked = Utility.countReachableTiles(board, pair, WQUEEN, hasChecked);		
 		}
 
-		for (Pair<Integer, Integer> pair : bPositions){
+		for (Pair<Byte, Byte> pair : bPositions){
 			hasChecked = Utility.countReachableTiles(board, pair, BQUEEN, hasChecked);
 		}
 

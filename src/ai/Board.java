@@ -10,142 +10,144 @@ import java.util.ArrayList;
  */
 public class Board {
 
-	private int[][] board;
+	private byte[][] board;
 	private int rows;
 	private int columns;
 
-	public final int WQUEEN = 1;
-	public final int BQUEEN = 2;
-	public final int ARROW = 3;
-	public final int FREE = -1;
-	
+	public final byte WQUEEN = 1;
+	public final byte BQUEEN = 2;
+	public final byte ARROW = 3;
+	public final byte FREE = -1;
+
 	// Used to keep track of where each amazon is for easier lookup
-	ArrayList<Pair<Integer, Integer> > whitePositions;
-	ArrayList<Pair<Integer, Integer> > blackPositions;
-	
+	ArrayList<Pair<Byte, Byte>> whitePositions;
+	ArrayList<Pair<Byte, Byte>> blackPositions;
+
 	public Board(int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
-		
-		board = new int[rows][columns];
-		whitePositions = new ArrayList<>();
-		blackPositions = new ArrayList<>();	
-	}
-	
-	public Board(Board parent){
-		rows = 10;
-		columns = 10;
-		
-		board = new int[rows][columns];
+
+		board = new byte[rows][columns];
 		whitePositions = new ArrayList<>();
 		blackPositions = new ArrayList<>();
-		
-		for (Pair<Integer, Integer> pair : parent.getWhitePositions()){
+	}
+
+	public Board(Board parent) {
+		rows = 10;
+		columns = 10;
+
+		board = new byte[rows][columns];
+		whitePositions = new ArrayList<>();
+		blackPositions = new ArrayList<>();
+
+		for (Pair<Byte, Byte> pair : parent.getWhitePositions()) {
 			whitePositions.add(pair);
 		}
-		for (Pair<Integer, Integer> pair : parent.getBlackPositions()){
+		for (Pair<Byte, Byte> pair : parent.getBlackPositions()) {
 			blackPositions.add(pair);
 		}
-		
-		int[][] parentBoard = parent.getBoard();
-		
-		for (int i = 0; i < rows; i++){
-			for (int j = 0; j < columns; j++){
+
+		byte[][] parentBoard = parent.getBoard();
+
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				board[i][j] = parentBoard[i][j];
 			}
-		}			
+		}
 	}
-	
+
 	/**
 	 * Use only for the initial board to set up the initial position
 	 */
-	public void initialize(){
-		
-		for (int i = 0; i < rows; i++){
-			for (int j = 0; j < columns; j++){
+	public void initialize() {
+
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				board[i][j] = FREE;
 			}
 		}
-		
+
 		board[0][3] = WQUEEN;
 		board[0][6] = WQUEEN;
 		board[3][0] = WQUEEN;
 		board[3][9] = WQUEEN;
 
-		whitePositions.add(new Pair<Integer, Integer>(0,3));
-		whitePositions.add(new Pair<Integer, Integer>(0,6));
-		whitePositions.add(new Pair<Integer, Integer>(3,0));
-		whitePositions.add(new Pair<Integer, Integer>(3,9));
+		whitePositions.add(new Pair<Byte, Byte>((byte)0, (byte)3));
+		whitePositions.add(new Pair<Byte, Byte>((byte)0, (byte)6));
+		whitePositions.add(new Pair<Byte, Byte>((byte)3, (byte)0));
+		whitePositions.add(new Pair<Byte, Byte>((byte)3, (byte)9));
 
 		board[6][0] = BQUEEN;
 		board[6][9] = BQUEEN;
 		board[9][3] = BQUEEN;
-		board[9][6] = BQUEEN;	
+		board[9][6] = BQUEEN;
 
-		blackPositions.add(new Pair<Integer, Integer>(6, 9));
-		blackPositions.add(new Pair<Integer, Integer>(9, 3));
-		blackPositions.add(new Pair<Integer, Integer>(6, 0));
-		blackPositions.add(new Pair<Integer, Integer>(9, 6));
-		
+		blackPositions.add(new Pair<Byte, Byte>((byte)6, (byte)9));
+		blackPositions.add(new Pair<Byte, Byte>((byte)9, (byte)3));
+		blackPositions.add(new Pair<Byte, Byte>((byte)6, (byte)0));
+		blackPositions.add(new Pair<Byte, Byte>((byte)9, (byte)6));
+
 	}
-	
-	public void freeSquare(int x, int y){
+
+	public void freeSquare(int x, int y) {
 		board[x][y] = FREE;
 	}
-	
-	public void placeMarker(int x, int y, int piece){
+
+	public void placeMarker(int x, int y, byte piece) {
 		board[x][y] = piece;
 	}
-		
-	public boolean isMarked(int x, int y){
-		if (board[x][y] == -1){
+
+	public boolean isMarked(int x, int y) {
+		if (board[x][y] == -1) {
 			return false;
 		}
 		return true;
 	}
-	
-	public int getPiece(int x, int y){
+
+	public int getPiece(int x, int y) {
 		return board[x][y];
 	}
+
 	/**
-	 * Cycle through black pieces, find the one that matches the starting configuration, remove it and make a new pairing.
+	 * Cycle through black pieces, find the one that matches the starting
+	 * configuration, remove it and make a new pairing.
 	 * 
 	 * @param oldX
 	 * @param oldY
 	 * @param newX
 	 * @param newY
 	 */
-	public void updateBlackPositions(int oldX, int oldY, int newX, int newY){
-		
-		for (Pair<Integer, Integer> p : blackPositions){			
-			if (p.getLeft() == oldX && p.getRight() == oldY){
+	public void updateBlackPositions(int oldX, int oldY, byte newX, byte newY) {
+
+		for (Pair<Byte, Byte> p : blackPositions) {
+			if (p.getLeft() == oldX && p.getRight() == oldY) {
 				blackPositions.remove(p);
-				blackPositions.add(new Pair<Integer, Integer>(newX, newY));
+				blackPositions.add(new Pair<Byte, Byte>(newX, newY));
 				return;
-			}	
+			}
 		}
 	}
-	
-	public ArrayList<Pair<Integer, Integer> > getBlackPositions(){
+
+	public ArrayList<Pair<Byte, Byte>> getBlackPositions() {
 		return blackPositions;
 	}
-	
-	public void updateWhitePositions(int oldX, int oldY, int newX, int newY){
 
-		for (Pair<Integer, Integer> p : whitePositions){			
-			if (p.getLeft() == oldX && p.getRight() == oldY){
+	public void updateWhitePositions(int oldX, int oldY, byte newX, byte newY) {
+
+		for (Pair<Byte, Byte> p : whitePositions) {
+			if (p.getLeft() == oldX && p.getRight() == oldY) {
 				whitePositions.remove(p);
-				whitePositions.add(new Pair<Integer, Integer>(newX, newY));
+				whitePositions.add(new Pair<Byte, Byte>(newX, newY));
 				return;
-			}	
+			}
 		}
 	}
-	
-	public ArrayList<Pair<Integer, Integer> > getWhitePositions(){
+
+	public ArrayList<Pair<Byte, Byte>> getWhitePositions() {
 		return whitePositions;
 	}
-	
-	public int[][] getBoard(){
+
+	public byte[][] getBoard() {
 		return board;
 	}
 }

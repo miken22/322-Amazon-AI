@@ -79,7 +79,7 @@ public class Utility {
 	 * @param hasChecked - A 2D int representing owned and neutral tiles
 	 * @return The updated 2D array indicating what could be reached from that queen
 	 */
-	public static int[][] countReachableTiles(Board board, Pair<Integer, Integer> source, int player, int[][] hasChecked){
+	public static int[][] countReachableTiles(Board board, Pair<Byte, Byte> source, int player, int[][] hasChecked){
 
 		int opponent;
 		switch(player){
@@ -90,7 +90,7 @@ public class Utility {
 			opponent = WQUEEN;
 		}
 		
-		Stack<Pair<Integer, Integer>> stack = new Stack<>();
+		Stack<Pair<Byte, Byte>> stack = new Stack<>();
 		
 		hasChecked[source.getLeft()][source.getRight()] = 4;
 				
@@ -98,9 +98,9 @@ public class Utility {
 
 		while (!stack.empty()){
 			// Check 8 diagonal positions.
-			Pair<Integer, Integer> top = stack.pop();
-			int xPos = top.getLeft();
-			int yPos = top.getRight();
+			Pair<Byte, Byte> top = stack.pop();
+			byte xPos = top.getLeft();
+			byte yPos = top.getRight();
 			
 			// Check boundary
 			if (xPos - 1 >= 0){
@@ -108,11 +108,11 @@ public class Utility {
 				if (!board.isMarked((xPos-1), yPos)){
 					// If we haven't looked at it yet
 					if (hasChecked[xPos-1][yPos] == 0){
-						stack.push(new Pair<>(xPos-1, yPos)); 
+						stack.push(new Pair<>((byte)(xPos-1), (byte)yPos)); 
 						hasChecked[xPos-1][yPos] = player;
 					// If the other team can reach it the tile is neutral
 					} else if (hasChecked[xPos - 1][yPos] == opponent) {
-						stack.push(new Pair<>(xPos-1, yPos)); 
+						stack.push(new Pair<>((byte)(xPos-1), yPos)); 
 						hasChecked[xPos-1][yPos] = ARROW;
 					}
 				}
@@ -122,10 +122,10 @@ public class Utility {
 				if (!board.isMarked((xPos+1), yPos)){
 					if (hasChecked[xPos+1][yPos] == 0){
 						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos+1, yPos));
+						stack.push(new Pair<>((byte)(xPos+1), yPos));
 						hasChecked[xPos+1][yPos] = player;
 					} else if (hasChecked[xPos+1][yPos] == opponent) {
-						stack.push(new Pair<>(xPos+1, yPos));
+						stack.push(new Pair<>((byte)(xPos+1), yPos));
 						hasChecked[xPos+1][yPos] = ARROW;
 					}
 				}
@@ -134,10 +134,10 @@ public class Utility {
 				if (!board.isMarked((xPos), yPos-1)){
 					if (hasChecked[xPos][yPos-1] == 0){
 						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos, yPos-1));
+						stack.push(new Pair<>(xPos, (byte)(yPos-1)));
 						hasChecked[xPos][yPos-1] = player;
 					} else if (hasChecked[xPos][yPos-1] == opponent){
-						stack.push(new Pair<>(xPos, yPos-1));
+						stack.push(new Pair<>(xPos, (byte)(yPos-1)));
 						hasChecked[xPos][yPos-1] = ARROW;
 					}
 				}
@@ -146,10 +146,10 @@ public class Utility {
 				if (!board.isMarked(xPos, yPos+1)){
 					if (hasChecked[xPos][yPos+1] == 0){
 						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos, yPos+1));
+						stack.push(new Pair<>(xPos, (byte)(yPos+1)));
 						hasChecked[xPos][yPos+1] = player;
 					} else if (hasChecked[xPos][yPos+1] == opponent){
-						stack.push(new Pair<>(xPos, yPos+1));
+						stack.push(new Pair<>(xPos, (byte)(yPos+1)));
 						hasChecked[xPos][yPos+1] = ARROW;
 					}
 				}
@@ -158,11 +158,11 @@ public class Utility {
 				if (!board.isMarked((xPos+1), yPos+1)){
 					if (hasChecked[xPos+1][yPos+1] == 0){
 						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos+1, yPos+1));
+						stack.push(new Pair<>((byte)(xPos+1), (byte)(yPos+1)));
 						hasChecked[xPos+1][yPos+1] = player;
 					} else if (hasChecked[xPos+1][yPos+1] == opponent) {
 						hasChecked[xPos+1][yPos+1] = ARROW;
-						stack.push(new Pair<>(xPos+1, yPos+1));
+						stack.push(new Pair<>((byte)(xPos+1), (byte)(yPos+1)));
 					}
 				}
 			}
@@ -170,10 +170,10 @@ public class Utility {
 				if (!board.isMarked((xPos+1), yPos-1)){
 					if (hasChecked[xPos+1][yPos-1] == 0){
 						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos+1, yPos-1));
+						stack.push(new Pair<>((byte)(xPos+1), (byte)(yPos-1)));
 						hasChecked[xPos+1][yPos-1] = player;
 					} else if (hasChecked[xPos+1][yPos-1] == opponent) {
-						stack.push(new Pair<>(xPos+1, yPos-1));
+						stack.push(new Pair<>((byte)(xPos+1), (byte)(yPos-1)));
 						hasChecked[xPos+1][yPos-1] = ARROW;
 					}
 				}
@@ -182,11 +182,11 @@ public class Utility {
 				if (!board.isMarked((xPos-1), yPos+1)){
 					if (hasChecked[xPos-1][yPos+1] == 0){
 						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos-1, yPos+1));
+						stack.push(new Pair<>((byte)(xPos-1), (byte)(yPos+1)));
 						hasChecked[xPos-1][yPos+1] = player;
 						
 					} else if (hasChecked[xPos-1][yPos+1] == opponent) {
-						stack.push(new Pair<>(xPos-1, yPos+1));
+						stack.push(new Pair<>((byte)(xPos-1), (byte)(yPos+1)));
 						hasChecked[xPos-1][yPos+1] = ARROW;
 					}
 				}
@@ -195,10 +195,10 @@ public class Utility {
 				if (!board.isMarked((xPos-1), yPos-1)){
 					if (hasChecked[xPos-1][yPos-1] == 0){
 						// If we haven't looked at it yet
-						stack.push(new Pair<>(xPos-1, yPos-1));
+						stack.push(new Pair<>((byte)(xPos-1), (byte)(yPos-1)));
 						hasChecked[xPos-1][yPos-1] = player;
 					} else if (hasChecked[xPos-1][yPos-1] == opponent) {
-						stack.push(new Pair<>(xPos-1, yPos-1));
+						stack.push(new Pair<>((byte)(xPos-1), (byte)(yPos-1)));
 						hasChecked[xPos-1][yPos-1] = ARROW;
 					}
 				}

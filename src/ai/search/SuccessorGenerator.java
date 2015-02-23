@@ -7,23 +7,19 @@ import ai.Board;
 import ai.Pair;
 
 /**
- * Generic successor generator for Amazons. Close to generating all possible moves in a partially better than brute force
- * way. Currently generates 80 more than literature says possible for the first move. We search in one direction until 
- * we hit an obstacle preventing the queen from moving, then we know we cannot move farther in that direction so we skip 
- * and go to the next one. Arrows are generated from farthest to closest so this pruning does not work, however some 
- * technique can be created to overcome this.
+ * Generic successor generator for Amazons.
  * 
  * @author Mike Nowicki
  *
  */
 public class SuccessorGenerator extends GameTreeSearch {
 
-	public List<int[]> getRelevantActions(Board board, int player){
+	public List<byte[]> getRelevantActions(Board board, int player){
 
-		ArrayList<int[]> moveList = new ArrayList<>();
+		ArrayList<byte[]> moveList = new ArrayList<>();
 
 		// Get the starting positions of the queens
-		ArrayList<Pair<Integer, Integer> > amazons;
+		ArrayList<Pair<Byte, Byte> > amazons;
 		if (player == 1){
 			amazons = board.getWhitePositions();
 		} else {
@@ -31,20 +27,20 @@ public class SuccessorGenerator extends GameTreeSearch {
 		}
 
 		// Iterate through queens
-		for (Pair<Integer, Integer> amazon : amazons){
+		for (Pair<Byte, Byte> amazon : amazons){
 
-			int fromX = amazon.getLeft();
-			int fromY = amazon.getRight();
+			byte fromX = amazon.getLeft();
+			byte fromY = amazon.getRight();
 
 			// Try all possible moves from the queens position
-			for (int i = 0; i < actions.getActions().size(); i++){
+			for (byte i = 0; i < actions.getActions().size(); i++){
 				
-				int[] amazonMove = actions.getActions().get(i);
+				byte[] amazonMove = actions.getActions().get(i);
 				
 				Board tempBoard = new Board(board);
 
-				int toX = fromX + amazonMove[0];
-				int toY = fromY + amazonMove[1];
+				byte toX = (byte)(fromX + amazonMove[0]);
+				byte toY = (byte)(fromY + amazonMove[1]);
 				
 				if (player == 1){
 					tempBoard.updateWhitePositions(fromX, fromY, toX, toY);
@@ -56,23 +52,19 @@ public class SuccessorGenerator extends GameTreeSearch {
 				if (moveIsValid(tempBoard, fromX, fromY, toX, toY, player, false)){
 					
 					tempBoard.freeSquare(fromX, fromY);
-					tempBoard.placeMarker(toX, toY, player);
+					tempBoard.placeMarker(toX, toY, (byte)player);
 					
-					for (int j = 0; j < actions.getActions().size(); j++){
+					// Skip last action in list (stays still)
+					for (int j = 0; j < actions.getActions().size() - 1; j++){
 						
-						int[] arrowSpot = actions.getActions().get(j);
+						byte[] arrowSpot = actions.getActions().get(j);
 						
-						int arrowX = toX + arrowSpot[0];
-						int arrowY = toY + arrowSpot[1];
-											
-						// Means we stand still and shoot at ourselves, does not mean we encounter an obstacle
-						if (fromX == toX && toX == arrowX && fromY == toY && toY == arrowY){
-							continue;
-						}
+						byte arrowX = (byte)(toX + arrowSpot[0]);
+						byte arrowY = (byte)(toY + arrowSpot[1]);
 						
 						// If queen and arrow placement is valid record the actions and push onto the list
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
-							int[] move = { fromX, fromY, toX, toY, arrowX, arrowY };						
+							byte[] move = { fromX, fromY, toX, toY, arrowX, arrowY };						
 							moveList.add(move);
 						} else {
 							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
@@ -102,7 +94,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 	}
 
 	// Applies the move sequence for the given player and returns a new board for the successor state.
-	public Board generateSuccessor(Board parent, int[] move, int player){
+	public Board generateSuccessor(Board parent, byte[] move, byte player){
 		
 		Board child = new Board(parent);
 		// Update the logical positions on the board

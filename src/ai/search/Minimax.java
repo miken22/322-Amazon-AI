@@ -16,11 +16,11 @@ public interface Minimax {
 	 * @param player - The player colour our agent is
 	 * @return - The move combination to get to the next best state
 	 */
-	public int[] maxSearch(Board board, int player);
+	public byte[] maxSearch(Board board, int player);
 	
-	public int[] tieBreaker();
+	public byte[] tieBreaker();
 	
-	public int maxVal(Board board, int depth, int player);
+	public int maxVal(Board board, int depth, int ALPHA, int BETA, int player);
 	
-	public int minVal(Board board, int depth, int player);
+	public int minVal(Board board, int depth, int ALPHA, int BETA, int player);
 }

@@ -112,7 +112,7 @@ public class Player implements GamePlayer {
 
 		try{
 			
-			int[] move = agent.selectMove(board);
+			byte[] move = agent.selectMove(board);
 
 			String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
 			client.sendToServer(moveMessage, true);
@@ -124,7 +124,7 @@ public class Player implements GamePlayer {
 			gui.updateMoveLog("Agent: ", action);
 			isOpponentsTurn = true;
 
-			agent.checkIfFinished();
+//			agent.checkIfFinished();
 			
 			
 		} catch (NullPointerException e){
@@ -145,13 +145,13 @@ public class Player implements GamePlayer {
 	 * @param move - 6 Element array for the queen move and arrow placing
 	 * @param piece - Colour of the piece moved
 	 */
-	private void updateRepresentations(int[] move, int piece){
+	private void updateRepresentations(byte[] move, int piece){
 		
 		gui.updateGUI(move[0], move[1], move[2], move[3], move[4], move[5], piece);
 		// Update logical representation of board.
 		board.freeSquare(move[0], move[1]);
-		board.placeMarker(move[2], move[3], piece);
-		board.placeMarker(move[4], move[5], ARROW);	
+		board.placeMarker(move[2], move[3], (byte) piece);
+		board.placeMarker(move[4], move[5], (byte) ARROW);	
 
 		if (piece == 1){
 			board.updateWhitePositions(move[0], move[1], move[2], move[3]);
@@ -198,7 +198,7 @@ public class Player implements GamePlayer {
 			System.out.println("Opponent move recieved.");
 			System.out.println(message.toString());
 			// Get the queen move and arrow marker.
-			int[] move = parser.getOpponentMove(xml);	
+			byte[] move = parser.getOpponentMove(xml);	
 			isOpponentsTurn = false;	
 			
 			// Update GUI
@@ -214,7 +214,7 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-2.0001", "54321");
+		Player player = new Player("Bot-1.0001", "54321");
 		if (args.length == 0 ){
 			player.joinServer();
 		} else {

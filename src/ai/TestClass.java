@@ -68,8 +68,8 @@ public class TestClass {
 		Board board2 = new Board(10, 10);
 		board2.initialize();
 		
-		int[][] b1 = board.getBoard();
-		int[][] b2 = board2.getBoard();
+		byte[][] b1 = board.getBoard();
+		byte[][] b2 = board2.getBoard();
 		
 		int hash1 = java.util.Arrays.deepHashCode(b1);
 		int hash2 = java.util.Arrays.deepHashCode(b2);

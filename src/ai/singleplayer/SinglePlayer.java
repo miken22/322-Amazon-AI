@@ -299,7 +299,7 @@ public class SinglePlayer {
 		while (true){
 			if (whiteTurn){
 				try{
-					int[] move = agent.selectMove(board);
+					byte[] move = agent.selectMove(board);
 					makeMove(board, move, 1);	
 					whiteTurn = false;
 
@@ -316,7 +316,7 @@ public class SinglePlayer {
 			} else {
 
 				try{
-					int[] move = agent2.selectMove(board);
+					byte[] move = agent2.selectMove(board);
 					makeMove(board, move, 2);
 					whiteTurn = true;
 
@@ -337,10 +337,10 @@ public class SinglePlayer {
 		
 	}
 	
-	private void makeMove(Board board, int[] move, int player){
+	private void makeMove(Board board, byte[] move, int player){
 		board.freeSquare(move[0], move[1]);
-		board.placeMarker(move[2], move[3], player);
-		board.placeMarker(move[4], move[5], ARROW);	
+		board.placeMarker(move[2], move[3], (byte) player);
+		board.placeMarker(move[4], move[5], (byte) ARROW);	
 
 		guiBoard[move[0]][move[1]].setFree();
 		guiBoard[move[4]][move[5]].setArrow();
@@ -386,16 +386,16 @@ public class SinglePlayer {
 	 */
 	private boolean isFinished() {	
 
-		ArrayList<Pair<Integer, Integer> > wPositions = board.getWhitePositions();
-		ArrayList<Pair<Integer, Integer> > bPositions = board.getBlackPositions();
+		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
+		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
 
 		int[][] hasChecked = new int[rows][columns];
 	
-		for (Pair<Integer, Integer> pair : wPositions){
+		for (Pair<Byte, Byte> pair : wPositions){
 			// Reach opposing amazon using legal moves then the game is not over.
 			hasChecked = Utility.countReachableTiles(board, pair, WQUEEN, hasChecked);		}
 		
-		for (Pair<Integer, Integer> pair : bPositions){
+		for (Pair<Byte, Byte> pair : bPositions){
 			// Reach opposing amazon using legal moves then the game is not over.
 			hasChecked = Utility.countReachableTiles(board, pair, BQUEEN, hasChecked);
 		}

@@ -99,9 +99,9 @@ public class XMLParser{
 	 * @param xml - The XML game message from the server
 	 * @return - A six element int[] representing the move.
 	 */
-	public int[] getOpponentMove(IXMLElement xml) {
+	public byte[] getOpponentMove(IXMLElement xml) {
 
-		int[] move = new int[6];
+		byte[] move = new byte[6];
 
 		IXMLElement queen = xml.getFirstChildNamed("queen");
 		String qmove = queen.getAttribute("move", "default");
@@ -110,16 +110,16 @@ public class XMLParser{
 		String amove = arrow.getAttribute("move", "defalut");
 				
 		char c = qmove.charAt(0);
-		move[1] = c - 97;
-		move[0] = Integer.parseInt(qmove.substring(1, 2));
+		move[1] = (byte) (c - 97);
+		move[0] = (byte) Integer.parseInt(qmove.substring(1, 2));
 		
 		c = qmove.charAt(3);
-		move[3] = c - 97; 
-		move[2] = Integer.parseInt(qmove.substring(4,5));
+		move[3] = (byte) (c - 97); 
+		move[2] = (byte) Integer.parseInt(qmove.substring(4,5));
 		
 		c = amove.charAt(0);
-		move[5] = c - 97;
-		move[4] = Integer.parseInt(amove.substring(1, amove.length()));
+		move[5] = (byte) (c - 97);
+		move[4] = (byte) Integer.parseInt(amove.substring(1, amove.length()));
 
 		return move;
 	}

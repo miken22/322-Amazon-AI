@@ -13,10 +13,10 @@ public class GameTreeSearch {
 
 	public Actions actions = new Actions();
 
-	public final int WQUEEN = 1;
-	public final int BQUEEN = 2;
-	public final int ARROW = 3;
-	public final int FREE = -1;
+	public final byte WQUEEN = 1;
+	public final byte BQUEEN = 2;
+	public final byte ARROW = 3;
+	public final byte FREE = -1;
 
 	public boolean moveIsValid(Board board, int sX, int sY, int dX, int dY, int player, boolean isArrow){
 
@@ -30,16 +30,10 @@ public class GameTreeSearch {
 		// Check horizontal move, make sure no obstacles
 		if (sX == dX){
 
-			if (sY == dY){
-				// No move, just throw arrow, not allowed to throw into your own tile
-				if (isArrow){
-					return false;
-				} else {
-					// Otherwise you are not moving, still valid I guess?
-					return true;
-				}
+			if (sY == dY) {
+				return true;
 			}
-
+			
 			// Get change in column, find if positive/negative, use to increment to new position checking each tile on the way.
 			int deltaY = dY - sY;
 			deltaY = deltaY / Math.abs(deltaY);

@@ -27,17 +27,17 @@ public class CountReachableTilesHeuristic extends EvaluationFunction {
 	@Override
 	public int evaluate(Board board, int player) {
 		
-		ArrayList<Pair<Integer, Integer> > wPositions = board.getWhitePositions();
-		ArrayList<Pair<Integer, Integer> > bPositions = board.getBlackPositions();
+		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
+		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
 
 		int[][] hasChecked = new int[ROWS][COLS];
 	
 		// Iterate over every queen and score the tiles it could reach. 
-		for (Pair<Integer, Integer> pair : wPositions){
+		for (Pair<Byte, Byte> pair : wPositions){
 			hasChecked = Utility.countReachableTiles(board, pair, WQUEEN, hasChecked);		
 		}
 		
-		for (Pair<Integer, Integer> pair : bPositions){
+		for (Pair<Byte, Byte> pair : bPositions){
 			hasChecked = Utility.countReachableTiles(board, pair, BQUEEN, hasChecked);
 		}
 		
@@ -59,9 +59,9 @@ public class CountReachableTilesHeuristic extends EvaluationFunction {
 
 		// Return the appropriate score, we want the difference between the area controlled.
 		if (OURCOLOUR == 1){
-			return whiteTiles;// - blackTiles;
+			return whiteTiles - blackTiles;
 		} else {
-			return blackTiles;// - whiteTiles;
+			return blackTiles - whiteTiles;
 		}
 		
 	}

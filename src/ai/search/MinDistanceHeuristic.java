@@ -3,7 +3,6 @@ package ai.search;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
-import java.util.Stack;
 
 import ai.Actions;
 import ai.Board;
@@ -32,24 +31,24 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 
 		int wUtility = 0;
 		int bUtility = 0;
-		ArrayList<Pair<Integer, Integer> > wPositions = board.getWhitePositions();
-		ArrayList<Pair<Integer, Integer> > bPositions = board.getBlackPositions();
+		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
+		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
 
 		int[][] wDistanceTable = new int[ROWS][COLS];
 		int[][] bDistanceTable = new int[ROWS][COLS];
 		
 		for (int i = 0; i < 10; i++){
 			for (int j = 0; j < 10; j++){
-				wDistanceTable[i][j] = Integer.MAX_VALUE;
-				bDistanceTable[i][j] = Integer.MAX_VALUE;
+				wDistanceTable[i][j] = Byte.MAX_VALUE;
+				bDistanceTable[i][j] = Byte.MAX_VALUE;
 			}
 		}
 		
-		for (Pair<Integer, Integer> pair : wPositions) {
+		for (Pair<Byte, Byte> pair : wPositions) {
 			wDistanceTable[pair.getLeft()][pair.getRight()] = -1;
 		}
 
-		for (Pair<Integer, Integer> pair : bPositions) {
+		for (Pair<Byte, Byte> pair : bPositions) {
 			bDistanceTable[pair.getLeft()][pair.getRight()] = -1;
 		}
 		
@@ -58,7 +57,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 
 //		for (int i = 9; i  >= 0; i--){
 //			for (int j = 0; j < 10; j++){
-//				if (wDistanceTable[i][j] == Integer.MAX_VALUE){
+//				if (wDistanceTable[i][j] == Byte.MAX_VALUE){
 //					System.out.print(0 + " | ");
 //				} else {
 //					System.out.print(wDistanceTable[i][j] + " | ");
@@ -97,8 +96,8 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 	 */
 	public void findDistances(Board board, int player, int[][] distanceTable){
 
-		ArrayList<Pair<Integer, Integer> > positions = null;
-		Queue<Pair<Integer, Integer> > queue = new ArrayDeque<>();
+		ArrayList<Pair<Byte, Byte> > positions = null;
+		Queue<Pair<Byte, Byte> > queue = new ArrayDeque<>();
 		
 		if (player == 1){
 			positions = board.getWhitePositions();
@@ -106,18 +105,18 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 			positions = board.getBlackPositions();
 		}
 		
-		for (Pair<Integer, Integer> pair : positions) {
+		for (Pair<Byte, Byte> pair : positions) {
 			queue.add(pair);
 		}
 		
 		while (!queue.isEmpty()){
 			
-			Pair<Integer, Integer> top = queue.poll();
+			Pair<Byte, Byte> top = queue.poll();
 	
 			int xPos = top.getLeft();
 			int yPos = top.getRight();
 			
-			for (int[] action : actions.getActions()){
+			for (byte[] action : actions.getActions()){
 				
 				int currentDistance = distanceTable[xPos][yPos];
 				if (currentDistance == -1){
@@ -140,7 +139,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 					if (search.moveIsValid(board, xPos, yPos, newX, newY, player, false)){
 						if (distanceTable[newX][newY] > currentDistance){
 							distanceTable[newX][newY] = currentDistance;
-							queue.add(new Pair<Integer, Integer>(newX, newY));
+							queue.add(new Pair<Byte, Byte>((byte)newX, (byte)newY));
 						}
 					}
 				}		

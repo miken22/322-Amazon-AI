@@ -15,6 +15,6 @@ public interface Search {
 	public final int ARROW = 3;
 	public final int FREE = -1;	 
 
-	public int[] selectMove(Board currentBoard);
+	public byte[] selectMove(Board currentBoard);
 	
 }
