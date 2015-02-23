@@ -23,9 +23,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 		for (int i = 0; i < 4; i++) {
 			moveList.add(new ArrayList<>());
 		}
-		
-		// Simple array to count moves each piece can make to order actions
-		int[] moveCount = new int[4];
+		// Index piece we are looking at.
 		int piece = 0;
 
 		// Get the starting positions of the queens
@@ -75,7 +73,6 @@ public class SuccessorGenerator extends GameTreeSearch {
 						// If queen and arrow placement is valid record the actions and push onto the list
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
 							byte[] move = { fromX, fromY, toX, toY, arrowX, arrowY };
-							moveCount[piece]++;	// count move
 							moveList.get(piece).add(move);
 						} else {
 							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
@@ -102,18 +99,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 			}
 			piece++;
 		}		
-		int[] order = new int[4];
-		// Get the order they should be in
-		for (int i = 0; i < 4; i++) {
-			int bigger = 0;
-			for (int j = 0; j < 4; j++) {
-				if (moveCount[i] > moveCount[j]) {
-					bigger++;
-				}
-			}
-			order[i] = bigger;
-		}
-
+		
 		// Order the set of moves
 		moveList.sort(new CountComparator());
 		ArrayList<byte[]> orderedMoves = new ArrayList<>();
@@ -121,7 +107,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 		for (int i = 0; i < 4; i++) {
 			orderedMoves.addAll(moveList.get(i));
 		}
-		
+				
 		// Return valid actions.
 		return orderedMoves;
 	}
