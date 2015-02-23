@@ -43,7 +43,7 @@ public class HMinimaxSearch implements Minimax {
 		scg = new SuccessorGenerator();
 		ties = new ArrayList<>();
 		timer = new Timer();
-		transitionTable = new HashMap<>();
+		transitionTable = new HashMap<>();		
 	}
 
 	/**
@@ -121,9 +121,13 @@ public class HMinimaxSearch implements Minimax {
 			}
 		}
 		
-		System.out.println("Cache size: " + transitionTable.size());
-		System.out.println("Number of cache hits: " + cacheHits);
-		cacheHits = 0;
+		if (potentialActions.size() == 0){
+			System.out.println("No possible moves from this state, player loses.");
+		}
+		
+//		System.out.println("Cache size: " + transitions.size());
+//		System.out.println("Number of cache hits: " + cacheHits);
+//		cacheHits = 0;
 
 		if (ties.size() > 1){
 			move = tieBreaker();
@@ -141,14 +145,18 @@ public class HMinimaxSearch implements Minimax {
 				
 		// Terminal nodes in search tree or at max depth we evaluate the board
 		if (searchDepth == DEPTH){
-			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
-			if (transitionTable.containsKey(hashValue)){
-				cacheHits++;
-				return transitionTable.get(hashValue);
-			}
-
+			// Scrapping transition table, too many incorrect hash collisions.
+//			int hash = hashCode(board.getBoard());
+//			
+//			if (transitionTable.containsKey(hash)){
+//				cacheHits++;
+//				return transitionTable.get(hash);
+//			}
+			
 			int value = evaluator.evaluate(board, ourPlayer);
-			transitionTable.put(hashValue, value);
+//			transitionTable.put(hash, value);
+			
+			
 			return value;	
 		}
 		
@@ -156,6 +164,10 @@ public class HMinimaxSearch implements Minimax {
 		if (maxNode){
 			// Generate all possible moves for our player
 			List<byte[]> potentialActions = scg.getRelevantActions(board, ourPlayer);
+			if (potentialActions.size() == 0) {
+				// Means we have no possible moves and should avoid this!
+				return Integer.MIN_VALUE;
+			}
 			for (byte[] action : potentialActions){
 				Board child = scg.generateSuccessor(board, action, (byte)ourPlayer);
 				// Search to next depth (min node)
@@ -175,6 +187,10 @@ public class HMinimaxSearch implements Minimax {
 		else {
 			// Same logic as max nodes, but for min states instead, generate children for opponents possible moves
 			List<byte[]> potentialActions = scg.getRelevantActions(board, opponent);
+			if (potentialActions.size() == 0) {
+				// Means opponent has no possible moves, we want this!
+				return Integer.MAX_VALUE;
+			}
 			for (byte[] action : potentialActions){
 				Board child = scg.generateSuccessor(board, action, (byte) opponent);
 				int result = alphaBeta(child, searchDepth+1, true);
@@ -191,6 +207,15 @@ public class HMinimaxSearch implements Minimax {
 			}
 			return BETA;
 		}
+	}
+
+	private int hashCode(byte[][] board) {
+		int hash = 0;
+		int p = 569;
+		for (int i = 0; i < 10; i++)
+	        for (int j = 0; j < 10; j++)
+	            hash = (hash) ^ (int)( (Math.pow(p,i)+Math.pow(p,j)) * board[i][j]);
+	    return hash;
 	}
 
 	/**

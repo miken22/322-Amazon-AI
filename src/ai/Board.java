@@ -17,7 +17,7 @@ public class Board {
 	public final byte WQUEEN = 1;
 	public final byte BQUEEN = 2;
 	public final byte ARROW = 3;
-	public final byte FREE = -1;
+	public final byte FREE = 0;
 
 	// Used to keep track of where each amazon is for easier lookup
 	ArrayList<Pair<Byte, Byte>> whitePositions;
@@ -98,7 +98,7 @@ public class Board {
 	}
 
 	public boolean isMarked(int x, int y) {
-		if (board[x][y] == -1) {
+		if (board[x][y] == FREE) {
 			return false;
 		}
 		return true;

@@ -15,6 +15,15 @@ import ai.Pair;
  */
 public class SuccessorGenerator extends GameTreeSearch {
 
+	/**
+	 * This function takes a state and player number and returns the set of all possible
+	 * actions that the player can make. The moves are ordered from fewest a piece can
+	 * make to the most.
+	 * 
+	 * @param board - Current game state
+	 * @param player - 1 for white, 2 for black
+	 * @return ArrayList of byte arrays that indicate the moves possible
+	 */
 	public List<byte[]> getRelevantActions(Board board, int player){
 
 		// Collect each set of moves for each amazon
@@ -44,12 +53,13 @@ public class SuccessorGenerator extends GameTreeSearch {
 			for (byte i = 0; i < actions.getActions().size(); i++){
 				
 				byte[] amazonMove = actions.getActions().get(i);
-				
+				// Create a new board to examine
 				Board tempBoard = new Board(board);
 
 				byte toX = (byte)(fromX + amazonMove[0]);
 				byte toY = (byte)(fromY + amazonMove[1]);
 				
+				// Update references to amazon positions for the corresponding player
 				if (player == 1){
 					tempBoard.updateWhitePositions(fromX, fromY, toX, toY);
 				} else {
@@ -97,17 +107,17 @@ public class SuccessorGenerator extends GameTreeSearch {
 				}
 				
 			}
+			// Increment index for move list.
 			piece++;
 		}		
-		
+			
 		// Order the set of moves
 		moveList.sort(new CountComparator());
 		ArrayList<byte[]> orderedMoves = new ArrayList<>();
 		// Add all the moves into one main list
 		for (int i = 0; i < 4; i++) {
 			orderedMoves.addAll(moveList.get(i));
-		}
-				
+		}		
 		// Return valid actions.
 		return orderedMoves;
 	}
