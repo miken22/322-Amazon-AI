@@ -95,15 +95,17 @@ public class HMinimaxSearch implements Minimax {
 
 				byte[] action = potentialActions.get(i);
 				Board child = scg.generateSuccessor(board, action, (byte)player);
-				// Opponent wants to minimize our possible moves from the root
-
+				// Since root is a max node we want the maximum possible value given our opponent
+				// makes a move to minimize our potential gains.
 				ALPHA = Math.max(ALPHA, alphaBeta(child, 1, false));
 
 				if (ALPHA > max){
+					// Update move ordering to put this action at the head of the list
 					potentialActions = moveToFront(potentialActions, action);
-
+					// Store best value and action
 					max = ALPHA;
 					move = action;
+					// Reset set of actions that lead to equally promising states
 					ties.clear();
 				} else if (ALPHA == max){
 					potentialActions = moveToFront(potentialActions, action);
@@ -129,8 +131,7 @@ public class HMinimaxSearch implements Minimax {
 
 		ties.clear();
 
-		System.out.println("[" + ALPHA +"," + BETA + "]");
-		System.out.println("Best estimate: " + max);
+		System.out.println("Alpha-Beta result: [" + ALPHA +"," + BETA + "]");
 		System.out.println("Got to depth: " + DEPTH);
 		return move;
 

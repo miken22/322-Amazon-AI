@@ -124,6 +124,7 @@ public class Player implements GamePlayer {
 			gui.updateMoveLog("Agent: ", action);
 			isOpponentsTurn = true;
 
+			// DISABLING to compare performance of heuristics
 //			agent.checkIfFinished();
 			
 			

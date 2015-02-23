@@ -1,6 +1,7 @@
 package ai.search;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import ai.Board;
@@ -16,7 +17,16 @@ public class SuccessorGenerator extends GameTreeSearch {
 
 	public List<byte[]> getRelevantActions(Board board, int player){
 
-		ArrayList<byte[]> moveList = new ArrayList<>();
+		// Collect each set of moves for each amazon
+		ArrayList<ArrayList<byte[]>> moveList = new ArrayList<>();
+		
+		for (int i = 0; i < 4; i++) {
+			moveList.add(new ArrayList<>());
+		}
+		
+		// Simple array to count moves each piece can make to order actions
+		int[] moveCount = new int[4];
+		int piece = 0;
 
 		// Get the starting positions of the queens
 		ArrayList<Pair<Byte, Byte> > amazons;
@@ -64,8 +74,9 @@ public class SuccessorGenerator extends GameTreeSearch {
 						
 						// If queen and arrow placement is valid record the actions and push onto the list
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
-							byte[] move = { fromX, fromY, toX, toY, arrowX, arrowY };						
-							moveList.add(move);
+							byte[] move = { fromX, fromY, toX, toY, arrowX, arrowY };
+							moveCount[piece]++;	// count move
+							moveList.get(piece).add(move);
 						} else {
 							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
 							// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
@@ -89,8 +100,30 @@ public class SuccessorGenerator extends GameTreeSearch {
 				}
 				
 			}
+			piece++;
 		}		
-		return moveList;
+		int[] order = new int[4];
+		// Get the order they should be in
+		for (int i = 0; i < 4; i++) {
+			int bigger = 0;
+			for (int j = 0; j < 4; j++) {
+				if (moveCount[i] > moveCount[j]) {
+					bigger++;
+				}
+			}
+			order[i] = bigger;
+		}
+
+		// Order the set of moves
+		moveList.sort(new CountComparator());
+		ArrayList<byte[]> orderedMoves = new ArrayList<>();
+		// Add all the moves into one main list
+		for (int i = 0; i < 4; i++) {
+			orderedMoves.addAll(moveList.get(i));
+		}
+		
+		// Return valid actions.
+		return orderedMoves;
 	}
 
 	// Applies the move sequence for the given player and returns a new board for the successor state.
@@ -109,5 +142,19 @@ public class SuccessorGenerator extends GameTreeSearch {
 			child.updateBlackPositions(move[0], move[1], move[2], move[3]);
 		}
 		return child;	
+	}
+	
+	// Simple comparator to order the number of moves possible for each amazon
+	private class CountComparator implements Comparator<ArrayList<byte[]>> {
+
+		@Override
+		public int compare(ArrayList<byte[]> o1, ArrayList<byte[]> o2) {
+			if (o1.size() < o2.size()) {
+				return -1;
+			} else if (o1.size() > o2.size()) {
+				return 1;
+			}
+			return 0;
+		}
 	}
 }
