@@ -22,6 +22,7 @@ public class HMinimaxSearch implements Minimax {
 	private EvaluationFunction evaluator;
 	private int DEPTH;
 	private byte ourPlayer;
+	private int opponent;
 
 	private SuccessorGenerator scg;
 	private Timer timer;
@@ -30,6 +31,9 @@ public class HMinimaxSearch implements Minimax {
 
 	private final byte ABSOLUTEDEPTH = 10;
 
+	private static int ALPHA = Integer.MIN_VALUE;
+	private static int BETA = Integer.MAX_VALUE;
+	
 	private HashMap<Integer, Integer> transitionTable;
 
 	List<byte[]> ties;
@@ -43,7 +47,8 @@ public class HMinimaxSearch implements Minimax {
 	}
 
 	/**
-	 * Takes a state and depth to perform a limited alpha-beta search
+	 * Takes a state and depth to perform a limited alpha-beta search. We start from a max node, generate it's children
+	 * and call the alpha-beta search to examine the min nodes next, alternating each level of the search.
 	 * 
 	 * @param board - Current state of the game
 	 * @param player - The player colour our agent is
@@ -52,30 +57,35 @@ public class HMinimaxSearch implements Minimax {
 	@Override
 	public byte[] maxSearch(Board board, int player){
 
+		timer.startTiming();
+		
 		int max = Integer.MIN_VALUE;
 		byte[] move = null;
-
+		
 		// Setup alpha beta bounds
-		int ALPHA = Integer.MIN_VALUE;
-		int BETA = Integer.MAX_VALUE;
+		ALPHA = Integer.MIN_VALUE;
+		BETA = Integer.MAX_VALUE;
 
 		ourPlayer = (byte)player;
-
-		// Get list of possible actions that can be made from the state
-		List<byte[]> potentialActions = scg.getRelevantActions(board, player);
-
+		
+		if (ourPlayer == 1){
+			opponent = 2;
+		} else {
+			opponent = 1;
+		}
+		
 		if (transitionTable.size() > 1000000){
 			System.out.println("Flushing transition table.");
 			transitionTable.clear();
 		}
 
-		timer.startTiming();
-
 		DEPTH = 2;
-
+		// Get list of possible actions that can be made from the state
+		List<byte[]> potentialActions = scg.getRelevantActions(board, player);
+						
 		// Timer controlled search, level 0 of the search
 		while (timer.isStillValid()){
-
+			
 			if (potentialActions.size() == 0){
 				break;
 			}
@@ -87,20 +97,20 @@ public class HMinimaxSearch implements Minimax {
 				Board child = scg.generateSuccessor(board, action, (byte)player);
 				// Opponent wants to minimize our possible moves from the root
 
-				int result = minVal(child, 1, ALPHA, BETA, player);
+				ALPHA = Math.max(ALPHA, alphaBeta(child, 1, false));
 
-				if (result > max){
+				if (ALPHA > max){
 					potentialActions = moveToFront(potentialActions, action);
 
-					max = result;
+					max = ALPHA;
 					move = action;
 					ties.clear();
-				} else if (result == max){
+				} else if (ALPHA == max){
 					potentialActions = moveToFront(potentialActions, action);
 					ties.add(action);
 				}
 
-			}
+			}			
 			// Increase bounds on the search
 			DEPTH++;
 			// Attempt to enforce unnecessary search late in the game
@@ -112,10 +122,6 @@ public class HMinimaxSearch implements Minimax {
 		System.out.println("Cache size: " + transitionTable.size());
 		System.out.println("Number of cache hits: " + cacheHits);
 		cacheHits = 0;
-		
-		if (potentialActions.size() == 0){
-			System.out.println("No possible moves detected.");
-		}
 
 		if (ties.size() > 1){
 			move = tieBreaker();
@@ -129,136 +135,61 @@ public class HMinimaxSearch implements Minimax {
 		return move;
 
 	}
-
-	/**
-	 * Returns the evaluation of the board for the player
-	 * 
-	 * @param board - State of the amazons game being evaluated
-	 * @param DEPTH - The current depth of the search
-	 * @param player - The player being evaluated, 1 for max, 2 for min
-	 * 
-	 * @return - The heuristic value of the state
-	 */
-	@Override
-	public int maxVal(Board board, int searchDepth, int ALPHA, int BETA, int player){
-
-		int max = Integer.MIN_VALUE;
-
-		// Switch roles for next generation
-		if (player == 1){
-			player = 2;
-		} else {
-			player = 1;
-		}
-
+	
+	public int alphaBeta(Board board, int searchDepth, boolean maxNode) {
+				
+		// Terminal nodes in search tree or at max depth we evaluate the board
 		if (searchDepth == DEPTH){
-
 			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
-
 			if (transitionTable.containsKey(hashValue)){
 				cacheHits++;
 				return transitionTable.get(hashValue);
 			}
 
 			int value = evaluator.evaluate(board, ourPlayer);
-
 			transitionTable.put(hashValue, value);
-
-			return  value;	
+			return value;	
 		}
-
-		List<byte[]> potentialActions = scg.getRelevantActions(board, player);
-
-		for (byte[] action : potentialActions){
-
-			Board child = scg.generateSuccessor(board, action, (byte)player);
-
-			int result = minVal(child, searchDepth+1, ALPHA, BETA, player);
-
-			max = Math.max(max, result);
-
-			if (timer.almostExpired()){
-				return max;
+		
+		// Max node
+		if (maxNode){
+			// Generate all possible moves for our player
+			List<byte[]> potentialActions = scg.getRelevantActions(board, ourPlayer);
+			for (byte[] action : potentialActions){
+				Board child = scg.generateSuccessor(board, action, (byte)ourPlayer);
+				// Search to next depth (min node)
+				int result = alphaBeta(child, searchDepth+1, false);
+				
+				if (timer.almostExpired()){
+					return Math.max(ALPHA, result);
+				}
+				// Alpha-beta pruning
+				if (result >= BETA){
+					return result;
+				}
+				ALPHA = Math.max(ALPHA, result);
 			}
+			return ALPHA;
+		}
+		else {
+			// Same logic as max nodes, but for min states instead, generate children for opponents possible moves
+			List<byte[]> potentialActions = scg.getRelevantActions(board, opponent);
+			for (byte[] action : potentialActions){
+				Board child = scg.generateSuccessor(board, action, (byte) opponent);
+				int result = alphaBeta(child, searchDepth+1, true);
+				
 
-			if (max >= BETA){
-				return max;
+				if (timer.almostExpired()){
+					return Math.min(BETA, result);
+				}
+				if (result <= ALPHA){
+					return result;
+				}
+				
+				BETA = Math.min(BETA, result);
 			}
-
-			ALPHA = Math.max(ALPHA, max);
-
+			return BETA;
 		}
-		// We ran out of moves, no good!
-		if (potentialActions.size() == 0){
-			max = Integer.MIN_VALUE;
-		}
-
-		return max;
-	}
-	/**
-	 * 
-	 * Returns the evaluation of the board for the player
-	 * 
-	 * @param board - State of the amazons game being evaluated
-	 * @param DEPTH - The current depth of the search
-	 * @param player - The player being evaluated, 1 for max, 2 for min
-	 * 
-	 * @return - The heuristic value of the state
-	 */
-	@Override
-	public int minVal(Board board, int searchDepth, int ALPHA, int BETA, int player){
-
-		int min = Integer.MAX_VALUE;
-
-		// Switch roles for next generation
-		if (player == 1){
-			player = 2;
-		} else {
-			player = 1;
-		}
-
-		if (searchDepth == DEPTH){
-
-			int hashValue = java.util.Arrays.deepHashCode(board.getBoard());
-
-			if (transitionTable.containsKey(hashValue)){
-				cacheHits++;
-				return transitionTable.get(hashValue);
-			}
-
-			int value = evaluator.evaluate(board, ourPlayer);
-
-			transitionTable.put(hashValue, value);
-
-			return  value;	
-		}
-
-		List<byte[]> potentialActions = scg.getRelevantActions(board, player);
-
-		for (byte[] action : potentialActions){
-
-			Board child = scg.generateSuccessor(board, action, (byte)player);
-
-			int result = maxVal(child, searchDepth+1, ALPHA, BETA, player);
-
-			min = Math.min(min, result);
-
-			if (timer.almostExpired()){
-				return min;
-			}
-
-			if (min <= ALPHA){
-				return min;
-			}
-
-			BETA = Math.min(BETA, min);
-
-		}
-		// No moves, goal state so we win, skew the results!
-		if (potentialActions.size() == 0){
-			min = Integer.MAX_VALUE;
-		}
-		return min;
 	}
 
 	/**

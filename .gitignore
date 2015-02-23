@@ -13,3 +13,8 @@ hs_err_pid*
 /bin/
 Javadoc/
 src/ai/search/parallel/
+Parallel storage/parallel/MaxSearch.java
+Parallel storage/parallel/ParallelLauncher.java
+Parallel storage/parallel/ParallelMinimax.java
+Parallel storage/parallel/SinglePlayer.java
+Parallel storage/parallel/WindowSearch.java

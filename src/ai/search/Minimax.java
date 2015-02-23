@@ -20,7 +20,4 @@ public interface Minimax {
 	
 	public byte[] tieBreaker();
 	
-	public int maxVal(Board board, int depth, int ALPHA, int BETA, int player);
-	
-	public int minVal(Board board, int depth, int ALPHA, int BETA, int player);
 }
