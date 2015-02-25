@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Actions {
 
-	public byte[] stayStill = { 0, 0 };
+//	public byte[] stayStill = { 0, 0 };
 
 	public byte[] leftOne = { -1, 0 };
 	public byte[] leftTwo = { -2, 0 };
@@ -175,7 +175,7 @@ public class Actions {
 		actions.add(upRightEight);
 		actions.add(upRightNine);
 		
-		actions.add(stayStill);
+//		actions.add(stayStill);
 		
 		arrowThrows.add(leftNine);
 		arrowThrows.add(leftEight);

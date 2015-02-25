@@ -29,7 +29,7 @@ public class HMinimaxSearch implements Minimax {
 
 	int cacheHits = 0;
 
-	private final byte ABSOLUTEDEPTH = 10;
+	private final byte ABSOLUTEDEPTH = 12;
 
 	private static int ALPHA = Integer.MIN_VALUE;
 	private static int BETA = Integer.MAX_VALUE;
@@ -110,6 +110,10 @@ public class HMinimaxSearch implements Minimax {
 				} else if (ALPHA == max){
 					potentialActions = moveToFront(potentialActions, action);
 					ties.add(action);
+				}
+				
+				if (timer.almostExpired()) {
+					break;
 				}
 
 			}			
