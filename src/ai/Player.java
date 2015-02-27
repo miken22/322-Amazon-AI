@@ -125,7 +125,7 @@ public class Player implements GamePlayer {
 			isOpponentsTurn = true;
 
 			// DISABLING to compare performance of heuristics
-//			agent.checkIfFinished();
+			agent.checkIfFinished();
 			
 			
 		} catch (NullPointerException e){

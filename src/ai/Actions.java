@@ -94,88 +94,108 @@ public class Actions {
 		
 		actions = new ArrayList<>();
 		arrowThrows = new ArrayList<>();
-			
-		actions.add(leftOne);
-		actions.add(leftTwo);
-		actions.add(leftThree);
-		actions.add(leftFour);
-		actions.add(leftFive);
-		actions.add(leftSix);
-		actions.add(leftSeven);
-		actions.add(leftEight);
-		actions.add(leftNine);
 		
-		actions.add(rightOne);
-		actions.add(rightTwo);
-		actions.add(rightThree);
-		actions.add(rightFour);
-		actions.add(rightFive);
-		actions.add(rightSix);
-		actions.add(rightSeven);
-		actions.add(rightEight);
-		actions.add(rightNine);
 		
-		actions.add(upOne);
-		actions.add(upTwo);
-		actions.add(upThree);
-		actions.add(upFour);
-		actions.add(upFive);
-		actions.add(upSix);
-		actions.add(upSeven);
-		actions.add(upEight);
+		actions.add(upRightNine);
+		actions.add(upLeftNine);
 		actions.add(upNine);
-		
-		actions.add(downOne);
-		actions.add(downTwo);
-		actions.add(downThree);
-		actions.add(downFour);
-		actions.add(downFive);
-		actions.add(downSix);
-		actions.add(downSeven);
-		actions.add(downEight);
+		actions.add(leftNine);
+		actions.add(rightNine);
 		actions.add(downNine);
-		
-		actions.add(downLeftOne);
-		actions.add(downLeftTwo);
-		actions.add(downLeftThree);
-		actions.add(downLeftFour);
-		actions.add(downLeftFive);
-		actions.add(downLeftSix);
-		actions.add(downLeftSeven);
-		actions.add(downLeftEight);
 		actions.add(downLeftNine);
-		
-		actions.add(downRightOne);
-		actions.add(downRightTwo);
-		actions.add(downRightThree);
-		actions.add(downRightFour);
-		actions.add(downRightFive);
-		actions.add(downRightSix);
-		actions.add(downRightSeven);
-		actions.add(downRightEight);
 		actions.add(downRightNine);
 		
-		actions.add(upLeftOne);
-		actions.add(upLeftTwo);
-		actions.add(upLeftThree);
-		actions.add(upLeftFour);
-		actions.add(upLeftFive);
-		actions.add(upLeftSix);
-		actions.add(upLeftSeven);
+		actions.add(upRightEight);
 		actions.add(upLeftEight);
-		actions.add(upLeftNine);
+		actions.add(upEight);
+		actions.add(leftEight);
+		actions.add(rightEight);
+		actions.add(downEight);
+		actions.add(downLeftEight);
+		actions.add(downRightEight);
+		
+		actions.add(upRightSeven);
+		actions.add(upLeftSeven);
+		actions.add(upSeven);
+		actions.add(leftSeven);
+		actions.add(rightSeven);
+		actions.add(downSeven);
+		actions.add(downLeftSeven);
+		actions.add(downRightSeven);
+		
+		actions.add(upRightSix);
+		actions.add(upLeftSix);
+		actions.add(upSix);
+		actions.add(leftSix);
+		actions.add(rightSix);
+		actions.add(downSix);
+		actions.add(downLeftSix);
+		actions.add(downRightSix);
+		
+		actions.add(upRightFive);
+		actions.add(upLeftFive);
+		actions.add(upFive);
+		actions.add(leftFive);
+		actions.add(rightFive);
+		actions.add(downFive);
+		actions.add(downLeftFive);
+		actions.add(downRightFive);
+		
+		actions.add(upRightFour);
+		actions.add(upLeftFour);
+		actions.add(leftFour);
+		actions.add(upFour);
+		actions.add(rightFour);
+		actions.add(downFour);
+		actions.add(downLeftFour);
+		actions.add(downRightFour);
+		
+		actions.add(upRightThree);
+		actions.add(upLeftThree);
+		actions.add(upThree);
+		actions.add(leftThree);
+		actions.add(rightThree);
+		actions.add(downThree);
+		actions.add(downLeftThree);
+		actions.add(downRightThree);
+		
+		actions.add(upRightTwo);
+		actions.add(upLeftTwo);
+		actions.add(upTwo);
+		actions.add(leftTwo);
+		actions.add(rightTwo);
+		actions.add(downTwo);
+		actions.add(downLeftTwo);
+		actions.add(downRightTwo);
 		
 		actions.add(upRightOne);
-		actions.add(upRightTwo);
-		actions.add(upRightThree);
-		actions.add(upRightFour);
-		actions.add(upRightFive);
-		actions.add(upRightSix);
-		actions.add(upRightSeven);
-		actions.add(upRightEight);
-		actions.add(upRightNine);
+		actions.add(upLeftOne);
+		actions.add(upOne);
+		actions.add(leftOne);
+		actions.add(rightOne);
+		actions.add(downOne);
+		actions.add(downLeftOne);
+		actions.add(downRightOne);
+
+		arrowThrows.add(upLeftNine);
+		arrowThrows.add(upLeftEight);
+		arrowThrows.add(upLeftSeven);
+		arrowThrows.add(upLeftSix);
+		arrowThrows.add(upLeftFive);
+		arrowThrows.add(upLeftFour);
+		arrowThrows.add(upLeftThree);
+		arrowThrows.add(upLeftTwo);
+		arrowThrows.add(upLeftOne);
 		
-//		actions.add(stayStill);
+		arrowThrows.add(upRightNine);
+		arrowThrows.add(upRightEight);
+		arrowThrows.add(upRightSeven);
+		arrowThrows.add(upRightSix);
+		arrowThrows.add(upRightFive);
+		arrowThrows.add(upRightFour);
+		arrowThrows.add(upRightThree);
+		arrowThrows.add(upRightTwo);
+		arrowThrows.add(upRightOne);
 		
 		arrowThrows.add(leftNine);
 		arrowThrows.add(leftEight);
@@ -236,26 +256,6 @@ public class Actions {
 		arrowThrows.add(downRightThree);
 		arrowThrows.add(downRightTwo);
 		arrowThrows.add(downRightOne);
-
-		arrowThrows.add(upLeftNine);
-		arrowThrows.add(upLeftEight);
-		arrowThrows.add(upLeftSeven);
-		arrowThrows.add(upLeftSix);
-		arrowThrows.add(upLeftFive);
-		arrowThrows.add(upLeftFour);
-		arrowThrows.add(upLeftThree);
-		arrowThrows.add(upLeftTwo);
-		arrowThrows.add(upLeftOne);
-		
-		arrowThrows.add(upRightNine);
-		arrowThrows.add(upRightEight);
-		arrowThrows.add(upRightSeven);
-		arrowThrows.add(upRightSix);
-		arrowThrows.add(upRightFive);
-		arrowThrows.add(upRightFour);
-		arrowThrows.add(upRightThree);
-		arrowThrows.add(upRightTwo);
-		arrowThrows.add(upRightOne);
 
 		
 	}

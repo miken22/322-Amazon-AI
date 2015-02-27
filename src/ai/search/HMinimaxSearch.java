@@ -79,7 +79,7 @@ public class HMinimaxSearch implements Minimax {
 			transitionTable.clear();
 		}
 
-		DEPTH = 2;
+		DEPTH = 1;
 		// Get list of possible actions that can be made from the state
 		List<byte[]> potentialActions = scg.getRelevantActions(board, player);
 						
@@ -89,7 +89,7 @@ public class HMinimaxSearch implements Minimax {
 			if (potentialActions.size() == 0){
 				break;
 			}
-
+			
 			// Generate the child of the root state, performing depth first alpha-beta search
 			for (int i = 0; i < potentialActions.size(); i++){
 
@@ -106,10 +106,11 @@ public class HMinimaxSearch implements Minimax {
 					max = ALPHA;
 					move = action;
 					// Reset set of actions that lead to equally promising states
+					ties.add(action);
 					ties.clear();
 				} else if (ALPHA == max){
 					potentialActions = moveToFront(potentialActions, action);
-					ties.add(action);
+//					ties.add(action);
 				}
 				
 				if (timer.almostExpired()) {

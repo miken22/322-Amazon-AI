@@ -73,9 +73,9 @@ public class SuccessorGenerator extends GameTreeSearch {
 					tempBoard.placeMarker(toX, toY, (byte)player);
 					
 					// Skip last action in list (stays still)
-					for (int j = 0; j < actions.getActions().size() - 1; j++){
+					for (int j = 0; j < actions.getArrowThrows().size(); j++){
 						
-						byte[] arrowSpot = actions.getActions().get(j);
+						byte[] arrowSpot = actions.getArrowThrows().get(j);
 						
 						byte arrowX = (byte)(toX + arrowSpot[0]);
 						byte arrowY = (byte)(toY + arrowSpot[1]);
@@ -84,27 +84,27 @@ public class SuccessorGenerator extends GameTreeSearch {
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
 							byte[] move = { fromX, fromY, toX, toY, arrowX, arrowY };
 							moveList.get(piece).add(move);
-						} else {
-							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
-							// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
-							// that allow moving in the obstructed direction.
-							if (arrowSpot[0] == 0){
-								j += 9 - Math.abs(arrowSpot[1]);
-							} else {
-								j += 9 - Math.abs(arrowSpot[0]);
-							}
-						}
+						}// else {
+//							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
+//							// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
+//							// that allow moving in the obstructed direction.
+//							if (arrowSpot[0] == 0){
+//								j += 9 - Math.abs(arrowSpot[1]);
+//							} else {
+//								j += 9 - Math.abs(arrowSpot[0]);
+//							}
+//						}
 					}
-				} else {
-					// This relies on current ordering of actions. We proceed in one direction from the old queen, as soon as we hit an
-					// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
-					// that allow moving in the obstructed direction.
-					if (amazonMove[0] == 0){
-						i += 9 - Math.abs(amazonMove[1]);
-					} else {
-						i += 9 - Math.abs(amazonMove[0]);
-					}
-				}
+				} //else {
+//					// This relies on current ordering of actions. We proceed in one direction from the old queen, as soon as we hit an
+//					// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
+//					// that allow moving in the obstructed direction.
+//					if (amazonMove[0] == 0){
+//						i += 9 - Math.abs(amazonMove[1]);
+//					} else {
+//						i += 9 - Math.abs(amazonMove[0]);
+//					}
+//				}
 				
 			}
 			// Increment index for move list.
@@ -146,9 +146,9 @@ public class SuccessorGenerator extends GameTreeSearch {
 		@Override
 		public int compare(ArrayList<byte[]> o1, ArrayList<byte[]> o2) {
 			if (o1.size() < o2.size()) {
-				return -1;
-			} else if (o1.size() > o2.size()) {
 				return 1;
+			} else if (o1.size() > o2.size()) {
+				return -1;
 			}
 			return 0;
 		}

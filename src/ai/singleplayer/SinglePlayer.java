@@ -292,7 +292,8 @@ public class SinglePlayer {
 		
 		agent.setupHeuristic(new MinDistanceHeuristic(1));
 //		agent.setupHeuristic(new CountReachableTilesHeuristic(1));
-		agent2.setupHeuristic(new CountReachableTilesHeuristic(2));
+		agent2.setupHeuristic(new MinDistanceHeuristic(2));
+//		agent2.setupHeuristic(new CountReachableTilesHeuristic(2));
 		
 //		agent.setupHeuristic(new BlindFunction(1));
 //		agent2.setupHeuristic(new BlindFunction(2));
@@ -325,7 +326,7 @@ public class SinglePlayer {
 					System.out.println("Black: " + action);
 					updateMoveLog(action, 2);
 					
-//					agent2.checkIfFinished();
+					agent2.checkIfFinished();
 					
 				} catch (NullPointerException e){
 					finished = true;
