@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import ubco.ai.games.GameTimer;
 import ai.Board;
 import ai.singleplayer.Timer;
 
@@ -42,7 +43,6 @@ public class HMinimaxSearch implements Minimax {
 		this.evaluator = evaluator;
 		scg = new SuccessorGenerator();
 		ties = new ArrayList<>();
-		timer = new Timer();
 		transitionTable = new HashMap<>();		
 	}
 
@@ -57,6 +57,7 @@ public class HMinimaxSearch implements Minimax {
 	@Override
 	public byte[] maxSearch(Board board, int player){
 
+		timer = new Timer();
 		timer.startTiming();
 		
 		int max = Integer.MIN_VALUE;
@@ -117,7 +118,10 @@ public class HMinimaxSearch implements Minimax {
 					break;
 				}
 
-			}			
+			}		
+			if (timer.almostExpired()) {
+				break;
+			}
 			// Increase bounds on the search
 			DEPTH++;
 			// Attempt to enforce unnecessary search late in the game
@@ -149,7 +153,7 @@ public class HMinimaxSearch implements Minimax {
 	public int alphaBeta(Board board, int searchDepth, boolean maxNode) {
 				
 		// Terminal nodes in search tree or at max depth we evaluate the board
-		if (searchDepth == DEPTH){
+		if (searchDepth == DEPTH || timer.almostExpired()){
 			// Scrapping transition table, too many incorrect hash collisions.
 //			int hash = hashCode(board.getBoard());
 //			
@@ -181,6 +185,7 @@ public class HMinimaxSearch implements Minimax {
 				if (timer.almostExpired()){
 					return Math.max(ALPHA, result);
 				}
+				
 				// Alpha-beta pruning
 				if (result >= BETA){
 					return result;
@@ -197,13 +202,14 @@ public class HMinimaxSearch implements Minimax {
 				return Integer.MAX_VALUE;
 			}
 			for (byte[] action : potentialActions){
-				Board child = scg.generateSuccessor(board, action, (byte) opponent);
-				int result = alphaBeta(child, searchDepth+1, true);
 				
+				Board child = scg.generateSuccessor(board, action, (byte) opponent);
+				int result = alphaBeta(child, searchDepth+1, true);		
 
 				if (timer.almostExpired()){
 					return Math.min(BETA, result);
 				}
+				
 				if (result <= ALPHA){
 					return result;
 				}

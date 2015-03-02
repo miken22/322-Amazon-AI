@@ -23,11 +23,11 @@ public class XMLParser{
 
 		// Need "type" to see which type of game message we have. Need to build cases for the other message types
 		if (xml.hasAttribute("type")){
-			if (xml.getAttribute("type", GameMessage.ACTION_GAME_START).contains(GameMessage.ACTION_GAME_START)){
+			if (xml.getAttribute("type", "false").contains(GameMessage.ACTION_GAME_START)){
 				return GameMessage.ACTION_GAME_START;
 			}
 
-			if (xml.getAttribute("type", GameMessage.ACTION_MOVE).contains(GameMessage.ACTION_MOVE)){
+			if (xml.getAttribute("type", "false").contains(GameMessage.ACTION_MOVE)){
 				return GameMessage.ACTION_MOVE;
 			}
 		}

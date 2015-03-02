@@ -1,6 +1,7 @@
 package ai.search;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 		ArrayList<ArrayList<byte[]>> moveList = new ArrayList<>();
 		
 		for (int i = 0; i < 4; i++) {
-			moveList.add(new ArrayList<>());
+			moveList.add(new ArrayList<byte[]>());
 		}
 		// Index piece we are looking at.
 		int piece = 0;
@@ -111,8 +112,9 @@ public class SuccessorGenerator extends GameTreeSearch {
 			piece++;
 		}		
 			
-		// Order the set of moves
-		moveList.sort(new CountComparator());
+		// Order the set of moves		
+		Collections.sort(moveList, new CountComparator());
+		
 		ArrayList<byte[]> orderedMoves = new ArrayList<>();
 		// Add all the moves into one main list
 		for (int i = 0; i < 4; i++) {

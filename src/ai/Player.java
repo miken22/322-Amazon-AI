@@ -99,38 +99,41 @@ public class Player implements GamePlayer {
 
 		agent = new Agent(playerID);
 		agent.setupHeuristic(new MinDistanceHeuristic(playerID));
-		
-		if (!isOpponentsTurn){
-			pickMove();
-		}
+
+		pickMove();
 		
 	}
 
 	private void pickMove() {
 
-		System.out.println("Agents move:");
+		
+		if (!isOpponentsTurn) {
+			System.out.println("Agents move:");
 
-		try{
-			
-			byte[] move = agent.selectMove(board);
+			try{
+				
+				byte[] move = agent.selectMove(board);
 
-			String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
-			client.sendToServer(moveMessage, true);
+				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
+				client.sendToServer(moveMessage, true);
 
-			// GUI and logic update
-			String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
+				// GUI and logic update
+				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
 
-			updateRepresentations(move, playerID);
-			gui.updateMoveLog("Agent: ", action);
-			isOpponentsTurn = true;
+				updateRepresentations(move, playerID);
+				gui.updateMoveLog("Agent: ", action);
+				isOpponentsTurn = true;
 
-			// DISABLING to compare performance of heuristics
-			agent.checkIfFinished();
-			
-			
-		} catch (NullPointerException e){
-			endGame();
-		}	
+				// DISABLING to compare performance of heuristics
+				agent.checkIfFinished();
+				
+				
+			} catch (NullPointerException e){
+				endGame();
+			}	
+		}
+		return;
+		
 	}
 
 	/**
