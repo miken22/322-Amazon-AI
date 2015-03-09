@@ -67,12 +67,13 @@ public class Player implements GamePlayer {
 		}
 	}
 
-	public void joinServer(String roomName){
+	public void joinServer(int roomNumber){
 		client.roomList = getRooms();
 		gui.init();
 
 		try {
-			client.joinGameRoom(roomName);
+			GameRoom room = client.roomList.get(roomNumber);
+			client.joinGameRoom(room.roomName);
 			System.out.println(roomNumber);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -100,8 +101,9 @@ public class Player implements GamePlayer {
 		agent = new Agent(playerID);
 		agent.setupHeuristic(new MinDistanceHeuristic(playerID));
 
-		pickMove();
-		
+		if (playerID == 1) {
+			pickMove();
+		}
 	}
 
 	private void pickMove() {
@@ -218,11 +220,11 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		if (args.length == 0 ){
 			player.joinServer();
 		} else {
-			player.joinServer(args[0] + " " + args[1]);
+			player.joinServer(Integer.valueOf(args[0]));
 		}
 	}
 }

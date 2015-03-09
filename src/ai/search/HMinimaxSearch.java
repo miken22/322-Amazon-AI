@@ -85,7 +85,7 @@ public class HMinimaxSearch implements Minimax {
 		List<byte[]> potentialActions = scg.getRelevantActions(board, player);
 						
 		// Timer controlled search, level 0 of the search
-		while (timer.isStillValid()){
+		while (!timer.almostExpired()){
 			
 			if (potentialActions.size() == 0){
 				break;
@@ -94,6 +94,10 @@ public class HMinimaxSearch implements Minimax {
 			// Generate the child of the root state, performing depth first alpha-beta search
 			for (int i = 0; i < potentialActions.size(); i++){
 
+				if (timer.almostExpired()) {
+					break;
+				}
+				
 				byte[] action = potentialActions.get(i);
 				Board child = scg.generateSuccessor(board, action, (byte)player);
 				// Since root is a max node we want the maximum possible value given our opponent
@@ -113,11 +117,6 @@ public class HMinimaxSearch implements Minimax {
 					potentialActions = moveToFront(potentialActions, action);
 //					ties.add(action);
 				}
-				
-				if (timer.almostExpired()) {
-					break;
-				}
-
 			}		
 			if (timer.almostExpired()) {
 				break;
