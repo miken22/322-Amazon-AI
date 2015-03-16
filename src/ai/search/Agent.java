@@ -71,17 +71,21 @@ public class Agent implements Search {
 		ArrayList<byte[]> openingMoves = new ArrayList<>();
 				
 		byte[] openingMove1 = { 0, 3, 7, 3, 5, 1 };
-		byte[] openingMove2 = { 0, 6, 7, 6, 5, 8 };
+		byte[] openingMove2 = { 0, 3, 8, 3, 6, 1 };
+		byte[] openingMove3 = { 0, 6, 7, 6, 5, 8 };
 		
-		byte[] openingMove3 = { 0, 3, 6, 3, 6, 1 };
-		byte[] openingMove4 = { 0, 6, 6, 6, 6, 8 };
+		byte[] openingMove4 = { 0, 3, 6, 3, 6, 1 };
+		byte[] openingMove5 = { 0, 6, 6, 6, 6, 8 };
+		byte[] openingMove6 = { 0, 6, 8, 6, 6, 8 };
 		
 		openingMoves.add(openingMove1);
 		openingMoves.add(openingMove2);
 		openingMoves.add(openingMove3);
 		openingMoves.add(openingMove4);
+		openingMoves.add(openingMove5);
+		openingMoves.add(openingMove6);
 		
-		int random = new Random().nextInt(4);
+		int random = new Random().nextInt(6);
 		
 		return openingMoves.get(random);
 	}

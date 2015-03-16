@@ -126,7 +126,6 @@ public class Player implements GamePlayer {
 				gui.updateMoveLog("Agent: ", action);
 				isOpponentsTurn = true;
 
-				// DISABLING to compare performance of heuristics
 				agent.checkIfFinished();
 				
 				
@@ -220,7 +219,7 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-2.0001", "54321");
+		Player player = new Player("Bot-1.0001", "54321");
 		if (args.length == 0 ){
 			player.joinServer();
 		} else {
