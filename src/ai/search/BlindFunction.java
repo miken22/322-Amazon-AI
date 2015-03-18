@@ -2,6 +2,12 @@ package ai.search;
 
 import ai.Board;
 
+/**
+ * Blind heuristic function for testing purposes
+ * 
+ * @author Michael Nowicki
+ *
+ */
 public class BlindFunction extends EvaluationFunction {
 
 	public BlindFunction(int role) {
@@ -11,7 +17,7 @@ public class BlindFunction extends EvaluationFunction {
 
 	@Override
 	public int evaluate(Board board, int player) {
-		return 1;
+		return 0;
 	}
 
 }

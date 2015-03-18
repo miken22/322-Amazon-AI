@@ -1,4 +1,4 @@
-package ai.singleplayer;
+package ai;
 
 public class Timer {
 
@@ -10,7 +10,7 @@ public class Timer {
 	
 	public boolean almostExpired(){	
 		long currentTime = ((System.currentTimeMillis() - startTime) / 1000) % 60;
-		if (currentTime > 15){
+		if (currentTime > 5){
 			return true;
 		}
 		return false;

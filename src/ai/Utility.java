@@ -2,6 +2,14 @@ package ai;
 
 import java.util.Stack;
 
+/**
+ * Utility class to help format moves, convert columns to integers
+ * and test for endgame states.
+ * 
+ * @author Michael Nowicki
+ *
+ */
+
 public class Utility {
 	
 	public static final int WQUEEN = 1;

@@ -7,6 +7,12 @@ import net.n3.nanoxml.IXMLElement;
 import ubco.ai.connection.ServerMessage;
 import ubco.ai.games.GameMessage;
 
+/**
+ * Parse messages from server, create message for server
+ * 
+ * @author Michael Nowicki
+ *
+ */
 public class XMLParser{
 
 	private String userName;

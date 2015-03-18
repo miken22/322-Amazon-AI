@@ -1,6 +1,8 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.Scanner;
+
 import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.IXMLParser;
 import net.n3.nanoxml.IXMLReader;
@@ -51,37 +53,40 @@ public class Player implements GamePlayer {
 		board.initialize();
 
 	}
-
+	
+	/**
+	 * Simple method that displays the rooms, their array index, and number
+	 * of users. Select the room to join by typing the index to join, launches
+	 * GUI after.
+	 *  
+	 */
 	public void joinServer(){
+		
+		gui.init();
+		
 		client.roomList = getRooms();	
-		gui.init();
 
+		int index = 0;
 		for (GameRoom g : client.roomList) {
-			try {
-				client.joinGameRoom(g.roomName);
-				roomNumber = g.roomID;
-				break;
-			} catch (Exception e) {
-				continue;
-			}
+			System.out.print(g.roomName + " [" + index++ + "] ");
+			System.out.println("Number of users: " + g.userCount);
 		}
-	}
-
-	public void joinServer(int number){
-		client.roomList = getRooms();
-		gui.init();
-
+		System.out.print("Pick a room number to join: ");
+		
+		Scanner in = new Scanner(System.in);
+		int number = in.nextInt();
+		in.close();
+		
 		try {
 			GameRoom room = client.roomList.get(number);
 			this.roomNumber = room.roomID;
 			client.joinGameRoom(room.roomName);
-			System.out.println(roomNumber);
 		} catch (Exception e) {
+			System.out.print("Invalid room number, exiting!");
 			e.printStackTrace();
+			System.exit(-1);
 		}
-
 	}
-
 
 	public void startGame() {
 
@@ -220,11 +225,7 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-3.0001", "54321");
-		if (args.length == 0 ){
-			player.joinServer();
-		} else {
-			player.joinServer(Integer.valueOf(args[0]));
-		}
+		Player player = new Player("Bot-1.0001", "54321");
+		player.joinServer();
 	}
 }

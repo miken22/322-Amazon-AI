@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import ubco.ai.games.GameTimer;
 import ai.Board;
-import ai.singleplayer.Timer;
+import ai.Timer;
 
 /**
  * The general minimax heuristic search algorithm
@@ -27,8 +26,6 @@ public class HMinimaxSearch implements Minimax {
 
 	private SuccessorGenerator scg;
 	private Timer timer;
-
-	int cacheHits = 0;
 
 	private final byte ABSOLUTEDEPTH = 12;
 
@@ -75,6 +72,7 @@ public class HMinimaxSearch implements Minimax {
 			opponent = 1;
 		}
 		
+		// TODO: Figure out a way to store boards, would make a huge difference...
 		if (transitionTable.size() > 1000000){
 			System.out.println("Flushing transition table.");
 			transitionTable.clear();
@@ -111,11 +109,11 @@ public class HMinimaxSearch implements Minimax {
 					max = ALPHA;
 					move = action;
 					// Reset set of actions that lead to equally promising states
-					ties.add(action);
 					ties.clear();
+					ties.add(action);
 				} else if (ALPHA == max){
 					potentialActions = moveToFront(potentialActions, action);
-//					ties.add(action);
+					ties.add(action);
 				}
 			}		
 			if (timer.almostExpired()) {
@@ -137,9 +135,10 @@ public class HMinimaxSearch implements Minimax {
 //		System.out.println("Number of cache hits: " + cacheHits);
 //		cacheHits = 0;
 
-		if (ties.size() > 1){
-			move = tieBreaker();
-		}
+		// TODO: We need to figure out a tie breaker
+//		if (ties.size() > 1){
+//			move = tieBreaker();
+//		}
 
 		ties.clear();
 
@@ -153,18 +152,14 @@ public class HMinimaxSearch implements Minimax {
 				
 		// Terminal nodes in search tree or at max depth we evaluate the board
 		if (searchDepth == DEPTH || timer.almostExpired()){
-			// Scrapping transition table, too many incorrect hash collisions.
+			// Code for checking transition table, just need to figure out a hash function.
 //			int hash = hashCode(board.getBoard());
-//			
 //			if (transitionTable.containsKey(hash)){
 //				cacheHits++;
 //				return transitionTable.get(hash);
 //			}
-			
 			int value = evaluator.evaluate(board, ourPlayer);
 //			transitionTable.put(hash, value);
-			
-			
 			return value;	
 		}
 		
@@ -219,14 +214,14 @@ public class HMinimaxSearch implements Minimax {
 		}
 	}
 
-	private int hashCode(byte[][] board) {
-		int hash = 0;
-		int p = 569;
-		for (int i = 0; i < 10; i++)
-	        for (int j = 0; j < 10; j++)
-	            hash = (hash) ^ (int)( (Math.pow(p,i)+Math.pow(p,j)) * board[i][j]);
-	    return hash;
-	}
+//	private int hashCode(byte[][] board) {
+//		int hash = 0;
+//		int p = 569;
+//		for (int i = 0; i < 10; i++)
+//	        for (int j = 0; j < 10; j++)
+//	            hash = (hash) ^ (int)( (Math.pow(p,i)+Math.pow(p,j)) * board[i][j]);
+//	    return hash;
+//	}
 
 	/**
 	 * Swaps the location of the newest best potential action by moving it to the front of the array for

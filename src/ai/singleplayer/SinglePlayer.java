@@ -30,7 +30,6 @@ import ai.Pair;
 import ai.Utility;
 import ai.gui.Cells;
 import ai.search.Agent;
-import ai.search.CountReachableTilesHeuristic;
 import ai.search.MinDistanceHeuristic;
 
 /**
@@ -229,7 +228,6 @@ public class SinglePlayer {
 
 				cell.setBounds(j * 50 + 50, 500 - i * 50, 50, 50);
 				cell.setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
-				cell.setXY(i,j);	// This is weird but it has to be backwards because the gui is tilted, is only for reference anyways never used.
 				guiBoard[i][j] = cell;
 				frame.add(cell);
 			}
@@ -264,15 +262,15 @@ public class SinglePlayer {
 	}
 
 	private void initializePositions(){
-		guiBoard[0][3].setWQueen();
-		guiBoard[0][6].setWQueen();
-		guiBoard[3][0].setWQueen();
-		guiBoard[3][9].setWQueen();
+		guiBoard[0][3].setWhitePiece();
+		guiBoard[0][6].setWhitePiece();
+		guiBoard[3][0].setWhitePiece();
+		guiBoard[3][9].setWhitePiece();
 
-		guiBoard[6][0].setBQueen();
-		guiBoard[6][9].setBQueen();
-		guiBoard[9][3].setBQueen();
-		guiBoard[9][6].setBQueen();	
+		guiBoard[6][0].setBlackPiece();
+		guiBoard[6][9].setBlackPiece();
+		guiBoard[9][3].setBlackPiece();
+		guiBoard[9][6].setBlackPiece();	
 	
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
@@ -350,10 +348,10 @@ public class SinglePlayer {
 		
 		if (player == 1){
 			board.updateWhitePositions(move[0], move[1], move[2], move[3]);
-			guiBoard[move[2]][move[3]].setWQueen();
+			guiBoard[move[2]][move[3]].setWhitePiece();
 		} else {
 			board.updateBlackPositions(move[0], move[1], move[2], move[3]);
-			guiBoard[move[2]][move[3]].setBQueen();
+			guiBoard[move[2]][move[3]].setBlackPiece();
 		}
 		
 

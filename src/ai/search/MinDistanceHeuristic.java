@@ -4,7 +4,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
 
-import ai.Actions;
 import ai.Board;
 import ai.Pair;
 
@@ -19,7 +18,6 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 	private final int ROWS = 10;
 	private final int COLS = 10;
 
-	Actions actions = new Actions();
 	GameTreeSearch search = new GameTreeSearch();
 	
 	public MinDistanceHeuristic(int role){
@@ -78,12 +76,12 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 			}
 		}
 		
-//		System.out.println(wUtility);
+		int adjustment = adjustForIsolatedPieces(board);
 		
 		if (player == 1){
-			return wUtility;
+			return wUtility + adjustment;
 		} else {
-			return bUtility;
+			return bUtility + adjustment;
 		}
 	}
 	
@@ -99,7 +97,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 		ArrayList<Pair<Byte, Byte> > positions = null;
 		Queue<Pair<Byte, Byte> > queue = new ArrayDeque<>();
 		
-		if (player == 1){
+		if (player == WQUEEN){
 			positions = board.getWhitePositions();
 		} else {
 			positions = board.getBlackPositions();
@@ -143,7 +141,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 						}
 					}
 				}		
-			}	
-		}
+			} // end for	
+		}// end while
 	}
-}
+}// end class

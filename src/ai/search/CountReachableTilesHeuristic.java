@@ -11,8 +11,7 @@ import ai.Utility;
  * amazon can hold, hopefully guiding the AI to consider moves that maximize
  * its area it owns in the late stages.
  * 
- * 
- * @author Mike-SSD
+ * @author Mike Nowicki
  *
  */
 public class CountReachableTilesHeuristic extends EvaluationFunction {

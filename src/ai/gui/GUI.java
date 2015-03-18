@@ -26,6 +26,13 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+/**
+ * Simple GUI class to visualize the game. Uses a 2D array of Cells
+ * to represent each location
+ * 
+ * @author Michael
+ *
+ */
 public class GUI {
 
 	private JFrame frame;
@@ -145,7 +152,7 @@ public class GUI {
 			for (int j = columns-1; j >= 0; j--) {
 
 				Cells cell;
-
+				// Calculation to determine which cells are coloured what.
 				if (i % 2 == 0){
 					if (j % 2 == 0){
 						cell = new Cells(dark);
@@ -162,7 +169,6 @@ public class GUI {
 
 				cell.setBounds(j * 50 + 22, 475 - i * 50, 50, 50);
 				cell.setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
-				cell.setXY(i,j);	// This is weird but it has to be backwards because the gui is tilted, is only for reference anyways never used.
 				guiBoard[i][j] = cell;
 				frame.add(cell);
 			}
@@ -196,15 +202,15 @@ public class GUI {
 	 */
 	private void initializePositions(){
 		
-		guiBoard[0][3].setWQueen();
-		guiBoard[0][6].setWQueen();
-		guiBoard[3][0].setWQueen();
-		guiBoard[3][9].setWQueen();
+		guiBoard[0][3].setWhitePiece();
+		guiBoard[0][6].setWhitePiece();
+		guiBoard[3][0].setWhitePiece();
+		guiBoard[3][9].setWhitePiece();
 
-		guiBoard[6][0].setBQueen();
-		guiBoard[6][9].setBQueen();
-		guiBoard[9][3].setBQueen();
-		guiBoard[9][6].setBQueen();
+		guiBoard[6][0].setBlackPiece();
+		guiBoard[6][9].setBlackPiece();
+		guiBoard[9][3].setBlackPiece();
+		guiBoard[9][6].setBlackPiece();
 		
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
@@ -228,9 +234,9 @@ public class GUI {
 		guiBoard[aRow][aCol].setArrow();
 		
 		if (pieceColour == WQUEEN){
-			guiBoard[tRow][tCol].setWQueen();
+			guiBoard[tRow][tCol].setWhitePiece();
 		} else {
-			guiBoard[tRow][tCol].setBQueen();
+			guiBoard[tRow][tCol].setBlackPiece();
 		}	
 	}
 	
@@ -269,6 +275,9 @@ public class GUI {
 		frame.dispose();
 	}
 
+	/**
+	 * For testing purposes, this is not allowed in games.
+	 */
 	public void removeArrow(int i, int j) {
 		
 		guiBoard[i][j].setFree();

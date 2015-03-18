@@ -2,15 +2,18 @@ package ai.gui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 
+/**
+ * Cells that extend JPanels for the GUI.
+ * 
+ * @author Michael
+ *
+ */
 public class Cells extends JPanel {
 
 	private static final long serialVersionUID = 7176886344416475173L;
@@ -18,30 +21,25 @@ public class Cells extends JPanel {
 	private Color defaultBackground;
 
 	private int piece;
-
-	private int x, y;
-
-	private boolean clicked;
-
+	
 	public Cells(Color def){
 
 		defaultBackground = def;
-		clicked = false;
 		piece = -1;
 
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e){
-				if (clicked){
-					setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
-					clicked = false;
-				} else {
-					setBorder(new LineBorder(Color.GREEN,1,true));
-					clicked = true;
-				}
-				System.out.println("["+x+"]["+y+"]");
-			}
-		});
+//		addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e){
+//				if (clicked){
+//					setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
+//					clicked = false;
+//				} else {
+//					setBorder(new LineBorder(Color.GREEN,1,true));
+//					clicked = true;
+//				}
+//				System.out.println("["+x+"]["+y+"]");
+//			}
+//		});
 
 		setBackground(defaultBackground);
 
@@ -56,12 +54,12 @@ public class Cells extends JPanel {
 		return piece == -1;
 	}
 
-	public void setWQueen(){
+	public void setWhitePiece(){
 		piece = 1;
 		repaint();
 	}
 
-	public void setBQueen(){
+	public void setBlackPiece(){
 		piece = 2;
 		repaint();
 	}
@@ -74,11 +72,6 @@ public class Cells extends JPanel {
 	public void setFree(){
 		piece = -1;
 		repaint();
-	}
-
-	public void setXY(int x, int y){
-		this.x = x;
-		this.y = y;
 	}
 
 	@Override

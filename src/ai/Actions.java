@@ -3,9 +3,13 @@ package ai;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simple class to represent all possible moves as 2D byte arrays.
+ * 
+ * @author Michael Nowicki
+ *
+ */
 public class Actions {
-
-//	public byte[] stayStill = { 0, 0 };
 
 	public byte[] leftOne = { -1, 0 };
 	public byte[] leftTwo = { -2, 0 };
@@ -89,12 +93,14 @@ public class Actions {
 	
 	List<byte[]> actions;
 	List<byte[]> arrowThrows;
+
+	List<byte[]> testMoves;
 	
 	public Actions(){
 		
 		actions = new ArrayList<>();
 		arrowThrows = new ArrayList<>();
-		
+		testMoves = new ArrayList<>();
 		
 		actions.add(upRightNine);
 		actions.add(upLeftNine);
@@ -257,15 +263,42 @@ public class Actions {
 		arrowThrows.add(downRightTwo);
 		arrowThrows.add(downRightOne);
 
+		// This array list contains a set of simple moves one step in each direction to test
+		// if an amazon is able to move
+		testMoves.add(upOne);
+		testMoves.add(upRightOne);
+		testMoves.add(rightOne);
+		testMoves.add(downRightOne);
+		testMoves.add(downOne);
+		testMoves.add(downLeftOne);
+		testMoves.add(leftOne);
+		testMoves.add(upLeftOne);
 		
 	}
 
+	/**
+	 * Specifically ordered set of possible moves, ordered from farthest to closest
+	 * in a radial scan
+	 * @return - ArrayList of byte arrays representing moves
+	 */
 	public List<byte[]> getActions(){	
 		return actions;
 	}
-	
+	/**
+	 * Specifically ordered set of moves for arrow throws, starts farthest to closest
+	 * throws.
+	 * 
+	 * @return - ArrayList of byte arrays representing throws
+	 */
 	public List<byte[]> getArrowThrows(){
 		return arrowThrows;
 	}
 		
+	/**
+	 * Get set of trivial one step moves for testing if an amazon can move
+	 * @return - ArrayList of byte arrays representing moves.
+	 */
+	public List<byte[]> getSimpleMoves(){
+		return testMoves;
+	}
 }
