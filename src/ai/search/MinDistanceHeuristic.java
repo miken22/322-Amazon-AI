@@ -2,7 +2,7 @@ package ai.search;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Queue;
+import java.util.Deque;
 
 import ai.Board;
 import ai.Pair;
@@ -86,7 +86,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 	}
 	
 	/**
-	 * Different way to compute distances, acts like a DFS outwards from each queen, supposed to be faster.
+	 * Different way to compute distances, acts like a DFS outwards from each queen.
 	 * 
 	 * @param board - State being evaluated.
 	 * @param player - Colour evaluating for.
@@ -95,7 +95,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 	public void findDistances(Board board, int player, int[][] distanceTable){
 
 		ArrayList<Pair<Byte, Byte> > positions = null;
-		Queue<Pair<Byte, Byte> > queue = new ArrayDeque<>();
+		Deque<Pair<Byte, Byte> > queue = new ArrayDeque<>();
 		
 		if (player == WQUEEN){
 			positions = board.getWhitePositions();
@@ -111,8 +111,8 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 			
 			Pair<Byte, Byte> top = queue.poll();
 	
-			int xPos = top.getLeft();
-			int yPos = top.getRight();
+			byte xPos = top.getLeft();
+			byte yPos = top.getRight();
 			
 			for (byte[] action : actions.getActions()){
 				
@@ -121,8 +121,8 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 					currentDistance = 0;
 				}
 				
-				int newX = xPos + action[0];
-				int newY = yPos + action[1];
+				byte newX = (byte) (xPos + action[0]);
+				byte newY = (byte) (yPos + action[1]);
 				
 				// Bound checks
 				if ((newX > 9 || newX < 0) || (newY > 9 || newY < 0)){
@@ -137,7 +137,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 					if (search.moveIsValid(board, xPos, yPos, newX, newY, player, false)){
 						if (distanceTable[newX][newY] > currentDistance){
 							distanceTable[newX][newY] = currentDistance;
-							queue.add(new Pair<Byte, Byte>((byte)newX, (byte)newY));
+							queue.addFirst(new Pair<Byte, Byte>(newX, newY));
 						}
 					}
 				}		
