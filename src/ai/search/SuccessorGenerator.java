@@ -85,28 +85,9 @@ public class SuccessorGenerator extends GameTreeSearch {
 						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
 							byte[] move = { fromX, fromY, toX, toY, arrowX, arrowY };
 							moveList.get(piece).add(move);
-						}// else {
-//							// This relies on current ordering of actions. We proceed in one direction from the new queen, as soon as we hit an
-//							// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
-//							// that allow moving in the obstructed direction.
-//							if (arrowSpot[0] == 0){
-//								j += 9 - Math.abs(arrowSpot[1]);
-//							} else {
-//								j += 9 - Math.abs(arrowSpot[0]);
-//							}
-//						}
+						}
 					}
-				} //else {
-//					// This relies on current ordering of actions. We proceed in one direction from the old queen, as soon as we hit an
-//					// obstacle we know we cannot proceed further in that direction so we skip the remaining operators
-//					// that allow moving in the obstructed direction.
-//					if (amazonMove[0] == 0){
-//						i += 9 - Math.abs(amazonMove[1]);
-//					} else {
-//						i += 9 - Math.abs(amazonMove[0]);
-//					}
-//				}
-				
+				} 
 			}
 			// Increment index for move list.
 			piece++;
@@ -116,6 +97,54 @@ public class SuccessorGenerator extends GameTreeSearch {
 		Collections.sort(moveList, new CountComparator());
 		
 		ArrayList<byte[]> orderedMoves = new ArrayList<>();
+		
+		// Try all possible moves
+//		for (byte i = 0; i < actions.getActions().size(); i++){
+//			
+//			byte[] amazonMove = actions.getActions().get(i);
+//			// Create a new board to examine
+//			Board tempBoard = new Board(board);
+//
+//			for (Pair<Byte, Byte> amazon : amazons) {
+//				
+//				byte fromX = amazon.getLeft();
+//				byte fromY = amazon.getRight();
+//				
+//				byte toX = (byte)(fromX + amazonMove[0]);
+//				byte toY = (byte)(fromY + amazonMove[1]);
+//				
+//				// Update references to amazon positions for the corresponding player
+//				if (player == 1){
+//					tempBoard.updateWhitePositions(fromX, fromY, toX, toY);
+//				} else {
+//					tempBoard.updateBlackPositions(fromX, fromY, toX, toY);				
+//				}
+//				// Check that the move is valid, if so try placing arrows
+//				if (moveIsValid(tempBoard, fromX, fromY, toX, toY, player, false)){
+//
+//					tempBoard.freeSquare(fromX, fromY);
+//					tempBoard.placeMarker(toX, toY, (byte)player);
+//
+//					// Skip last action in list (stays still)
+//					for (int j = 0; j < actions.getArrowThrows().size(); j++){
+//
+//						byte[] arrowSpot = actions.getArrowThrows().get(j);
+//
+//						byte arrowX = (byte)(toX + arrowSpot[0]);
+//						byte arrowY = (byte)(toY + arrowSpot[1]);
+//
+//						// If queen and arrow placement is valid record the actions and push onto the list
+//						if (moveIsValid(tempBoard, toX, toY, arrowX, arrowY, player, true)){
+//							byte[] move = { fromX, fromY, toX, toY, arrowX, arrowY };
+//							orderedMoves.add(move);
+//						}
+//					}
+//				}
+//			}
+//		}
+		
+		
+		
 		// Add all the moves into one main list
 		for (int i = 0; i < 4; i++) {
 			orderedMoves.addAll(moveList.get(i));
@@ -147,7 +176,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 
 		@Override
 		public int compare(ArrayList<byte[]> o1, ArrayList<byte[]> o2) {
-			if (o1.size() < o2.size()) {
+			if (o1.size() > o2.size()) {
 				return 1;
 			} else if (o1.size() > o2.size()) {
 				return -1;
