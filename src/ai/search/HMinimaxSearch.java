@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 
 import ai.Board;
-import ai.Pair;
 import ai.Timer;
 
 /**
@@ -34,7 +33,7 @@ public class HMinimaxSearch implements Minimax {
 	private static int BETA = Integer.MAX_VALUE;
 
 	// Since there are so many collisions we can store a list, check each pair
-	private HashMap<Long, ArrayList<Pair<byte[][], Integer> > > transitionTable;
+	private HashMap<Integer, ArrayList<Board> > transitionTable;
 	private int cacheHits = 0;
 
 	List<byte[]> ties;
@@ -155,23 +154,22 @@ public class HMinimaxSearch implements Minimax {
 
 			// Since overhead of this is large only do it when the depth is worth while
 			if (searchDepth >= 2) {
-				// Hash board, see if code has been generated before
-				long hash = hashCode(board.getBoard());
+				int hash = board.hashCode();
 				if (transitionTable.containsKey(hash)) {
 					// Get the bucket representing all board/value tuples that hash to same value
-					ArrayList<Pair<byte[][], Integer> > bucket = transitionTable.get(hash);
-					byte[][] game = board.getBoard();
+					ArrayList<Board> bucket = transitionTable.get(hash);
 					// Iterate over bucket, check if any are EXACTLY equal
-					for (Pair<byte[][], Integer> tuple : bucket) {
+					for (Board collision : bucket) {
 						// If they are, return the cost
-						if (java.util.Arrays.deepEquals(game, tuple.getLeft())){
+						if (board.equals(collision)){
 							cacheHits++;
-							return tuple.getRight();
+							return collision.getHeuristicValue();
 						}
 					}
 					// Otherwise new board state collides, evaluate and add to bucket
 					int value = evaluator.evaluate(board, ourPlayer);
-					bucket.add(new Pair<byte[][], Integer>(game, value));
+					board.setHeuristicValue(value);
+					bucket.add(board);
 					return value;
 				}
 
@@ -179,9 +177,10 @@ public class HMinimaxSearch implements Minimax {
 				int value = evaluator.evaluate(board, ourPlayer);
 
 				// Create a bucket and put into the hashmap
-				ArrayList<Pair<byte[][], Integer> > bucket = new ArrayList<>();
-				bucket.add(new Pair<byte[][], Integer>(board.getBoard(), value));
-				transitionTable.put(hash, bucket);
+				ArrayList<Board> bucket = new ArrayList<>();
+				board.setHeuristicValue(value);
+				bucket.add(board);
+				transitionTable.put(board.hashCode(), bucket);
 				return value;
 			}
 			return evaluator.evaluate(board, ourPlayer);

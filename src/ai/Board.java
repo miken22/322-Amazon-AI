@@ -22,6 +22,7 @@ public class Board {
 	// Used to keep track of where each amazon is for easier lookup
 	ArrayList<Pair<Byte, Byte>> whitePositions;
 	ArrayList<Pair<Byte, Byte>> blackPositions;
+	private int heuristicValue;
 
 	public Board(int rows, int columns) {
 		this.rows = rows;
@@ -149,5 +150,22 @@ public class Board {
 
 	public byte[][] getBoard() {
 		return board;
+	}
+	
+	public void setHeuristicValue(int value) {
+		this.heuristicValue = value;
+	}
+	
+	public int getHeuristicValue() {
+		return heuristicValue;
+	}
+	
+	@Override
+	public int hashCode() {
+		return java.util.Arrays.deepHashCode(board);
+	}
+	
+	public boolean equals(Board otherBoard){
+		return java.util.Arrays.deepEquals(board, otherBoard.getBoard());
 	}
 }
