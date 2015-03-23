@@ -10,13 +10,13 @@ import ai.Board;
  */
 public class BlindFunction extends EvaluationFunction {
 
-	public BlindFunction(int role) {
+	public BlindFunction(byte role) {
 		super(role);
 		
 	}
 
 	@Override
-	public int evaluate(Board board, int player) {
+	public int evaluate(Board board, byte player) {
 		return 0;
 	}
 

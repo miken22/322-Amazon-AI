@@ -74,7 +74,8 @@ public class XMLParser{
 	}
 
 	/**
-	 * Create the server message for a move in the correct format
+	 * Create the server message for a move in the correct format. Might need to offset by +1 if
+	 * other groups index from 1 - 10 instead of 0 -9
 	 * 
 	 * @param roomID - Room to send message to.
 	 * @param fX - X location where queen leaves from
@@ -100,7 +101,8 @@ public class XMLParser{
 	}
 
 	/**
-	 * Convert the opponents XML move into a set of 6 integers for the boards logic
+	 * Convert the opponents XML move into a set of 6 integers for the boards logic. Might need
+	 * to offset by -1 if opponents index from 1 - 10 instead of 0 - 9.
 	 * 
 	 * @param xml - The XML game message from the server
 	 * @return - A six element int[] representing the move.

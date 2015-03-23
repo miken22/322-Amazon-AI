@@ -20,12 +20,12 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 
 	GameTreeSearch search = new GameTreeSearch();
 	
-	public MinDistanceHeuristic(int role){
+	public MinDistanceHeuristic(byte role){
 		super(role);
 	}
 
 	@Override
-	public int evaluate(Board board, int player){
+	public int evaluate(Board board, byte player){
 
 		int wUtility = 0;
 		int bUtility = 0;

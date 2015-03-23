@@ -76,8 +76,8 @@ public class SinglePlayer {
 	private boolean playerTurn = false;
 	private boolean finished = false;
 	
-	private Agent agent = new Agent(1);
-	private Agent agent2 = new Agent(2);
+	private Agent agent = new Agent((byte)1);
+	private Agent agent2 = new Agent((byte)2);
 	
 	/**
 	 * 2 element array, index 0 for white score, 1 for black score
@@ -288,9 +288,9 @@ public class SinglePlayer {
 
 		boolean whiteTurn = true;
 		
-		agent.setupHeuristic(new MinDistanceHeuristic(1));
+		agent.setupHeuristic(new MinDistanceHeuristic((byte)1));
 //		agent.setupHeuristic(new CountReachableTilesHeuristic(1));
-		agent2.setupHeuristic(new MinDistanceHeuristic(2));
+		agent2.setupHeuristic(new MinDistanceHeuristic((byte)2));
 //		agent2.setupHeuristic(new CountReachableTilesHeuristic(2));
 		
 //		agent.setupHeuristic(new BlindFunction(1));
@@ -389,15 +389,15 @@ public class SinglePlayer {
 		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
 		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
 
-		int[][] hasChecked = new int[rows][columns];
+		byte[][] hasChecked = new byte[rows][columns];
 	
 		for (Pair<Byte, Byte> pair : wPositions){
 			// Reach opposing amazon using legal moves then the game is not over.
-			hasChecked = Utility.countReachableTiles(board, pair, WQUEEN, hasChecked);		}
+			hasChecked = Utility.countReachableTiles(board, pair, (byte) WQUEEN, hasChecked);		}
 		
 		for (Pair<Byte, Byte> pair : bPositions){
 			// Reach opposing amazon using legal moves then the game is not over.
-			hasChecked = Utility.countReachableTiles(board, pair, BQUEEN, hasChecked);
+			hasChecked = Utility.countReachableTiles(board, pair, (byte) BQUEEN, hasChecked);
 		}
 		
 		whiteTiles = 4;

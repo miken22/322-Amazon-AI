@@ -12,9 +12,9 @@ import java.util.Stack;
 
 public class Utility {
 	
-	public static final int WQUEEN = 1;
-	public static final int BQUEEN = 2;
-	public static final int ARROW = 3;
+	public static final byte WQUEEN = 1;
+	public static final byte BQUEEN = 2;
+	public static final byte ARROW = 3;
 
 	private static final int ROWS = 10;
 	private static final int COLS = 10;
@@ -87,7 +87,7 @@ public class Utility {
 	 * @param hasChecked - A 2D int representing owned and neutral tiles
 	 * @return The updated 2D array indicating what could be reached from that queen
 	 */
-	public static int[][] countReachableTiles(Board board, Pair<Byte, Byte> source, int player, int[][] hasChecked){
+	public static byte[][] countReachableTiles(Board board, Pair<Byte, Byte> source, byte player, byte[][] hasChecked){
 
 		int opponent;
 		switch(player){
@@ -121,7 +121,7 @@ public class Utility {
 					// If the other team can reach it the tile is neutral
 					} else if (hasChecked[xPos - 1][yPos] == opponent) {
 						stack.push(new Pair<>((byte)(xPos-1), yPos)); 
-						hasChecked[xPos-1][yPos] = ARROW;
+						hasChecked[xPos-1][yPos] = ARROW;	// Represent "neutral"
 					}
 				}
 			}

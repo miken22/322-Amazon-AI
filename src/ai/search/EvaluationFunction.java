@@ -18,14 +18,14 @@ public abstract class EvaluationFunction {
 	public int OURCOLOUR;
 	public int OPPONENT;
 	
-	public final int WQUEEN = 1;
-	public final int BQUEEN = 2;
-	public final int ARROW = 3;
-	public final int FREE = -1;
+	public final byte WQUEEN = 1;
+	public final byte BQUEEN = 2;
+	public final byte ARROW = 3;
+	public final byte FREE = -1;
 	
 	Actions actions = new Actions();
 	
-	public EvaluationFunction(int role){
+	public EvaluationFunction(byte role){
 		OURCOLOUR = role;
 		if (OURCOLOUR == WQUEEN){
 			OPPONENT = BQUEEN;
@@ -41,7 +41,7 @@ public abstract class EvaluationFunction {
 	 * @param player - The player being evaluated, {@value 1} white, {@value 2} for black.
 	 * @return - The heuristic value of the state
 	 */
-	public abstract int evaluate(Board board, int player);
+	public abstract int evaluate(Board board, byte player);
 	
 	/**
 	 * Call this function after evaluation to test if either play has isolated pieces.
@@ -89,13 +89,13 @@ public abstract class EvaluationFunction {
 			// Same logic as above, roles switched though
 			for (boolean b : whiteMoves) {
 				if (!b) {
-					adjustment++;
+					adjustment += 2;
 				}
 			}
 			
 			for (boolean b : blackMoves) {
 				if (!b) {
-					adjustment--;
+					adjustment -= 2;
 				}
 			}
 		}

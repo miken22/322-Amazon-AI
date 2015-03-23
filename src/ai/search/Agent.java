@@ -17,7 +17,7 @@ public class Agent implements Search {
 
 	private HMinimaxSearch hMinimax;
 
-	private int role;
+	private byte role;
 	private int move = 0;
 	int rows = 10;
 	int columns = 10;
@@ -27,7 +27,7 @@ public class Agent implements Search {
 	private boolean winningState = false;
 
 
-	public Agent(int ourColour){
+	public Agent(byte ourColour){
 		this.role = ourColour;
 	}
 
@@ -105,33 +105,34 @@ public class Agent implements Search {
 		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
 		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
 
+		byte[][] hasChecked = new byte[rows][columns];
 
-		int[][] hasChecked = new int[rows][columns];
-
+		// Scan from each amazon, mark each tile an amazon can reach
 		for (Pair<Byte, Byte> pair : wPositions){
-			hasChecked = Utility.countReachableTiles(board, pair, WQUEEN, hasChecked);		
+			hasChecked = Utility.countReachableTiles(board, pair, (byte) WQUEEN, hasChecked);		
 		}
 
 		for (Pair<Byte, Byte> pair : bPositions){
-			hasChecked = Utility.countReachableTiles(board, pair, BQUEEN, hasChecked);
+			hasChecked = Utility.countReachableTiles(board, pair, (byte) BQUEEN, hasChecked);
 		}
 
 		int whiteTiles = 4;
 		int blackTiles = 4; 
 		int bothCanReach = 0;
 
+		// Scan the abstracted board
 		for (int i = 0; i < rows; i++){
 			for (int j = 0; j < columns; j++){
 				switch(hasChecked[i][j]){
 				case(1):
-					whiteTiles++;
-				break;
+					whiteTiles++;	// White controlled
+					break;
 				case(2):
-					blackTiles++;
-				break;
+					blackTiles++;	// Black controlled
+					break;
 				case(3):
-					bothCanReach++;
-				break;
+					bothCanReach++;	// Neutral tile
+					break;
 				}
 			}
 		}
@@ -142,8 +143,9 @@ public class Agent implements Search {
 			winningState = true;
 			// Switch to a heuristic that maximizes total area controlled.
 			System.out.println("Switching to max reachable tiles heuristic for endgame.");
-			
 			setupHeuristic(new CountReachableTilesHeuristic(role));
+			System.out.println("Cleared the transition table.");
+			hMinimax.clearTable();
 			return true;
 		}
 
