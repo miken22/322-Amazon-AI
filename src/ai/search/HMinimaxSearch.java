@@ -42,7 +42,7 @@ public class HMinimaxSearch implements Minimax {
 		this.evaluator = evaluator;
 		scg = new SuccessorGenerator();
 		ties = new ArrayList<>();
-		transitionTable = new HashMap<>();		
+		transitionTable = new HashMap<>();
 	}
 
 	/**
@@ -153,37 +153,35 @@ public class HMinimaxSearch implements Minimax {
 		if (searchDepth == DEPTH || timer.almostExpired()){
 
 			// Since overhead of this is large only do it when the depth is worth while
-			if (searchDepth >= 2) {
-				int hash = board.hashCode();
-				if (transitionTable.containsKey(hash)) {
-					// Get the bucket representing all board/value tuples that hash to same value
-					ArrayList<Board> bucket = transitionTable.get(hash);
-					// Iterate over bucket, check if any are EXACTLY equal
-					for (Board collision : bucket) {
-						// If they are, return the cost
-						if (board.equals(collision)){
-							cacheHits++;
-							return collision.getHeuristicValue();
-						}
+			int hash = board.hashCode();
+			if (transitionTable.containsKey(hash)) {
+				// Get the bucket representing all board/value tuples that hash to same value
+				ArrayList<Board> bucket = transitionTable.get(hash);
+				// Iterate over bucket, check if any are EXACTLY equal
+				for (Board collision : bucket) {
+					// If they are, return the cost
+					if (board.equals(collision)){
+						cacheHits++;
+						return collision.getHeuristicValue();
 					}
-					// Otherwise new board state collides, evaluate and add to bucket
-					int value = evaluator.evaluate(board, ourPlayer);
-					board.setHeuristicValue(value);
-					bucket.add(board);
-					return value;
 				}
-
-				// Otherwise, first time we have seen the board, evaluate it.
+				// Otherwise new board state collides, evaluate and add to bucket
 				int value = evaluator.evaluate(board, ourPlayer);
-
-				// Create a bucket and put into the hashmap
-				ArrayList<Board> bucket = new ArrayList<>();
 				board.setHeuristicValue(value);
 				bucket.add(board);
-				transitionTable.put(board.hashCode(), bucket);
 				return value;
 			}
-			return evaluator.evaluate(board, ourPlayer);
+			
+			// Otherwise, first time we have seen the board, evaluate it.
+			int value = evaluator.evaluate(board, ourPlayer);
+
+			// Create a bucket and put into the hashmap
+			ArrayList<Board> bucket = new ArrayList<>();
+			board.setHeuristicValue(value);
+			bucket.add(board);
+			transitionTable.put(board.hashCode(), bucket);
+			return value;
+
 		}
 
 		// Max node
@@ -236,11 +234,7 @@ public class HMinimaxSearch implements Minimax {
 			return BETA;
 		}
 	}
-
-	private long hashCode(byte[][] board) {
-		return java.util.Arrays.deepHashCode(board);
-	}
-
+	
 	/**
 	 * Swaps the location of the newest best potential action by moving it to the front of the array for
 	 * the next round of alpha-beta search.
