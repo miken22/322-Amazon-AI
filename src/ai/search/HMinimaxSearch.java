@@ -64,10 +64,6 @@ public class HMinimaxSearch implements Minimax {
 		byte[] move = null;
 		cacheHits = 0;
 
-		// Setup alpha beta bounds
-		ALPHA = Integer.MIN_VALUE;
-		BETA = Integer.MAX_VALUE;
-
 		ourPlayer = (byte)player;
 
 		if (ourPlayer == 1){
@@ -90,6 +86,10 @@ public class HMinimaxSearch implements Minimax {
 		// Timer controlled search, level 0 of the search
 		while (!timer.almostExpired()){
 
+			// Setup alpha beta bounds
+			ALPHA = Integer.MIN_VALUE;
+			BETA = Integer.MAX_VALUE;
+			
 			if (potentialActions.size() == 0){
 				break;
 			}
@@ -153,35 +153,38 @@ public class HMinimaxSearch implements Minimax {
 		// Terminal nodes in search tree or at max depth we evaluate the board
 		if (searchDepth == DEPTH || timer.almostExpired()){
 
-			// Hash board, see if code has been generated before
-			long hash = hashCode(board.getBoard());
-			if (transitionTable.containsKey(hash)) {
-				// Get the bucket representing all board/value tuples that hash to same value
-				ArrayList<Pair<byte[][], Integer> > bucket = transitionTable.get(hash);
-				byte[][] game = board.getBoard();
-				// Iterate over bucket, check if any are EXACTLY equal
-				for (Pair<byte[][], Integer> tuple : bucket) {
-					// If they are, return the cost
-					if (java.util.Arrays.deepEquals(game, tuple.getLeft())){
-						cacheHits++;
-						return tuple.getRight();
+			// Since overhead of this is large only do it when the depth is worth while
+			if (searchDepth >= 2) {
+				// Hash board, see if code has been generated before
+				long hash = hashCode(board.getBoard());
+				if (transitionTable.containsKey(hash)) {
+					// Get the bucket representing all board/value tuples that hash to same value
+					ArrayList<Pair<byte[][], Integer> > bucket = transitionTable.get(hash);
+					byte[][] game = board.getBoard();
+					// Iterate over bucket, check if any are EXACTLY equal
+					for (Pair<byte[][], Integer> tuple : bucket) {
+						// If they are, return the cost
+						if (java.util.Arrays.deepEquals(game, tuple.getLeft())){
+							cacheHits++;
+							return tuple.getRight();
+						}
 					}
+					// Otherwise new board state collides, evaluate and add to bucket
+					int value = evaluator.evaluate(board, ourPlayer);
+					bucket.add(new Pair<byte[][], Integer>(game, value));
+					return value;
 				}
-				// Otherwise new board state collides, evaluate and add to bucket
+
+				// Otherwise, first time we have seen the board, evaluate it.
 				int value = evaluator.evaluate(board, ourPlayer);
-				bucket.add(new Pair<byte[][], Integer>(game, value));
+
+				// Create a bucket and put into the hashmap
+				ArrayList<Pair<byte[][], Integer> > bucket = new ArrayList<>();
+				bucket.add(new Pair<byte[][], Integer>(board.getBoard(), value));
+				transitionTable.put(hash, bucket);
 				return value;
 			}
-
-			// Otherwise, first time we have seen the board, evaluate it.
-			int value = evaluator.evaluate(board, ourPlayer);
-
-			// Create a bucket and put into the hashmap
-			ArrayList<Pair<byte[][], Integer> > bucket = new ArrayList<>();
-			bucket.add(new Pair<byte[][], Integer>(board.getBoard(), value));
-			transitionTable.put(hash, bucket);
-
-			return value;	
+			return evaluator.evaluate(board, ourPlayer);
 		}
 
 		// Max node
