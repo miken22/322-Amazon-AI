@@ -119,7 +119,8 @@ public class HMinimaxSearch implements Minimax {
 					potentialActions = moveToFront(potentialActions, action);
 					ties.add(action);
 				}
-			}		
+			}	
+			
 			if (timer.almostExpired()) {
 				break;
 			}
@@ -254,6 +255,34 @@ public class HMinimaxSearch implements Minimax {
 		potentialActions = tempList;
 
 		return potentialActions;
+	}
+	
+	/**
+	 * Convert the board into a 50 byte array for simple representation.
+	 * 
+	 * @param board - Current board being evaluated.
+	 */
+	public byte[] toByteArray(byte[][] board) {
+		
+		byte[] simpleRep = new byte[50];
+		
+		int counter = 0;
+		int index = 0;
+		
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (counter == 0) {
+					simpleRep[index] = board[i][j];
+					simpleRep[index] = (byte) (simpleRep[index] << 2);
+					counter++;
+				} else {
+					simpleRep[index] = (byte) (simpleRep[index] | board[i][j]);
+					counter = 0;
+					index++;
+				}		
+			}
+		}
+		return simpleRep;
 	}
 
 	/**

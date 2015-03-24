@@ -98,7 +98,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 		
 		ArrayList<byte[]> orderedMoves = new ArrayList<>();
 		
-		// Try all possible moves
+		// Try all possible moves -> Tests ordering by trying the move for each queen, not an improvement so far
 //		for (byte i = 0; i < actions.getActions().size(); i++){
 //			
 //			byte[] amazonMove = actions.getActions().get(i);
