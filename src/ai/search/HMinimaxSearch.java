@@ -126,6 +126,7 @@ public class HMinimaxSearch implements Minimax {
 			}
 			searchDepth = DEPTH;
 			// Increase bounds on the search
+			System.out.println("Increasing search depth.");
 			DEPTH++;
 			// Attempt to enforce unnecessary search late in the game
 			if (DEPTH > ABSOLUTEDEPTH){

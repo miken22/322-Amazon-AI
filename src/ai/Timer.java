@@ -3,6 +3,7 @@ package ai;
 public class Timer {
 
 	private long startTime;
+	private final byte MAXSEARCHTIME = 25;
 		
 	public void startTiming(){
 		startTime = System.currentTimeMillis();
@@ -10,7 +11,7 @@ public class Timer {
 	
 	public boolean almostExpired(){	
 		long currentTime = ((System.currentTimeMillis() - startTime) / 1000) % 60;
-		if (currentTime > 25){
+		if (currentTime > MAXSEARCHTIME){
 			return true;
 		}
 		return false;
