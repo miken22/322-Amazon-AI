@@ -132,7 +132,7 @@ public class Player implements GamePlayer {
 				gui.updateMoveLog("Agent: ", action);
 				isOpponentsTurn = true;
 
-				agent.checkIfFinished();
+				//agent.checkIfFinished();
 				
 				
 			} catch (NullPointerException e){
