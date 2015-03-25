@@ -102,11 +102,10 @@ public class SuccessorGenerator extends GameTreeSearch {
 //		for (byte i = 0; i < actions.getActions().size(); i++){
 //			
 //			byte[] amazonMove = actions.getActions().get(i);
-//			// Create a new board to examine
-//			Board tempBoard = new Board(board);
 //
 //			for (Pair<Byte, Byte> amazon : amazons) {
 //				
+//				Board tempBoard = new Board(board);
 //				byte fromX = amazon.getLeft();
 //				byte fromY = amazon.getRight();
 //				

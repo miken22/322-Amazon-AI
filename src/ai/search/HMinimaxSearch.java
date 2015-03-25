@@ -84,7 +84,6 @@ public class HMinimaxSearch implements Minimax {
 
 		// Timer controlled search, level 0 of the search
 		while (!timer.almostExpired()){
-
 			// Setup alpha beta bounds
 			ALPHA = Integer.MIN_VALUE;
 			BETA = Integer.MAX_VALUE;
@@ -140,13 +139,11 @@ public class HMinimaxSearch implements Minimax {
 
 		System.out.println("Number of cache hits: " + cacheHits);
 		cacheHits = 0;
-
 		ties.clear();
 
-		System.out.println("Alpha-Beta result: [" + ALPHA +"," + BETA + "]");
+		System.out.println("Alpha-Beta result: [" + ALPHA + "," + BETA + "]");
 		System.out.println("Got to depth: " + searchDepth);
 		return move;
-
 	}
 
 	public int alphaBeta(Board board, int searchDepth, boolean maxNode) {
@@ -173,17 +170,14 @@ public class HMinimaxSearch implements Minimax {
 				bucket.add(board);
 				return value;
 			}
-			
 			// Otherwise, first time we have seen the board, evaluate it.
 			int value = evaluator.evaluate(board, ourPlayer);
-
 			// Create a bucket and put into the hashmap
 			ArrayList<Board> bucket = new ArrayList<>();
 			board.setHeuristicValue(value);
 			bucket.add(board);
 			transitionTable.put(board.hashCode(), bucket);
 			return value;
-
 		}
 
 		// Max node
@@ -252,7 +246,6 @@ public class HMinimaxSearch implements Minimax {
 		List<byte[]> tempList = new ArrayList<>();
 		tempList.add(action);
 		tempList.addAll(potentialActions);
-
 		potentialActions = tempList;
 
 		return potentialActions;
@@ -291,11 +284,8 @@ public class HMinimaxSearch implements Minimax {
 	 */
 	@Override
 	public byte[] tieBreaker() {
-
 		// TODO: Try to find an algorithm to pick the state that x1blocks opponent best (arrow closest or something)
-
 		System.out.println("Number of ties: " + ties.size());
-
 		int choice = new Random().nextInt(ties.size());
 		return ties.get(choice);
 	}

@@ -49,7 +49,6 @@ public class Player implements GamePlayer {
 		board = new Board(ROWS, COLS);
 		gui = new GUI(ROWS, COLS);
 		parser = new XMLParser(userName);
-		
 		board.initialize();
 
 	}
@@ -62,8 +61,7 @@ public class Player implements GamePlayer {
 	 */
 	public void joinServer(){
 		
-		gui.init();
-		
+		gui.init();		
 		client.roomList = getRooms();	
 
 		int index = 0;
@@ -113,34 +111,25 @@ public class Player implements GamePlayer {
 	}
 
 	private void pickMove() {
-
 		
 		if (!isOpponentsTurn) {
 			System.out.println("Agents move:");
-
 			try{
-				
 				byte[] move = agent.selectMove(board);
-
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
 				client.sendToServer(moveMessage, true);
-
 				// GUI and logic update
-				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
-
+				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) +
+						"" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
 				updateRepresentations(move, playerID);
 				gui.updateMoveLog("Agent: ", action);
 				isOpponentsTurn = true;
-
-				//agent.checkIfFinished();
-				
-				
+				//agent.checkIfFinished();				
 			} catch (NullPointerException e){
 				endGame();
 			}	
 		}
-		return;
-		
+		return;	
 	}
 
 	/**
