@@ -28,7 +28,10 @@ public class HMinimaxSearch implements Minimax {
 	private Timer timer;
 
 	private final byte ABSOLUTEDEPTH = 12;
-
+	
+	private int tableSize = 0;
+	private int moveCount = 0;
+	
 	private static int ALPHA = Integer.MIN_VALUE;
 	private static int BETA = Integer.MAX_VALUE;
 
@@ -72,7 +75,7 @@ public class HMinimaxSearch implements Minimax {
 		}
 
 		// TODO: Figure out a way to store boards, would make a huge difference...
-		if (transitionTable.size() > 1000000){
+		if (tableSize > 2000000){
 			System.out.println("Flushing transition table.");
 			transitionTable.clear();
 		}
@@ -123,6 +126,11 @@ public class HMinimaxSearch implements Minimax {
 			if (timer.almostExpired()) {
 				break;
 			}
+			
+			if (moveCount < 14) {
+				break;
+			}
+			
 			searchDepth = DEPTH;
 			// Increase bounds on the search
 			System.out.println("Increasing search depth.");
@@ -133,6 +141,8 @@ public class HMinimaxSearch implements Minimax {
 			}
 		}
 
+		moveCount++;
+		
 		if (potentialActions.size() == 0){
 			System.out.println("No possible moves from this state, player loses.");
 		}
@@ -168,6 +178,7 @@ public class HMinimaxSearch implements Minimax {
 				int value = evaluator.evaluate(board, ourPlayer);
 				board.setHeuristicValue(value);
 				bucket.add(board);
+				tableSize++;
 				return value;
 			}
 			// Otherwise, first time we have seen the board, evaluate it.
@@ -177,6 +188,7 @@ public class HMinimaxSearch implements Minimax {
 			board.setHeuristicValue(value);
 			bucket.add(board);
 			transitionTable.put(board.hashCode(), bucket);
+			tableSize++;
 			return value;
 		}
 
