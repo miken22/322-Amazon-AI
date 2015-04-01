@@ -100,13 +100,12 @@ public class HMinimaxSearch implements Minimax {
 			}
 
 			// Generate the child of the root state, performing depth first alpha-beta search
-			for (int i = 0; i < potentialActions.size(); i++){
+			for (byte[] action : potentialActions){
 
 				if (timer.almostExpired()) {
 					break;
 				}
 
-				byte[] action = potentialActions.get(i);
 				Board child = scg.generateSuccessor(board, action, (byte)player);
 				// Since root is a max node we want the maximum possible value given our opponent
 				// makes a move to minimize our potential gains.
@@ -118,13 +117,15 @@ public class HMinimaxSearch implements Minimax {
 					// Store best value and action
 					max = ALPHA;
 					move = action;
+				
 					// Reset set of actions that lead to equally promising states
-					ties.clear();
-					ties.add(action);
-				} else if (ALPHA == max){
-					potentialActions = moveToFront(potentialActions, action);
-					ties.add(action);
-				}
+					//ties.clear();
+					//ties.add(action);
+				} 
+				//else if (ALPHA == max){
+				//	potentialActions = moveToFront(potentialActions, action);
+				//	ties.add(action);
+				//}
 			}	
 			
 			if (timer.almostExpired()) {
@@ -151,9 +152,9 @@ public class HMinimaxSearch implements Minimax {
 			System.out.println("No possible moves from this state, player loses.");
 		}
 		
-		if (ties.size() > 1) {
+		/*if (ties.size() > 1) {
 			move = tieBreaker(board);
-		}
+		}*/
 
 		System.out.println("Number of cache hits: " + cacheHits);
 		cacheHits = 0;
