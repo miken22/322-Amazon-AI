@@ -90,26 +90,26 @@ public abstract class EvaluationFunction {
 			// Scan all our pieces, for each one that cannot move subtract one
 			for (boolean b : whiteMoves) {
 				if (!b) {
-					adjustment -= 1;
+					adjustment -= 2;
 				}
 			}
 			// Scan opponents pieces, for each trapped amazon add one
 			for (boolean b : blackMoves) {
 				if (!b) {
-					adjustment += 1;
+					adjustment += 2;
 				}
 			}	
 		} else {
 			// Same logic as above, roles switched though
 			for (boolean b : whiteMoves) {
 				if (!b) {
-					adjustment += 1;
+					adjustment += 2;
 				}
 			}
 
 			for (boolean b : blackMoves) {
 				if (!b) {
-					adjustment -= 1;
+					adjustment -= 2;
 				}
 			}
 		}

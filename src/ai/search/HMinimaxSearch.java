@@ -1,6 +1,7 @@
 package ai.search;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -63,6 +64,7 @@ public class HMinimaxSearch implements Minimax {
 		timer.startTiming();
 
 		int max = Integer.MIN_VALUE;
+		List<byte[]> lastMoveRecord = new ArrayList<>();
 		byte[] move = null;
 		cacheHits = 0;
 
@@ -77,6 +79,7 @@ public class HMinimaxSearch implements Minimax {
 		if (tableSize > 2000000){
 			System.out.println("Flushing transition table.");
 			transitionTable.clear();
+			tableSize = 0;
 		}
 		
 		board.clearWhiteTrapMap();
@@ -98,11 +101,14 @@ public class HMinimaxSearch implements Minimax {
 			if (potentialActions.size() == 0){
 				break;
 			}
-
+			
+			boolean itrFinished = true;
+			
 			// Generate the child of the root state, performing depth first alpha-beta search
 			for (int i = 0; i < potentialActions.size(); i++){
 
 				if (timer.almostExpired()) {
+					itrFinished = false;
 					break;
 				}
 
@@ -118,20 +124,31 @@ public class HMinimaxSearch implements Minimax {
 					// Store best value and action
 					max = ALPHA;
 					move = action;
+					
+					if (lastMoveRecord.size() == 0){
+						lastMoveRecord.add(move);
+					} else {
+						lastMoveRecord.set(0, move);
+					}
 					// Reset set of actions that lead to equally promising states
-					//ties.clear();
-					//ties.add(action);
-				} //else if (ALPHA == max){
-				//	potentialActions = moveToFront(potentialActions, action);
-				//	ties.add(action);
-				//}
+//					ties.clear();
+//					ties.add(action);
+//				} 
+//				else if (ALPHA == max){
+//					potentialActions = moveToFront(potentialActions, action);
+//					ties.add(action);
+				}
 			}	
 			
+			if (!itrFinished) {
+				move = lastMoveRecord.get(0);
+			}
+						
 			if (timer.almostExpired()) {
 				break;
 			}
 			
-			if (moveCount < 14) {
+			if (moveCount < 9) {
 				break;
 			}
 			
@@ -151,9 +168,9 @@ public class HMinimaxSearch implements Minimax {
 			System.out.println("No possible moves from this state, player loses.");
 		}
 		
-		/*if (ties.size() > 1) {
-			move = tieBreaker(board);
-		}*/
+//		if (ties.size() > 1) {
+//			move = tieBreaker(board);
+//		}
 
 		System.out.println("Number of cache hits: " + cacheHits);
 		cacheHits = 0;
@@ -161,6 +178,7 @@ public class HMinimaxSearch implements Minimax {
 
 		System.out.println("Alpha-Beta result: [" + ALPHA + "," + BETA + "]");
 		System.out.println("Got to depth: " + searchDepth);
+				
 		return move;
 	}
 

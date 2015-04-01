@@ -177,7 +177,7 @@ public class SuccessorGenerator extends GameTreeSearch {
 		public int compare(ArrayList<byte[]> o1, ArrayList<byte[]> o2) {
 			if (o1.size() > o2.size()) {
 				return 1;
-			} else if (o1.size() > o2.size()) {
+			} else if (o1.size() < o2.size()) {
 				return -1;
 			}
 			return 0;
