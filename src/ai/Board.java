@@ -1,7 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * This class represents the state of the game during search and gameplay.
@@ -25,21 +25,22 @@ public class Board {
 	ArrayList<Pair<Byte, Byte>> blackPositions;
 	
 	// Record of parents trapped pieces, updated after the state is evaluated.
-	private HashMap<Pair<Byte, Byte>, Boolean> whiteTraps;
-	private HashMap<Pair<Byte, Byte>, Boolean> blackTraps;
+	private HashSet<Pair<Byte, Byte> > whiteTraps;
+	private HashSet<Pair<Byte, Byte> > blackTraps;
 	
 	private int heuristicValue;
 
 	public Board(int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
-		whiteTraps = new HashMap<>();
-		blackTraps = new HashMap<>();
+		whiteTraps = new HashSet<>();
+		blackTraps = new HashSet<>();
 		board = new byte[rows][columns];
 		whitePositions = new ArrayList<>();
 		blackPositions = new ArrayList<>();
 	}
-
+	
+	// Makes a clone of the parent board
 	public Board(Board parent) {
 		rows = 10;
 		columns = 10;
@@ -54,6 +55,9 @@ public class Board {
 		for (Pair<Byte, Byte> pair : parent.getBlackPositions()) {
 			blackPositions.add(pair);
 		}
+		
+		this.whiteTraps = parent.getWhiteTrappedPieces();
+		this.blackTraps = parent.getBlackTrappedPieces();
 
 		byte[][] parentBoard = parent.getBoard();
 
@@ -116,16 +120,55 @@ public class Board {
 		return board[x][y];
 	}
 
-	public boolean whiteTrappedPieces(Pair<Byte, Byte> position){
+	/**
+	 * Takes a pair representing a white amazon position, checks if it is
+	 * stored within the hashset of trapped pieces
+	 * 
+	 * @param position - A pair of bytes representing the x,y coordinate 
+	 * 					of the piece to check of a white amazon
+	 * @return - True if the piece was already stored in the trapped positions
+	 * 			False otherwise
+	 */
+	public boolean whitePieceTrapped(Pair<Byte, Byte> position){
 		
+		if (whiteTraps.contains(position)) {
+			return true;
+		}
 		return false;
 	}
 	
-	public boolean blackTrappedPieces(Pair<Byte, Byte> position){
+	/**
+	 * Takes a pair representing a black amazon position, checks if it is
+	 * stored within the hashset of trapped pieces
+	 * 
+	 * @param position - A pair of bytes representing the x,y coordinate 
+	 * 					of the piece to check of a black amazon
+	 * @return - True if the piece was already stored in the trapped positions
+	 * 			False otherwise
+	 */
+	public boolean blackPieceTrapped(Pair<Byte, Byte> position){
 		
+		if (blackTraps.contains(position)) {
+			return true;
+		}
 		return false;
 	}
+
+	public void addWhiteTrappedPiece(Pair<Byte, Byte> amazon) {
+		whiteTraps.add(amazon);
+	}	
 	
+	public void addBlackTrappedPiece(Pair<Byte, Byte> amazon) {
+		blackTraps.add(amazon);
+	}
+	
+	public void clearWhiteTrapMap() {
+		whiteTraps.clear();
+	}
+
+	public void clearBlackTrapMap() {
+		blackTraps.clear();
+	}
 	/**
 	 * Cycle through black pieces, find the one that matches the starting
 	 * configuration, remove it and make a new pairing.
@@ -146,10 +189,6 @@ public class Board {
 		}
 	}
 
-	public ArrayList<Pair<Byte, Byte>> getBlackPositions() {
-		return blackPositions;
-	}
-
 	public void updateWhitePositions(int oldX, int oldY, byte newX, byte newY) {
 
 		for (Pair<Byte, Byte> p : whitePositions) {
@@ -165,8 +204,20 @@ public class Board {
 		return whitePositions;
 	}
 
+	public ArrayList<Pair<Byte, Byte>> getBlackPositions() {
+		return blackPositions;
+	}
+
 	public byte[][] getBoard() {
 		return board;
+	}
+
+	public HashSet<Pair<Byte, Byte>> getBlackTrappedPieces() {
+		return blackTraps;
+	}
+
+	public HashSet<Pair<Byte, Byte>> getWhiteTrappedPieces() {
+		return whiteTraps;
 	}
 	
 	public void setHeuristicValue(int value) {

@@ -17,14 +17,14 @@ public abstract class EvaluationFunction {
 
 	public int OURCOLOUR;
 	public int OPPONENT;
-	
+
 	public final byte WQUEEN = 1;
 	public final byte BQUEEN = 2;
 	public final byte ARROW = 3;
 	public final byte FREE = -1;
-	
+
 	Actions actions = new Actions();
-	
+
 	public EvaluationFunction(byte role){
 		OURCOLOUR = role;
 		if (OURCOLOUR == WQUEEN){
@@ -33,7 +33,7 @@ public abstract class EvaluationFunction {
 			OPPONENT = WQUEEN;
 		}
 	}
-	
+
 	/**
 	 * Returns the move for the most promising state.
 	 * 
@@ -42,7 +42,7 @@ public abstract class EvaluationFunction {
 	 * @return - The heuristic value of the state
 	 */
 	public abstract int evaluate(Board board, byte player);
-	
+
 	/**
 	 * Call this function after evaluation to test if either play has isolated pieces.
 	 * 
@@ -50,28 +50,42 @@ public abstract class EvaluationFunction {
 	 * @return - The adjustment that should be made to the heuristic value of the state.
 	 */
 	public int adjustForIsolatedPieces(Board board) {
-		
+
 		int adjustment = 0;
-		
+
 		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
 		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
-		
+
 		// Use flags to indicate if pieces can move
 		boolean[] whiteMoves = new boolean[4];
 		boolean[] blackMoves = new boolean[4];
 		// Track amazons
 		int index = 0;
 		for (Pair<Byte, Byte> amazon : wPositions) {
-			whiteMoves[index] = canMove(board, amazon);
+			// If the piece is not already stored as trapped
+			if (!board.whitePieceTrapped(amazon)) {
+				// check if a move can be made from it
+				whiteMoves[index] = canMove(board, amazon);
+				if (!whiteMoves[index]) {
+					board.addWhiteTrappedPiece(amazon);
+				}
+			}
 			index++;
 		}
-		
+
 		index = 0;
 		for (Pair<Byte, Byte> amazon : bPositions) {
-			blackMoves[index] = canMove(board, amazon);
+			// If the piece is not already stored as trapped
+			if (!board.blackPieceTrapped(amazon)) {
+				// check if a move can be made from it
+				blackMoves[index] = canMove(board, amazon);
+				if (!blackMoves[index]) {
+					board.addBlackTrappedPiece(amazon);
+				}
+			}
 			index++;
 		}
-		
+
 		if (OURCOLOUR == WQUEEN) {
 			// Scan all our pieces, for each one that cannot move subtract one
 			for (boolean b : whiteMoves) {
@@ -92,7 +106,7 @@ public abstract class EvaluationFunction {
 					adjustment += 1;
 				}
 			}
-			
+
 			for (boolean b : blackMoves) {
 				if (!b) {
 					adjustment -= 1;
@@ -101,7 +115,7 @@ public abstract class EvaluationFunction {
 		}
 		return adjustment;
 	}
-	
+
 	/**
 	 * Test if the amazon can take a step in one of the 8 possible directions.
 	 * @param board - Current board configuration.
@@ -109,7 +123,7 @@ public abstract class EvaluationFunction {
 	 * @return - True if the piece can move, false otherwise.
 	 */
 	public boolean canMove(Board board, Pair<Byte, Byte> amazon) {
-		
+
 		List<byte[]> moves = actions.getSimpleMoves();
 		// Try step in each possible direction
 		for (byte[] step : moves) {
@@ -117,7 +131,7 @@ public abstract class EvaluationFunction {
 			// so can return true;
 			int testX = amazon.getLeft() + step[0];
 			int testY = amazon.getRight() + step[1];
-			
+
 			if ((testX >= 0 && testX < 10) && (testY >= 0 && testY < 10)){
 				// Piece can take at least one step, return true
 				if (!board.isMarked(testX, testY)) {

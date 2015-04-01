@@ -74,11 +74,15 @@ public class HMinimaxSearch implements Minimax {
 			opponent = 1;
 		}
 
-		// TODO: Figure out a way to store boards, would make a huge difference...
 		if (tableSize > 2000000){
 			System.out.println("Flushing transition table.");
 			transitionTable.clear();
 		}
+		
+		board.clearWhiteTrapMap();
+		board.clearBlackTrapMap();
+		// Find the trapped pieces on current board, if any
+		evaluator.adjustForIsolatedPieces(board);
 
 		DEPTH = 1;
 		int searchDepth = DEPTH;

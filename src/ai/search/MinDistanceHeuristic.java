@@ -8,7 +8,8 @@ import ai.Board;
 import ai.Pair;
 
 /**
- * Trivial heuristic function, trying to convert to the min-distance function. It's close but not quite there
+ * Min-distance function as defined in the paper on the project
+ * page.
  * 
  * @author Mike Nowicki
  *
@@ -35,6 +36,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 		int[][] wDistanceTable = new int[ROWS][COLS];
 		int[][] bDistanceTable = new int[ROWS][COLS];
 		
+		// Initialize matrix representing board with infinite values
 		for (int i = 0; i < 10; i++){
 			for (int j = 0; j < 10; j++){
 				wDistanceTable[i][j] = Byte.MAX_VALUE;
@@ -42,14 +44,19 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 			}
 		}
 		
+		// Mark each queen position as -1 so that it cannot be evaluated for control
 		for (Pair<Byte, Byte> pair : wPositions) {
 			wDistanceTable[pair.getLeft()][pair.getRight()] = -1;
 		}
 
+		// Same as above
 		for (Pair<Byte, Byte> pair : bPositions) {
 			bDistanceTable[pair.getLeft()][pair.getRight()] = -1;
 		}
 		
+		// Scan the board from the white pieces and record the number of steps to
+		// each reachable tile. Then goes back over for black pieces and updates only
+		// if black can get there in fewer moves. Any tie states are recorded as neutral.
 		findDistances(board, WQUEEN, wDistanceTable);
 		findDistances(board, BQUEEN, bDistanceTable);
 
@@ -65,6 +72,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 //		}
 //		System.out.println("--------------------------");
 		
+		// Scan the board and count the tiles controlled by each side
 		for (int i = 0; i < 10; i++){
 			for (int j = 0; j < 10; j++){
 				// Want to consider it "owned" if it is easier for one side to reach
@@ -76,6 +84,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 			}
 		}
 		
+		// Not used atm
 		int adjustment = 0;// adjustForIsolatedPieces(board);
 		
 		if (player == 1){
@@ -103,10 +112,13 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 			positions = board.getBlackPositions();
 		}
 		
+		// Fill the queue to start from the initial positions
 		for (Pair<Byte, Byte> pair : positions) {
 			queue.add(pair);
 		}
 		
+		// Iteratively remove from the queue, try a move and add to the queue
+		// if it is reached in fewer numbers.
 		while (!queue.isEmpty()){
 			
 			Pair<Byte, Byte> top = queue.poll();
@@ -117,6 +129,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 			for (byte[] action : actions.getActions()){
 				
 				int currentDistance = distanceTable[xPos][yPos];
+				// So that we start from the 0th spot
 				if (currentDistance == -1){
 					currentDistance = 0;
 				}
