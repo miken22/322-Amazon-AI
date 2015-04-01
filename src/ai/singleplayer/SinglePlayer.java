@@ -5,8 +5,6 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,7 +24,6 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import ai.Board;
-import ai.Pair;
 import ai.Utility;
 import ai.gui.Cells;
 import ai.search.Agent;
@@ -66,15 +63,11 @@ public class SinglePlayer {
 	private int rows;
 	private int columns;
 	
-	private int whiteTiles;
-	private int blackTiles;
-	private int bothCanReach;
-	
 	private Board board;
 	private Cells[][] guiBoard;
 	
 	private boolean playerTurn = false;
-	private boolean finished = false;
+//	private boolean finished = false;
 	
 	private Agent agent = new Agent((byte)1);
 	private Agent agent2 = new Agent((byte)2);
@@ -307,10 +300,9 @@ public class SinglePlayer {
 					System.out.println("White: " + action);
 					updateMoveLog(action, 1);
 					
-					agent.checkIfFinished();
+					Utility.checkIfFinished(board);
 					
 				} catch (NullPointerException e){
-					finished = true;
 					break;
 				}
 			} else {
@@ -324,14 +316,12 @@ public class SinglePlayer {
 					System.out.println("Black: " + action);
 					updateMoveLog(action, 2);
 					
-					agent2.checkIfFinished();
+					Utility.checkIfFinished(board);
 					
 				} catch (NullPointerException e){
-					finished = true;
 					break;
 				}
 			}
-			finished = isFinished();
 		}
 		endGame();
 		
@@ -384,7 +374,7 @@ public class SinglePlayer {
 	 * 
 	 * @param player - Which players pieces to start from to look for the goal.
 	 */
-	private boolean isFinished() {	
+/*	private boolean isFinished() {	
 
 		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
 		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
@@ -434,7 +424,7 @@ public class SinglePlayer {
 		
 		// If we reach this point we have examined every component
 		return false;
-	}
+	} */
 	
 	private void updateMoveLog(String move, int pid) {
 		Document doc = moveLog.getDocument();

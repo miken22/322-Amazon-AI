@@ -84,8 +84,7 @@ public class MinDistanceHeuristic extends EvaluationFunction {
 			}
 		}
 		
-		// Not used atm
-		int adjustment = 0;// adjustForIsolatedPieces(board);
+		int adjustment = adjustForIsolatedPieces(board);
 		
 		if (player == 1){
 			return wUtility + adjustment;

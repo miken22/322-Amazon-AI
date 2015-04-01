@@ -209,12 +209,11 @@ public class Player implements GamePlayer {
 			pickMove();
 			
 		}
-
 		return true;
 	}
 
 	public static void main(String[] args) {
-		Player player = new Player("Bot-1.0001", "54321");
+		Player player = new Player("Bot-2.0001", "54321");
 		player.joinServer();
 	}
 }

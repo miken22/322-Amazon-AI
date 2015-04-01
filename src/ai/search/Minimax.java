@@ -18,6 +18,6 @@ public interface Minimax {
 	 */
 	public byte[] maxSearch(Board board, int player);
 	
-	public byte[] tieBreaker();
+	public byte[] tieBreaker(Board board);
 	
 }

@@ -1,5 +1,6 @@
 package ai;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 /**
@@ -214,4 +215,54 @@ public class Utility {
 		}	
 		return hasChecked;
 	}	
+	
+	/**
+	 * Search board starting from each of the players pieces. If one colour owns more
+	 * territory than the other amazons, plus neutral tiles, then we are in a "winning"
+	 * position. We should then 
+	 * 
+	 */
+	public static boolean checkIfFinished(Board board) {	
+
+		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
+		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
+
+		byte[][] hasChecked = new byte[10][10];
+
+		// Scan from each amazon, mark each tile an amazon can reach
+		for (Pair<Byte, Byte> pair : wPositions){
+			hasChecked = countReachableTiles(board, pair, (byte) WQUEEN, hasChecked);		
+		}
+
+		for (Pair<Byte, Byte> pair : bPositions){
+			hasChecked = countReachableTiles(board, pair, (byte) BQUEEN, hasChecked);
+		}
+
+		int whiteTiles = 4;
+		int blackTiles = 4; 
+		int bothCanReach = 0;
+
+		// Scan the abstracted board
+		for (int i = 0; i < 10; i++){
+			for (int j = 0; j < 10; j++){
+				switch(hasChecked[i][j]){
+				case(1):
+					whiteTiles++;	// White controlled
+					break;
+				case(2):
+					blackTiles++;	// Black controlled
+					break;
+				case(3):
+					bothCanReach++;	// Neutral tile
+					break;
+				}
+			}
+		}
+		// Test for winning or losing winning state
+		if ((whiteTiles > blackTiles + bothCanReach) || (blackTiles > whiteTiles + bothCanReach)) {
+			return true;
+		}
+		return false;
+	}
+
 }

@@ -3,10 +3,10 @@ package ai.search;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import ai.Board;
 import ai.Timer;
+import ai.montecarlo.MonteCarloTieBreaker;
 
 /**
  * The general minimax heuristic search algorithm
@@ -150,6 +150,10 @@ public class HMinimaxSearch implements Minimax {
 		if (potentialActions.size() == 0){
 			System.out.println("No possible moves from this state, player loses.");
 		}
+		
+		if (ties.size() > 1) {
+			move = tieBreaker(board);
+		}
 
 		System.out.println("Number of cache hits: " + cacheHits);
 		cacheHits = 0;
@@ -268,7 +272,8 @@ public class HMinimaxSearch implements Minimax {
 	}
 	
 	/**
-	 * Convert the board into a 50 byte array for simple representation.
+	 * Convert the board into a 50 byte array for simple representation. Not used
+	 * at the moment.
 	 * 
 	 * @param board - Current board being evaluated.
 	 */
@@ -299,11 +304,24 @@ public class HMinimaxSearch implements Minimax {
 	 * Tie breaker that selects the operator at random.
 	 */
 	@Override
-	public byte[] tieBreaker() {
-		// TODO: Try to find an algorithm to pick the state that x1blocks opponent best (arrow closest or something)
+	public byte[] tieBreaker(Board board) {
+		
 		System.out.println("Number of ties: " + ties.size());
-		int choice = new Random().nextInt(ties.size());
-		return ties.get(choice);
+		
+		MonteCarloTieBreaker mctb = new MonteCarloTieBreaker(ourPlayer);
+		int bestValue = Integer.MIN_VALUE;
+		byte[] selectedMove = null;
+		
+		for (byte[] move : ties) {
+			int result = mctb.simulateFromSuccessor(board, move);
+			if (result > bestValue) {
+				selectedMove = move;
+			}
+			if (timer.almostExpired()) {
+				return selectedMove;
+			}
+		}
+		return selectedMove;
 	}
 
 	/**
