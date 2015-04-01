@@ -43,10 +43,20 @@ public class Pair<L, R> implements Comparator<Pair<L, R>>{
 	 */
 	@Override
 	public int compare(Pair<L, R> p1, Pair<L, R> p2) {
-		if (p1.getLeft() == p2.getLeft() && p1.getRight() == p2.getRight()){
+		if (p1.getLeft() == p2.getLeft() && p1.getRight() == p2.getRight()) {
 			return 1;
 		}
 		return -1;
 	}
-	
+	/**
+	 * No generic protection, meant for Pair<Byte, Byte> only. Checks if the two pairs are equal
+	 * @param otherPair The pair to compare against, must be a pair of Byte's
+	 * @return True if they are the same, false otherwise.
+	 */
+	public boolean equals(Pair<L, R> otherPair) {
+		if (this.getLeft() == otherPair.getLeft() && this.getRight() == otherPair.getRight()) {
+			return true;
+		}
+		return false;
+	}
 }

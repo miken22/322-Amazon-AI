@@ -1,6 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class represents the state of the game during search and gameplay.
@@ -22,12 +23,18 @@ public class Board {
 	// Used to keep track of where each amazon is for easier lookup
 	ArrayList<Pair<Byte, Byte>> whitePositions;
 	ArrayList<Pair<Byte, Byte>> blackPositions;
+	
+	// Record of parents trapped pieces, updated after the state is evaluated.
+	private HashMap<Pair<Byte, Byte>, Boolean> whiteTraps;
+	private HashMap<Pair<Byte, Byte>, Boolean> blackTraps;
+	
 	private int heuristicValue;
 
 	public Board(int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
-
+		whiteTraps = new HashMap<>();
+		blackTraps = new HashMap<>();
 		board = new byte[rows][columns];
 		whitePositions = new ArrayList<>();
 		blackPositions = new ArrayList<>();
@@ -109,6 +116,16 @@ public class Board {
 		return board[x][y];
 	}
 
+	public boolean whiteTrappedPieces(Pair<Byte, Byte> position){
+		
+		return false;
+	}
+	
+	public boolean blackTrappedPieces(Pair<Byte, Byte> position){
+		
+		return false;
+	}
+	
 	/**
 	 * Cycle through black pieces, find the one that matches the starting
 	 * configuration, remove it and make a new pairing.
