@@ -23,26 +23,9 @@ public class Cells extends JPanel {
 	private int piece;
 	
 	public Cells(Color def){
-
 		defaultBackground = def;
 		piece = -1;
-
-//		addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e){
-//				if (clicked){
-//					setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
-//					clicked = false;
-//				} else {
-//					setBorder(new LineBorder(Color.GREEN,1,true));
-//					clicked = true;
-//				}
-//				System.out.println("["+x+"]["+y+"]");
-//			}
-//		});
-
 		setBackground(defaultBackground);
-
 	}
 
 	@Override
@@ -79,6 +62,7 @@ public class Cells extends JPanel {
 		super.paintComponent(g);
 		BufferedImage image = null;
 
+		// Place white queen image
 		if (piece == 1){
 			try{
 				image = ImageIO.read(this.getClass().getResourceAsStream("/rsz_wq.png"));
@@ -89,7 +73,7 @@ public class Cells extends JPanel {
 			g.drawImage(image,0,0,null);
 			return;
 		}
-
+		// Black queen image
 		if (piece == 2){
 			try{
 				image =  ImageIO.read(this.getClass().getResourceAsStream("/rsz_bq.png"));
@@ -100,6 +84,7 @@ public class Cells extends JPanel {
 			g.drawImage(image,0,0,null);
 			return;
 		}
+		// Arrow image
 		if (piece == 3){
 			try{
 				image =  ImageIO.read(this.getClass().getResourceAsStream("/rsz_arrow.jpg"));
@@ -110,7 +95,7 @@ public class Cells extends JPanel {
 			g.drawImage(image,0,0,null);
 			return;
 		}
-
+		// Clear space
 		setBackground(defaultBackground);
 	}
 }

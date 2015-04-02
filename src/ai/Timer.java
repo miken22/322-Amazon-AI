@@ -1,5 +1,10 @@
 package ai;
-
+/**
+ * Simple timer class to control Minimax search time
+ * 
+ * @author Mike Nowicki
+ *
+ */
 public class Timer {
 
 	private long startTime;

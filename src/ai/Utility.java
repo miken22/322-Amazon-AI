@@ -20,6 +20,13 @@ public class Utility {
 	private static final int ROWS = 10;
 	private static final int COLS = 10;
 	
+
+	/**
+	 * Convert letter representation for column to integer
+	 * 
+	 * @param c - Char for the column being represented
+	 * @return - The integer value for the column
+	 */
 	public static int getColumn(char c){
 	
 		switch(c){
@@ -47,7 +54,12 @@ public class Utility {
 		
 		return -1;
 	}
-	
+	/**
+	 * Convert integer to letter representation
+	 * 
+	 * @param c - Int for the column being represented
+	 * @return - The character rep for the column
+	 */
 	public static char getColumnLetter(int c){
 		switch(c){
 		case(0):

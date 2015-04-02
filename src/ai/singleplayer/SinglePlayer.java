@@ -30,7 +30,8 @@ import ai.search.Agent;
 import ai.search.MinDistanceHeuristic;
 
 /**
- * Two bots playing game of amazons
+ * Two bots playing game of amazons, ugly code as it's
+ * mostly written in one file. For testing only
  * 
  * 
  * @author Mike Nowicki

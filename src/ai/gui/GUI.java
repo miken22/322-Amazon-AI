@@ -9,14 +9,12 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -40,13 +38,9 @@ public class GUI {
 	private JScrollPane scrollLog;
 
 	private JTextPane moveLog ;
-	private JTextArea input;
 
 	private Style userStyle;
 	private StyledDocument moveTextarea;
-
-	private JButton send;
-	private JButton clear;
 
 	private JMenuBar menu;
 	private JMenu file;
@@ -75,6 +69,9 @@ public class GUI {
 		initializePositions();
 	}	
 
+	/**
+	 * Initializes all elements for the GUI
+	 */
 	private void createFrame(){
 
 		Border b = new LineBorder(Color.LIGHT_GRAY,1,true);
@@ -86,14 +83,8 @@ public class GUI {
 		file = new JMenu("File");
 		exit = new JMenuItem("Exit");
 
-
-		send = new JButton("Send");
-		clear = new JButton("Clear");
-
 		moveLog = new JTextPane();
 		scrollLog = new JScrollPane(moveLog);
-
-		input = new JTextArea();
 
 		userStyle = moveLog.addStyle("userin", null);
 
@@ -127,13 +118,9 @@ public class GUI {
 		moveTextarea = moveLog.getStyledDocument();
 
 		exit.addActionListener(new MenuListener(1));
-		
-		
+				
 		c = frame.getContentPane();
 		c.add(scrollLog);
-		c.add(input);
-		c.add(send);
-		c.add(clear);
 		
 	}
 	
@@ -145,8 +132,10 @@ public class GUI {
 		Color light = new Color(219, 169, 1);
 		Color dark = new Color(255, 229, 204);
 		
+		// Create a new grid of Cells
 		guiBoard = new Cells[rows][columns];
 
+		// Initialize and add to the GUI
 		for (int i = rows-1; i >= 0; i--) {
 
 			for (int j = columns-1; j >= 0; j--) {
@@ -174,6 +163,7 @@ public class GUI {
 			}
 		}
 
+		// Write on the edge of board
 		char[] letters = {'a','b','c','d','e','f','g','h','i','j'};
 		for (int i = 0; i < columns; i++){
 			JLabel label = new JLabel();
@@ -214,7 +204,6 @@ public class GUI {
 		
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		input.requestFocus();
 	}
 
 	/**
@@ -240,6 +229,11 @@ public class GUI {
 		}	
 	}
 	
+	/**
+	 * Update move history text
+	 * @param player - Who moved
+	 * @param move - The move
+	 */
 	public void updateMoveLog(String player, String move){
 		Document doc = moveLog.getDocument();
 
@@ -262,7 +256,6 @@ public class GUI {
 		public MenuListener(int a){
 			this.id = a;
 		}
-
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (id==1){
@@ -273,14 +266,5 @@ public class GUI {
 
 	public void destroy() {
 		frame.dispose();
-	}
-
-	/**
-	 * For testing purposes, this is not allowed in games.
-	 */
-	public void removeArrow(int i, int j) {
-		
-		guiBoard[i][j].setFree();
-		
 	}
 }

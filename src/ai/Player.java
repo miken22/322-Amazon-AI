@@ -115,18 +115,20 @@ public class Player implements GamePlayer {
 		if (!isOpponentsTurn) {
 			System.out.println("Agents move:");
 			try{
+				// Get move from agent performing alpha-beta search
 				byte[] move = agent.selectMove(board);
+				// Build string and send message
 				String moveMessage = parser.buildMoveForServer(roomNumber, move[0], move[1], move[2], move[3], move[4], move[5]);
 				client.sendToServer(moveMessage, true);
 				// GUI and logic update
 				String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) +
 						"" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
 				updateRepresentations(move, playerID);
-				gui.updateMoveLog("Agent: ", action);
+				gui.updateMoveLog("Agent: ", action);	// Update move history
 				isOpponentsTurn = true;
 				//agent.checkIfFinished();				
 			} catch (NullPointerException e){
-				endGame();
+				endGame();	// If null pointer returned then no moves possible, end the game
 			}	
 		}
 		return;	
@@ -179,8 +181,10 @@ public class Player implements GamePlayer {
 		iParser.setReader(reader);
 		IXMLElement xml = (IXMLElement) iParser.parse();
 
+		// Parse move
 		String answer = parser.handleXML(xml);
 
+		// If the move is game start get the roles and pick move if appropriate
 		if (answer.equals(GameMessage.ACTION_GAME_START)){
 			
 			System.out.println(message.toString());
@@ -195,6 +199,7 @@ public class Player implements GamePlayer {
 
 		} else if (answer.equals(GameMessage.ACTION_MOVE)){
 
+			// Otherwise a move was returned, update the GUI then select a move
 			System.out.println("Opponent move recieved.");
 			System.out.println(message.toString());
 			// Get the queen move and arrow marker.
@@ -213,6 +218,7 @@ public class Player implements GamePlayer {
 	}
 
 	public static void main(String[] args) {
+		// Create player and connect to server
 		Player player = new Player("Bot-2.0001", "54321");
 		player.joinServer();
 	}
