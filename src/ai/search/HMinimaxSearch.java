@@ -1,7 +1,6 @@
 package ai.search;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,7 +63,6 @@ public class HMinimaxSearch implements Minimax {
 		timer.startTiming();
 
 		int max = Integer.MIN_VALUE;
-		List<byte[]> lastMoveRecord = new ArrayList<>();
 		byte[] move = null;
 		cacheHits = 0;
 
@@ -102,13 +100,11 @@ public class HMinimaxSearch implements Minimax {
 				break;
 			}
 			
-			boolean itrFinished = true;
 			
 			// Generate the child of the root state, performing depth first alpha-beta search
 			for (int i = 0; i < potentialActions.size(); i++){
 
 				if (timer.almostExpired()) {
-					itrFinished = false;
 					break;
 				}
 
@@ -125,11 +121,6 @@ public class HMinimaxSearch implements Minimax {
 					max = ALPHA;
 					move = action;
 					
-					if (lastMoveRecord.size() == 0){
-						lastMoveRecord.add(move);
-					} else {
-						lastMoveRecord.set(0, move);
-					}
 					// Reset set of actions that lead to equally promising states
 //					ties.clear();
 //					ties.add(action);
@@ -139,10 +130,6 @@ public class HMinimaxSearch implements Minimax {
 //					ties.add(action);
 				}
 			}	
-			
-			if (!itrFinished) {
-				move = lastMoveRecord.get(0);
-			}
 						
 			if (timer.almostExpired()) {
 				break;
