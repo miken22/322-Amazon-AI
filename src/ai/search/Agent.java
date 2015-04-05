@@ -47,7 +47,7 @@ public class Agent implements Search {
 
 		move++;
 
-		byte[] moveChoice = hMinimax.maxSearch(board, role);
+		byte[] moveChoice = hMinimax.alphaBetaSearch(board, role);
 
 		// Checks that we never pick a move standing still and shooting at self
 		for (int i = 0; i < moveChoice.length; i++){

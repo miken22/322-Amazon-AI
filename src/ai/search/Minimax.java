@@ -16,7 +16,7 @@ public interface Minimax {
 	 * @param player - The player colour our agent is
 	 * @return - The move combination to get to the next best state
 	 */
-	public byte[] maxSearch(Board board, int player);
+	public byte[] alphaBetaSearch(Board board, int player);
 	
 	public byte[] tieBreaker(Board board);
 	

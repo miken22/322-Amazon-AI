@@ -57,7 +57,7 @@ public class HMinimaxSearch implements Minimax {
 	 * @return - The move combination to get to the next best state
 	 */
 	@Override
-	public byte[] maxSearch(Board board, int player){
+	public byte[] alphaBetaSearch(Board board, int player){
 
 		timer = new Timer();
 		timer.startTiming();
