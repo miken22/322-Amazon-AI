@@ -4,7 +4,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
@@ -18,3 +17,6 @@ Parallel storage/parallel/ParallelLauncher.java
 Parallel storage/parallel/ParallelMinimax.java
 Parallel storage/parallel/SinglePlayer.java
 Parallel storage/parallel/WindowSearch.java
+.idea/
+322-Amazon-AI.iml
+Amazons Writeup.pdf
