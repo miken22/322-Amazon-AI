@@ -4,17 +4,10 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.text.BadLocationException;
@@ -27,7 +20,9 @@ import ai.Board;
 import ai.Utility;
 import ai.gui.Cells;
 import ai.search.Agent;
+import ai.search.GameTreeSearch;
 import ai.search.MinDistanceHeuristic;
+import javafx.scene.input.KeyCode;
 
 /**
  * Two bots playing game of amazons, ugly code as it's
@@ -66,12 +61,15 @@ public class SinglePlayer {
 	
 	private Board board;
 	private Cells[][] guiBoard;
+
+	private boolean waiting = true;
 	
 	private boolean playerTurn = false;
 //	private boolean finished = false;
 	
-	private Agent agent = new Agent((byte)1);
-	private Agent agent2 = new Agent((byte)2);
+	private Agent agent = new Agent((byte)2);
+
+	private GameTreeSearch gts = new GameTreeSearch();
 	
 	/**
 	 * 2 element array, index 0 for white score, 1 for black score
@@ -180,6 +178,13 @@ public class SinglePlayer {
 		send.setBorder(b);
 		send.setBackground(new Color(250,250,250));
 		send.setFocusPainted(false);
+		send.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				input.requestFocus();
+				handleMove();
+			}
+		});
 		
 		clear.setBounds(550, 600, 170, 50);
 		clear.setBorder(b);
@@ -269,65 +274,48 @@ public class SinglePlayer {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		input.requestFocus();
+
+		agent.setupHeuristic(new MinDistanceHeuristic((byte)2));
 		
 		if (!playerTurn){
-			playGame();
+			playGame(true);
 		}
 	}
 	
 	/**
-	 * Have two agents play against each other
+	 * Have user play against the agent
 	 */
-	private void playGame(){
+	private void playGame(boolean turn) {
 
-		boolean whiteTurn = true;
-		
-		agent.setupHeuristic(new MinDistanceHeuristic((byte)1));
-//		agent.setupHeuristic(new CountReachableTilesHeuristic(1));
-		agent2.setupHeuristic(new MinDistanceHeuristic((byte)2));
-//		agent2.setupHeuristic(new CountReachableTilesHeuristic(2));
-		
-//		agent.setupHeuristic(new BlindFunction(1));
-//		agent2.setupHeuristic(new BlindFunction(2));
-		
-		while (true){
-			if (whiteTurn){
-				try{
-					byte[] move = agent.selectMove(board);
-					makeMove(board, move, 1);	
-					whiteTurn = false;
+		playerTurn = turn;
 
-					String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + move[2] + "-" + Utility.getColumnLetter(move[5]) + move[4];
-					System.out.println("White: " + action);
-					updateMoveLog(action, 1);
-					
-					Utility.checkIfFinished(board);
-					
-				} catch (NullPointerException e){
-					break;
-				}
-			} else {
+		if (turn) {
 
-				try{
-					byte[] move = agent2.selectMove(board);
-					makeMove(board, move, 2);
-					whiteTurn = true;
+		} else {
 
-					String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
-					System.out.println("Black: " + action);
-					updateMoveLog(action, 2);
-					
-					Utility.checkIfFinished(board);
-					
-				} catch (NullPointerException e){
-					break;
-				}
+			System.out.println("made it");
+
+			byte[] move = agent.selectMove(board);
+
+			// This signals no valid moves
+			if (move[0] == move[2] &&  move[1] == move[3]) {
+				endGame();
 			}
+
+			String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + "" + move[2] + "-" + Utility.getColumnLetter(move[5]) + "" + move[4];
+			System.out.println(action);
+			updateMoveLog(action, 2);
+
+			makeMove(board, move, 2);
+			playerTurn = true;
 		}
-		endGame();
-		
+
 	}
-	
+
+	private void endGame() {
+		addText("Game over, computer ran out of moves!");
+	}
+
 	private void makeMove(Board board, byte[] move, int player){
 		board.freeSquare(move[0], move[1]);
 		board.placeMarker(move[2], move[3], (byte) player);
@@ -335,7 +323,6 @@ public class SinglePlayer {
 
 		guiBoard[move[0]][move[1]].setFree();
 		guiBoard[move[4]][move[5]].setArrow();
-
 		
 		if (player == 1){
 			board.updateWhitePositions(move[0], move[1], move[2], move[3]);
@@ -347,12 +334,63 @@ public class SinglePlayer {
 		
 
 	}
-	
-	private void endGame(){
-		System.out.println("Game Over!");
-		addText("Game over!");
-//		frame.dispose();
-//		System.exit(0);
+
+	private void handleMove() {
+		String in = input.getText();
+
+		String from;
+		String to;
+		String arrow;
+
+		String[] splitIn = in.split("-");
+		from = splitIn[0];
+		to = splitIn[1];
+		arrow = splitIn[2];
+
+		// Get information about source of move
+		char fromRow = from.toLowerCase().charAt(0);
+		int fCol = Utility.getColumn(fromRow);
+		int fRow = from.charAt(1)-48;
+
+		char toRow = to.toLowerCase().charAt(0);
+		int tCol = Utility.getColumn(toRow);
+		int tRow = to.charAt(1)-48;
+
+		char arrRow = arrow.toLowerCase().charAt(0);
+		int aCol = Utility.getColumn(arrRow);
+		int aRow = arrow.charAt(1)-48;
+
+		byte[] move = new byte[6];
+		move[0] = (byte)fRow;
+		move[1] = (byte)fCol;
+		move[2] = (byte)tRow;
+		move[3] = (byte)tCol;
+		move[4] = (byte)aRow;
+		move[5] = (byte)aCol;
+
+		if (board.getPiece(fRow, fCol) != WQUEEN){
+			JOptionPane.showMessageDialog(frame,"Must start with your own piece.", "Invalid", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		if (!gts.moveIsValid(board, move[0], move[1], move[2], move[3], 1, false)) {
+			JOptionPane.showMessageDialog(null, "Invalid move chosen");
+			return;
+		}
+
+		if (!gts.moveIsValid(board, move[2], move[3], move[4], move[5], 1, true)) {
+			JOptionPane.showMessageDialog(null, "Invalid move chosen");
+			return;
+		}
+
+		makeMove(board, move, 1);
+
+		String action = Utility.getColumnLetter(move[1]) + "" + move[0] + "-" + Utility.getColumnLetter(move[3]) + move[2] + "-" + Utility.getColumnLetter(move[5]) + move[4];
+		System.out.println("White: " + action);
+		updateMoveLog(action, 1);
+
+		input.setText("");
+		playGame(false);
 	}
 
 	private void addText(String message){
@@ -368,65 +406,7 @@ public class SinglePlayer {
 		} catch (BadLocationException e1){}
 		chat.select(doc.getLength(), doc.getLength());
 	}
-	
-	/**
-	 * Search board starting from each of the players pieces. If there is no path to any opposing colour then the game
-	 * is over.
-	 * 
-	 * @param player - Which players pieces to start from to look for the goal.
-	 */
-/*	private boolean isFinished() {	
 
-		ArrayList<Pair<Byte, Byte> > wPositions = board.getWhitePositions();
-		ArrayList<Pair<Byte, Byte> > bPositions = board.getBlackPositions();
-
-		byte[][] hasChecked = new byte[rows][columns];
-	
-		for (Pair<Byte, Byte> pair : wPositions){
-			// Reach opposing amazon using legal moves then the game is not over.
-			hasChecked = Utility.countReachableTiles(board, pair, (byte) WQUEEN, hasChecked);		}
-		
-		for (Pair<Byte, Byte> pair : bPositions){
-			// Reach opposing amazon using legal moves then the game is not over.
-			hasChecked = Utility.countReachableTiles(board, pair, (byte) BQUEEN, hasChecked);
-		}
-		
-		whiteTiles = 4;
-		blackTiles = 4; 
-		bothCanReach = 0;
-		
-		for (int i = 0; i < rows; i++){
-			for (int j = 0; j < columns; j++){
-				switch(hasChecked[i][j]){
-					case(1):
-						whiteTiles++;
-						break;
-					case(2):
-						blackTiles++;
-						break;
-					case(3):
-						bothCanReach++;
-						break;
-				}
-			}
-		}
-		
-		System.out.println("Black: " + blackTiles + " White: " + whiteTiles + " Both: " + bothCanReach);
-		
-		if (blackTiles > whiteTiles + bothCanReach){
-			System.out.println("Black wins");
-			System.out.println("Black: " + blackTiles + " White: " + (whiteTiles + bothCanReach));
-			return true;
-		} else if (whiteTiles > blackTiles + bothCanReach){
-			System.out.println("White wins!");
-			System.out.println("Black: " + (blackTiles  + bothCanReach) + " White: " + (whiteTiles));
-			return true;
-		} 
-		
-		// If we reach this point we have examined every component
-		return false;
-	} */
-	
 	private void updateMoveLog(String move, int pid) {
 		Document doc = moveLog.getDocument();
 
@@ -442,5 +422,4 @@ public class SinglePlayer {
 
 		moveLog.select(doc.getLength(), doc.getLength());
 	}
-	
 }
