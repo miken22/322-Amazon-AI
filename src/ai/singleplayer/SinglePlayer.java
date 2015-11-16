@@ -48,7 +48,7 @@ public class SinglePlayer {
 	private StyledDocument moveTextarea;
 
 	private JButton send;
-	private JButton clear;
+//	private JButton clear;
 
 	private JMenuBar menu;
 	private JMenu file;
@@ -114,7 +114,7 @@ public class SinglePlayer {
 		exit = new JMenuItem("Exit");
 		
 		send = new JButton("Send");
-		clear = new JButton("Clear");
+//		clear = new JButton("Clear");
 
 		moveLog = new JTextPane();
 		scrollLog = new JScrollPane(moveLog);
@@ -137,7 +137,7 @@ public class SinglePlayer {
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(725, 675);
-		frame.setResizable(false);
+//		frame.setResizable(false);
 		frame.setJMenuBar(menu);
 
 		menu.setBackground(new Color(244,244,244));
@@ -150,7 +150,7 @@ public class SinglePlayer {
 		chat.setBackground(new Color(252,252,252));
 		chat.setFont(font);
 
-		scrollChat.setBounds(550, 250, 170, 300);
+		scrollChat.setBounds(540, 250, 170, 300);
 		scrollChat.setBackground(new Color(252,252,252));
 		scrollChat.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Chat History:"));
 
@@ -160,21 +160,21 @@ public class SinglePlayer {
 		moveLog.setBackground(new Color(252,252,252));
 		moveLog.setFont(font);
 
-		scrollLog.setBounds(550, 0, 170, 250);
+		scrollLog.setBounds(540, 0, 170, 250);
 		scrollLog.setBackground(new Color(252,252,252));
 		scrollLog.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Move History:"));
 
 		input.setLineWrap(true);
 		input.setBorder(b);
 		input.setFont(font);
-		input.setBounds(0, 550, 550, 100);
+		input.setBounds(0, 550, 550, 60);
 		input.setBackground(new Color(252,252,252));
 		input.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,1,true), "Enter a move or chat:"));		
 
 		chatTextarea = chat.getStyledDocument();
 		moveTextarea = moveLog.getStyledDocument();
 
-		send.setBounds(550, 550, 170, 50);
+		send.setBounds(550, 557, 170, 50);
 		send.setBorder(b);
 		send.setBackground(new Color(250,250,250));
 		send.setFocusPainted(false);
@@ -186,17 +186,17 @@ public class SinglePlayer {
 			}
 		});
 		
-		clear.setBounds(550, 600, 170, 50);
-		clear.setBorder(b);
-		clear.setBackground(new Color(250,250,250));
-		clear.setFocusPainted(false);
+//		clear.setBounds(550, 600, 170, 50);
+//		clear.setBorder(b);
+//		clear.setBackground(new Color(250,250,250));
+//		clear.setFocusPainted(false);
 
 		c = frame.getContentPane();
 		c.add(scrollChat);
 		c.add(scrollLog);
 		c.add(input);
 		c.add(send);
-		c.add(clear);
+//		c.add(clear);
 		
 	}
 
@@ -225,7 +225,7 @@ public class SinglePlayer {
 					}
 				}
 
-				cell.setBounds(j * 50 + 50, 500 - i * 50, 50, 50);
+				cell.setBounds(j * 50 + 40, 500 - i * 50, 50, 50);
 				cell.setBorder(new LineBorder(Color.LIGHT_GRAY,1,true));
 				guiBoard[i][j] = cell;
 				frame.add(cell);
@@ -241,7 +241,7 @@ public class SinglePlayer {
 		for (int i = 0; i < columns; i++){
 			JLabel label = new JLabel();
 			label.setBackground(Color.BLACK);
-			label.setBounds(70 + i * 50,10, 50,50);
+			label.setBounds(50 + i * 50,5, 50,50);
 			label.setText("" + letters[i]);
 			frame.add(label);
 		}
@@ -250,7 +250,7 @@ public class SinglePlayer {
 		for (int i = rows-1; i >= 0; i--){
 			JLabel label = new JLabel();
 			label.setBackground(Color.BLACK);
-			label.setBounds(25,510-i*50, 50,40);
+			label.setBounds(20, 510-i*50, 50,40);
 			label.setText("" + i);
 			frame.add(label);
 		}
@@ -373,12 +373,23 @@ public class SinglePlayer {
 			return;
 		}
 
-		if (!gts.moveIsValid(board, move[0], move[1], move[2], move[3], 1, false)) {
+		if (move[0] == move[2] && move[1] == move[3]){
+			JOptionPane.showMessageDialog(frame,"Cannot stay stationary and shoot an arrow", "Invalid", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		Board tempBoard = new Board(board);
+		tempBoard.updateWhitePositions(move[0], move[1], move[2], move[3]);
+
+		if (!gts.moveIsValid(tempBoard, move[0], move[1], move[2], move[3], WQUEEN, false)) {
 			JOptionPane.showMessageDialog(null, "Invalid move chosen");
 			return;
 		}
 
-		if (!gts.moveIsValid(board, move[2], move[3], move[4], move[5], 1, true)) {
+		tempBoard.freeSquare(move[0], move[1]);
+		tempBoard.placeMarker(move[2], move[3], (byte) WQUEEN);
+
+		if (!gts.moveIsValid(tempBoard, move[2], move[3], move[4], move[5], WQUEEN, true)) {
 			JOptionPane.showMessageDialog(null, "Invalid move chosen");
 			return;
 		}
